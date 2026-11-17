@@ -47,7 +47,6 @@
         }
     </script>
     <style>
-        /* Core & Offline-Safe Base Styles */
         * { box-sizing: border-box; }
         html, body {
             background-color: #06080d;
@@ -106,14 +105,14 @@
 
         <!-- Compact Mobile-First Two-Row Top Studio HUD -->
         <header class="shrink-0 bg-[#0e121c]/95 backdrop-blur-xl border-b border-white/[0.08] px-3 sm:px-5 pt-2.5 pb-2 z-30">
-            <!-- Row 1: Studio Identity + Save Status + Trophy + Cash + Advance Week -->
+            <!-- Row 1: Studio Identity + Save + Trophy + Cash + Advance Week -->
             <div class="flex items-center justify-between gap-1.5 sm:gap-2">
                 <div class="flex items-center gap-2 min-w-0">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-black shadow-lg shadow-amber-500/20 shrink-0">
                         <i class="ph-fill ph-film-slate text-base sm:text-lg"></i>
                     </div>
                     <button onclick="openRenameStudioModal()" class="flex items-center gap-1 min-w-0 text-left group">
-                        <span id="hudStudioName" class="font-display font-extrabold text-xs sm:text-sm text-white truncate max-w-[105px] sm:max-w-[200px] group-hover:text-amber-300 transition">Nusantara Pictures</span>
+                        <span id="hudStudioName" class="font-display font-extrabold text-xs sm:text-sm text-white truncate max-w-[100px] sm:max-w-[200px] group-hover:text-amber-300 transition">Nusantara Pictures</span>
                         <i class="ph ph-pencil-simple text-[11px] text-gray-500 group-hover:text-amber-300 shrink-0"></i>
                     </button>
                 </div>
@@ -131,13 +130,19 @@
                         <span id="hudAwardCount" class="font-mono text-[11px] font-extrabold">0</span>
                     </button>
 
-                    <!-- Cash Pill -->
+                    <!-- Cash Pill (Opens Funding / Investor / Loan Hub) -->
                     <button onclick="openFundingPitchModal()" title="Pinjaman Investor & Pendanaan Studio" class="px-2.5 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 text-right transition group">
                         <div class="hidden sm:flex items-center justify-end gap-1 text-[9px] font-mono uppercase tracking-wider text-emerald-300/75 leading-none">
                             <span>KAS STUDIO</span>
                             <span class="px-1 rounded bg-emerald-500/20 text-emerald-200 font-bold">+DANA</span>
                         </div>
                         <div id="hudCash" class="font-mono font-extrabold text-[11px] sm:text-xs text-emerald-300 leading-tight">Rp 600 Jt</div>
+                    </button>
+
+                    <!-- Advance Week Button -->
+                    <button onclick="advanceWeek()" class="px-2.5 sm:px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-black font-display font-extrabold text-[11px] sm:text-xs shadow-lg shadow-amber-500/20 flex items-center gap-1 transition shrink-0">
+                        <span>Pekan +1</span>
+                        <i class="ph-bold ph-fast-forward text-xs"></i>
                     </button>
                 </div>
             </div>
@@ -172,7 +177,7 @@
                 <button onclick="switchMainTab('cinemail')" id="nav-cinemail" class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400 hover:text-white transition">
                     <i class="ph ph-envelope-simple text-lg"></i>
                     <span class="text-[10px] font-bold mt-0.5 truncate max-w-full">CineMail</span>
-                    <span id="badge-cinemail" class="absolute top-1 right-2.5 sm:right-5 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white font-mono text-[9px] font-extrabold flex items-center justify-center">2</span>
+                    <span id="badge-cinemail" class="absolute top-1 right-2.5 sm:right-5 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white font-mono text-[9px] font-extrabold flex items-center justify-center">3</span>
                 </button>
                 <button onclick="switchMainTab('cinegram')" id="nav-cinegram" class="nav-btn relative flex flex-col items-center justify-center py-1.5 rounded-xl text-gray-400 hover:text-white transition">
                     <i class="ph ph-instagram-logo text-lg"></i>
@@ -263,7 +268,7 @@
         }
 
         // =========================================================================
-        // 2. DATA CATALOGS (CREW, STORY PRESETS, MOVIES, SOCIAL)
+        // 2. DATA CATALOGS (GENRES, PREMISES, CREW, MOVIES, SOCIAL)
         // =========================================================================
         const GENRES = ['Horor', 'Aksi', 'Drama', 'Komedi', 'Sci-Fi', 'Thriller', 'Romansa', 'Fantasi'];
 
@@ -309,6 +314,13 @@
                 'Akademi pengendali cuaca di atas awan terancam runtuh ketika kristal angin utama dicuri.'
             ]
         };
+
+        const RANDOM_TITLES = [
+            'BAYANGAN DI BALIK CENDELA', 'SANDIWARA MALAM TERAKHIR', 'LANGIT MERAH NUSANTARA',
+            'JEJAK LANGKAH TANPA NAMA', 'DETAK WAKTU JAKARTA', 'KUTUKAN LONTAR KUNO',
+            'OPERASI GARUDA HITAM', 'JANJI DI STASIUN TUGU', 'PENJAGA GERBANG AWAN',
+            'WARUNG KOPI PENUH RAHASIA', 'SINYAL DARI ORBIT SELATAN', 'RAHASIA VILA KABUT'
+        ];
 
         const LOCATIONS = [
             { id: 'loc_local', name: 'Studio Lokal Jakarta', cost: 35000000, qBonus: 4, hypeBonus: 2, desc: 'Set indoor hemat biaya & cepat.' },
@@ -530,6 +542,7 @@
                     genre: 'Horor',
                     ageRating: '17+',
                     locationId: 'loc_local',
+                    scaleMult: 1.0,
                     synopsis: STORY_PREMISES['Horor'][0],
                     franchiseId: '',
                     directorId: 'dir_1',
@@ -627,7 +640,8 @@
                 },
 
                 boxoffice: {
-                    region: 'id'
+                    region: 'id',
+                    mode: 'weekly'
                 },
 
                 cineflix: {
@@ -656,14 +670,10 @@
                 localStorage.setItem(SAVE_KEY, JSON.stringify(state));
                 const icon = document.getElementById('hudSaveIcon');
                 if (icon) {
-                    icon.classList.remove('text-emerald-400');
-                    icon.classList.add('text-amber-300');
-                    setTimeout(() => {
-                        icon.classList.remove('text-amber-300');
-                        icon.classList.add('text-emerald-400');
-                    }, 500);
+                    icon.classList.remove('text-gray-400');
+                    icon.classList.add('text-emerald-400');
                 }
-                if (!silent) showToast('Progres permainan tersimpan di browser!', 'success');
+                if (!silent) showToast('Progres permainan berhasil disimpan ke LocalStorage!', 'success');
             } catch (e) {
                 if (!silent) showToast('Gagal menyimpan ke LocalStorage browser.', 'error');
             }
@@ -675,33 +685,16 @@
                 if (!raw) return false;
                 const parsed = JSON.parse(raw);
                 if (!parsed || typeof parsed !== 'object') return false;
-
-                const fresh = createDefaultState();
+                const def = createDefaultState();
                 state = {
-                    ...fresh,
+                    ...def,
                     ...parsed,
-                    marketMood: { ...fresh.marketMood, ...(parsed.marketMood || {}) },
-                    draft: { ...fresh.draft, ...(parsed.draft || {}) },
-                    cinemail: {
-                        ...fresh.cinemail,
-                        ...(parsed.cinemail || {}),
-                        mobilePane: 'list',
-                        messages: Array.isArray(parsed.cinemail?.messages) ? parsed.cinemail.messages : fresh.cinemail.messages
-                    },
-                    cinegram: {
-                        ...fresh.cinegram,
-                        ...(parsed.cinegram || {}),
-                        posts: Array.isArray(parsed.cinegram?.posts) ? parsed.cinegram.posts : fresh.cinegram.posts,
-                        activities: Array.isArray(parsed.cinegram?.activities) ? parsed.cinegram.activities : fresh.cinegram.activities
-                    },
-                    boxoffice: { ...fresh.boxoffice, ...(parsed.boxoffice || {}) },
-                    cineflix: { ...fresh.cineflix, ...(parsed.cineflix || {}) },
-                    cineboxd: { ...fresh.cineboxd, ...(parsed.cineboxd || {}) },
-                    releasedMovies: Array.isArray(parsed.releasedMovies) && parsed.releasedMovies.length > 0 ? parsed.releasedMovies : fresh.releasedMovies,
-                    hiredCrewIds: Array.isArray(parsed.hiredCrewIds) ? parsed.hiredCrewIds : fresh.hiredCrewIds,
-                    awards: Array.isArray(parsed.awards) ? parsed.awards : [],
-                    activeLoans: Array.isArray(parsed.activeLoans) ? parsed.activeLoans : [],
-                    franchises: Array.isArray(parsed.franchises) ? parsed.franchises : []
+                    draft: { ...def.draft, ...(parsed.draft || {}) },
+                    cinemail: { ...def.cinemail, ...(parsed.cinemail || {}) },
+                    cinegram: { ...def.cinegram, ...(parsed.cinegram || {}) },
+                    boxoffice: { ...def.boxoffice, ...(parsed.boxoffice || {}) },
+                    cineflix: { ...def.cineflix, ...(parsed.cineflix || {}) },
+                    cineboxd: { ...def.cineboxd, ...(parsed.cineboxd || {}) }
                 };
                 return true;
             } catch (e) {
@@ -709,131 +702,85 @@
             }
         }
 
-        function openSaveManagerModal() {
-            const lastText = state.lastSavedAt ? 'Terakhir tersimpan pukul ' + state.lastSavedAt : 'Belum ada simpanan manual';
-            openModal(`
-                <div class="p-5 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                                <i class="ph-fill ph-floppy-disk text-lg"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-display font-extrabold text-sm sm:text-base text-white">Penyimpanan Lokal (LocalStorage)</h3>
-                                <p class="font-mono text-[10px] text-emerald-300">${lastText}</p>
-                            </div>
-                        </div>
-                        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 flex items-center justify-center"><i class="ph ph-x"></i></button>
-                    </div>
-
-                    <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10 space-y-1.5 text-xs text-gray-300">
-                        <div>Studio: <strong class="text-white">${escapeHTML(state.studioName)}</strong></div>
-                        <div>Waktu: <strong class="text-amber-300">Pekan ${state.week} • Tahun ${state.year}</strong></div>
-                        <div>Kas & Rilisan: <strong class="text-emerald-300">${formatIDR(state.cash)}</strong> • ${state.releasedMovies.filter(m => m.studio === state.studioName).length} Karya Studio</div>
-                        <p class="text-[11px] text-gray-400 pt-1 leading-relaxed">
-                            Progres otomatis disimpan setiap kali <strong>Pekan +1</strong> atau transaksi penting dijalankan, sehingga tetap aman saat halaman dimuat ulang di GitHub Pages.
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <button onclick="saveGameState(false); closeModal()" class="py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-display font-extrabold text-xs flex items-center justify-center gap-1.5">
-                            <i class="ph-bold ph-floppy-disk"></i>
-                            <span>Simpan Sekarang</span>
-                        </button>
-                        <button onclick="exportSaveJSON()" class="py-2.5 px-4 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/30 text-sky-200 font-display font-bold text-xs flex items-center justify-center gap-1.5">
-                            <i class="ph-bold ph-copy"></i>
-                            <span>Salin Kode Cadangan</span>
-                        </button>
-                    </div>
-
-                    <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
-                        <span class="text-[11px] text-gray-400">Ingin mulai karier dari awal?</span>
-                        <button onclick="confirmResetSaveModal()" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-bold text-[11px]">
-                            Reset Save Baru
-                        </button>
-                    </div>
-                </div>
-            `, 'max-w-md');
-        }
-
-        function exportSaveJSON() {
-            try {
-                const ta = document.createElement('textarea');
-                ta.value = JSON.stringify(state);
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                ta.remove();
-                showToast('Kode JSON save berhasil disalin ke clipboard!', 'success');
-            } catch (e) {
-                showToast('Tidak dapat menyalin kode save.', 'error');
-            }
-        }
-
-        function confirmResetSaveModal() {
-            openModal(`
-                <div class="p-5 space-y-4">
-                    <h3 class="font-display font-extrabold text-base text-rose-300">Reset Semua Progres Permainan?</h3>
-                    <p class="text-xs text-gray-300 leading-relaxed">
-                        Data simpanan <strong>${escapeHTML(state.studioName)}</strong> (Pekan ${state.week}, ${formatIDR(state.cash)}) akan dihapus dan permainan dimulai ulang dari Pekan 1.
-                    </p>
-                    <div class="flex justify-end gap-2">
-                        <button onclick="openSaveManagerModal()" class="px-4 py-2 rounded-xl bg-white/10 text-xs font-bold text-gray-300">Batal</button>
-                        <button onclick="executeResetSave()" class="px-4 py-2 rounded-xl bg-rose-500 text-white text-xs font-extrabold">Ya, Mulai Baru</button>
-                    </div>
-                </div>
-            `, 'max-w-sm');
-        }
-
-        function executeResetSave() {
-            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
-            state = createDefaultState();
-            saveGameState(true);
-            closeModal();
-            updateHUD();
-            switchMainTab('studio');
-            showToast('Permainan baru dimulai dari Pekan 1!', 'info');
-        }
-
         // =========================================================================
-        // 4. HUD, MODAL & NAVIGATION HELPERS
+        // 4. CORE NAVIGATION, HUD & SYSTEM MODALS
         // =========================================================================
-        function getWeeklyPayroll() {
-            return state.hiredCrewIds.reduce((sum, id) => {
-                const c = CREW_CATALOG.find(x => x.id === id);
-                return sum + (c ? c.weeklySalary : 0);
-            }, 0);
-        }
-
         function updateHUD() {
-            document.getElementById('hudStudioName').textContent = state.studioName;
-            document.getElementById('hudAwardCount').textContent = state.awards.length;
+            const nameEl = document.getElementById('hudStudioName');
+            if (nameEl) nameEl.textContent = state.studioName;
+
+            const awardEl = document.getElementById('hudAwardCount');
+            if (awardEl) awardEl.textContent = state.awards.length;
+
             const cashEl = document.getElementById('hudCash');
-            cashEl.textContent = formatIDR(state.cash);
-            cashEl.className = 'font-mono font-extrabold text-[11px] sm:text-xs leading-tight ' + (state.cash < 0 ? 'text-rose-400' : 'text-emerald-300');
+            if (cashEl) {
+                cashEl.textContent = formatIDR(state.cash);
+                cashEl.className = 'font-mono font-extrabold text-[11px] sm:text-xs leading-tight ' + (state.cash < 0 ? 'text-rose-400' : 'text-emerald-300');
+            }
 
-            document.getElementById('hudWeekYear').textContent = 'Pekan ' + state.week + ' • ' + state.year;
-            document.getElementById('hudTrend').textContent = 'Tren: ' + state.trendingGenre + ' (+25%)';
-            document.getElementById('hudRep').textContent = state.reputation + '%';
-            document.getElementById('hudHype').textContent = state.hype + '%';
+            const wyEl = document.getElementById('hudWeekYear');
+            if (wyEl) wyEl.textContent = 'Pekan ' + state.week + ' • ' + state.year;
 
-            const unreadMails = state.cinemail.messages.filter(m => m.unread).length;
+            const trEl = document.getElementById('hudTrend');
+            if (trEl) trEl.textContent = 'Tren: ' + state.trendingGenre + ' (+25%)';
+
+            const repEl = document.getElementById('hudRep');
+            if (repEl) repEl.textContent = state.reputation + '%';
+
+            const hypeEl = document.getElementById('hudHype');
+            if (hypeEl) hypeEl.textContent = state.hype + '%';
+
+            const unreadMailCount = state.cinemail.messages.filter(m => m.unread).length;
             const mailBadge = document.getElementById('badge-cinemail');
-            if (unreadMails > 0) {
-                mailBadge.textContent = unreadMails;
-                mailBadge.classList.remove('hidden');
-            } else {
-                mailBadge.classList.add('hidden');
+            if (mailBadge) {
+                if (unreadMailCount > 0) {
+                    mailBadge.textContent = unreadMailCount;
+                    mailBadge.classList.remove('hidden');
+                } else {
+                    mailBadge.classList.add('hidden');
+                }
             }
 
             const gramBadge = document.getElementById('badge-cinegram');
-            if (state.cinegram.unreadNotif) gramBadge.classList.remove('hidden');
-            else gramBadge.classList.add('hidden');
+            if (gramBadge) {
+                if (state.cinegram.unreadNotif) gramBadge.classList.remove('hidden');
+                else gramBadge.classList.add('hidden');
+            }
+        }
+
+        function switchMainTab(tabId) {
+            state.mainTab = tabId;
+            if (tabId === 'cinegram') {
+                state.cinegram.unreadNotif = false;
+                updateHUD();
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-amber-400', 'bg-amber-500/10');
+                btn.classList.add('text-gray-400');
+            });
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400');
+                activeBtn.classList.add('text-amber-400', 'bg-amber-500/10');
+            }
+            renderCurrentTab();
+        }
+
+        function renderCurrentTab() {
+            const tab = state.mainTab;
+            if (tab === 'studio') renderStudioView();
+            else if (tab === 'cinemail') renderCinemailView();
+            else if (tab === 'cinegram') renderCinegramView();
+            else if (tab === 'boxoffice') renderBoxOfficeView();
+            else if (tab === 'cineflix') renderCineflixView();
+            else if (tab === 'cineboxd') renderCineboxdView();
         }
 
         function openModal(html, maxWidthClass = 'max-w-2xl') {
             const overlay = document.getElementById('modalOverlay');
             const content = document.getElementById('modalContent');
+            if (!overlay || !content) return;
             content.className = 'w-full ' + maxWidthClass + ' bg-[#111520] border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-screen-push';
             content.innerHTML = html;
             overlay.classList.remove('hidden');
@@ -842,6 +789,7 @@
 
         function closeModal() {
             const overlay = document.getElementById('modalOverlay');
+            if (!overlay) return;
             overlay.classList.add('hidden');
             overlay.classList.remove('flex');
         }
@@ -853,30 +801,149 @@
                         <h3 class="font-display font-extrabold text-base text-white">Ubah Nama Studio</h3>
                         <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 flex items-center justify-center"><i class="ph ph-x"></i></button>
                     </div>
-                    <input id="renameStudioInput" type="text" maxlength="28" value="${escapeHTML(state.studioName)}" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-sm text-white font-bold focus:outline-none focus:border-amber-400">
-                    <div class="flex justify-end gap-2">
-                        <button onclick="closeModal()" class="px-4 py-2 rounded-xl bg-white/10 text-xs font-bold text-gray-300">Batal</button>
-                        <button onclick="saveStudioName()" class="px-4 py-2 rounded-xl bg-amber-500 text-black text-xs font-extrabold">Simpan</button>
+                    <form onsubmit="event.preventDefault(); applyStudioRename()" class="space-y-3">
+                        <input id="renameStudioInput" type="text" maxlength="28" value="${escapeHTML(state.studioName)}" class="w-full px-3.5 py-2.5 rounded-2xl bg-black/60 border border-white/15 text-sm font-bold text-white focus:outline-none focus:border-amber-400">
+                        <button type="submit" class="w-full py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-display font-extrabold text-xs">
+                            Simpan Nama Studio
+                        </button>
+                    </form>
+                </div>
+            `, 'max-w-sm');
+        }
+
+        function applyStudioRename() {
+            const val = document.getElementById('renameStudioInput')?.value.trim();
+            if (!val) return;
+            state.studioName = val;
+            saveGameState(true);
+            updateHUD();
+            closeModal();
+            renderCurrentTab();
+            showToast('Nama studio diubah menjadi "' + val + '"!', 'success');
+        }
+
+        function openSaveManagerModal() {
+            openModal(`
+                <div class="p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="ph-fill ph-floppy-disk text-emerald-400 text-xl"></i>
+                            <div>
+                                <h3 class="font-display font-extrabold text-base text-white">Penyimpanan Data (LocalStorage)</h3>
+                                <p class="font-mono text-[10px] text-gray-400">Tersimpan otomatis setiap Pekan +1 • Terakhir: ${state.lastSavedAt || 'Baru saja'}</p>
+                            </div>
+                        </div>
+                        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 flex items-center justify-center"><i class="ph ph-x"></i></button>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-black/45 border border-white/10 font-mono text-xs space-y-1 text-gray-300">
+                        <div>Studio: <strong class="text-white">${escapeHTML(state.studioName)}</strong></div>
+                        <div>Waktu: <strong class="text-amber-300">Pekan ${state.week} • ${state.year}</strong></div>
+                        <div>Kas Studio: <strong class="text-emerald-300">${formatIDR(state.cash)}</strong></div>
+                        <div>Key Penyimpanan: <span class="text-sky-300">${SAVE_KEY}</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button onclick="saveGameState(false); closeModal()" class="py-2.5 px-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-display font-extrabold text-xs flex items-center justify-center gap-1.5">
+                            <i class="ph-bold ph-floppy-disk"></i>
+                            <span>Simpan Sekarang</span>
+                        </button>
+                        <button onclick="copySaveBackupJSON()" class="py-2.5 px-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-display font-bold text-xs flex items-center justify-center gap-1.5">
+                            <i class="ph ph-copy"></i>
+                            <span>Salin Backup JSON</span>
+                        </button>
+                    </div>
+
+                    <div class="pt-2 border-t border-white/10">
+                        <button onclick="resetSaveData()" class="w-full py-2.5 rounded-2xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/35 text-rose-300 font-display font-bold text-xs">
+                            Reset & Mulai Karier Studio Baru
+                        </button>
                     </div>
                 </div>
             `, 'max-w-md');
         }
 
-        function saveStudioName() {
-            const val = document.getElementById('renameStudioInput')?.value.trim();
-            if (val) {
-                state.studioName = val;
-                saveGameState(true);
-                updateHUD();
-                renderCurrentTab();
-                showToast('Nama studio diperbarui menjadi ' + val + '!', 'success');
+        function copySaveBackupJSON() {
+            try {
+                const jsonStr = JSON.stringify(state);
+                if (navigator.clipboard) navigator.clipboard.writeText(jsonStr);
+                showToast('Data save JSON disalin ke clipboard!', 'success');
+            } catch (e) {
+                showToast('Data save tersimpan aman di LocalStorage.', 'info');
             }
+        }
+
+        function resetSaveData() {
+            localStorage.removeItem(SAVE_KEY);
+            state = createDefaultState();
+            saveGameState(true);
             closeModal();
+            updateHUD();
+            switchMainTab('studio');
+            showToast('Save data direset! Memulai studio baru dari Pekan 1.', 'info');
+        }
+
+        function triggerAwardWin({ festival, category, movieTitle, prizeCash, repGain }) {
+            state.cash += prizeCash;
+            state.reputation = Math.min(100, state.reputation + repGain);
+            state.awards.unshift({
+                id: 'aw_' + Date.now(),
+                festival,
+                category,
+                movieTitle,
+                prizeCash,
+                week: state.week,
+                year: state.year
+            });
+
+            state.cinemail.messages.unshift({
+                id: 'mail_aw_' + Date.now(),
+                folder: 'business',
+                sender: festival + ' Committee',
+                email: 'awards@' + festival.toLowerCase().replace(/[^a-z0-9]/g, '') + '.org',
+                subject: '🏆 Pemenang Resmi: "' + movieTitle + '" — ' + category,
+                time: 'Pekan ' + state.week,
+                unread: true,
+                starred: true,
+                body: 'Selamat kepada ' + state.studioName + '!\n\nKarya Anda "' + movieTitle + '" resmi dianugerahi piala bergengsi pada kategori ' + category + ' di ' + festival + '.\n\nHadiah dana penghargaan sebesar ' + formatIDR(prizeCash) + ' telah ditransfer ke kas studio Anda.',
+                actionType: 'none',
+                resolved: true
+            });
+
+            saveGameState(true);
+            updateHUD();
+            playTone(780, 'triangle', 0.22, 0.06);
+
+            openModal(`
+                <div class="p-6 bg-gradient-to-b from-amber-500/20 via-[#111520] to-[#111520] text-center space-y-4">
+                    <div class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-br from-amber-300 to-orange-600 flex items-center justify-center text-black shadow-2xl shadow-amber-500/30">
+                        <i class="ph-fill ph-trophy text-3xl"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-amber-300 font-extrabold">${escapeHTML(festival)}</div>
+                        <h3 class="font-display font-extrabold text-xl text-white">MENANG PENGHARGAAN!</h3>
+                        <p class="text-xs text-gray-300">"<strong>${escapeHTML(movieTitle)}</strong>" meraih <strong>${escapeHTML(category)}</strong></p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-black/50 border border-amber-500/30 flex items-center justify-around font-mono text-xs">
+                        <div>
+                            <div class="text-[10px] text-gray-400">HADIAH DANA</div>
+                            <div class="font-extrabold text-emerald-300">+${formatIDR(prizeCash)}</div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] text-gray-400">REPUTASI STUDIO</div>
+                            <div class="font-extrabold text-sky-300">+${repGain}%</div>
+                        </div>
+                    </div>
+                    <button onclick="closeModal()" class="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-display font-extrabold text-xs">
+                        Rayakan & Lanjutkan
+                    </button>
+                </div>
+            `, 'max-w-md');
         }
 
         function openAwardsCabinetModal() {
             openModal(`
-                <div class="p-5 space-y-4 max-h-[80dvh] flex flex-col">
+                <div class="p-5 space-y-4 max-h-[78dvh] flex flex-col">
                     <div class="flex items-center justify-between shrink-0">
                         <div class="flex items-center gap-2">
                             <i class="ph-fill ph-trophy text-amber-400 text-xl"></i>
@@ -886,17 +953,17 @@
                     </div>
                     <div class="flex-1 overflow-y-auto app-scroll space-y-2.5">
                         ${state.awards.length === 0 ? `
-                            <div class="p-8 text-center rounded-2xl bg-black/30 border border-white/5 text-xs text-gray-400">
-                                Belum ada piala yang diraih. Ikuti Sirkuit Festival Film setelah menyelesaikan produksi atau raih film terbaik tahunan di Pekan 52!
+                            <div class="p-8 text-center text-xs text-gray-400">
+                                Belum ada piala penghargaan. Daftarkan karya berkualitas tinggi ke Sirkuit Festival atau raih skor ≥ 4.2★ hingga Pekan 52!
                             </div>
                         ` : state.awards.map(a => `
-                            <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 to-transparent border border-amber-500/30 flex items-center justify-between gap-3">
+                            <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-between gap-3">
                                 <div>
-                                    <div class="font-mono text-[10px] text-amber-300 font-bold">${escapeHTML(a.festival)} • Pekan ${a.week}</div>
-                                    <div class="font-display font-extrabold text-sm text-white">${escapeHTML(a.category)}</div>
-                                    <div class="text-xs text-gray-300">Karya: <strong>${escapeHTML(a.movieTitle)}</strong></div>
+                                    <div class="font-mono text-[10px] text-amber-300 font-bold">${escapeHTML(a.festival)} • ${a.year}</div>
+                                    <div class="font-display font-extrabold text-sm text-white">${escapeHTML(a.movieTitle)}</div>
+                                    <div class="text-[11px] text-gray-300">${escapeHTML(a.category)}</div>
                                 </div>
-                                <i class="ph-fill ph-trophy text-2xl text-amber-400 shrink-0"></i>
+                                <div class="font-mono text-xs font-extrabold text-emerald-300 shrink-0">+${formatIDR(a.prizeCash)}</div>
                             </div>
                         `).join('')}
                     </div>
@@ -904,429 +971,270 @@
             `, 'max-w-lg');
         }
 
-        function triggerAwardWin({ festival, category, movieTitle, prizeCash, repGain }) {
-            state.awards.unshift({
-                id: 'aw_' + Date.now(),
-                festival,
-                category,
-                movieTitle,
-                week: state.week
-            });
-            state.cash += prizeCash;
-            state.reputation = Math.min(100, state.reputation + repGain);
-
-            state.cinemail.messages.unshift({
-                id: 'mail_aw_' + Date.now(),
-                folder: 'business',
-                sender: festival,
-                email: 'committee@festival-awards.org',
-                subject: 'Pemenang Resmi: ' + category + ' — "' + movieTitle + '"',
-                time: 'Pekan ' + state.week,
-                unread: true,
-                starred: true,
-                body: 'Selamat kepada ' + state.studioName + '!\n\nKarya Anda "' + movieTitle + '" resmi memenangkan penghargaan ' + category + ' pada ajang ' + festival + '. Dana apresiasi sebesar ' + formatIDR(prizeCash) + ' telah ditransfer ke kas studio Anda.',
-                actionType: 'none',
-                resolved: true
-            });
-
-            state.cinegram.activities.unshift({
-                user: festival,
-                text: 'menganugerahkan piala ' + category + ' kepada "' + movieTitle + '"! 🏆',
-                time: 'Pekan ' + state.week
-            });
-
-            state.cinegram.posts.unshift({
-                id: 'post_aw_' + Date.now(),
-                region: 'intl',
-                author: 'cannes_dispatch',
-                verified: true,
-                following: true,
-                location: festival,
-                time: 'Baru saja',
-                headline: '🏆 ' + state.studioName.toUpperCase() + ' MENANG ' + category.toUpperCase() + '!',
-                grad: 'from-amber-900 via-yellow-950 to-black',
-                icon: 'ph-trophy',
-                movieId: null,
-                caption: 'Selamat untuk ' + state.studioName + '! "' + movieTitle + '" membawa pulang piala ' + category + ' di ' + festival + '! 🏆🎬 #AwardsSeason #CinemaNews',
-                translatedCaption: null,
-                likes: 5400,
-                liked: false,
-                bookmarked: false,
-                poll: null,
-                comments: [
-                    { id: 'caw1', user: 'cinephile_jakarta', text: 'Sejarah baru! Pidato kemenangannya merinding banget 😭🏆', time: '1m', likes: 210, liked: false },
-                    { id: 'caw2', user: 'variety_asia', text: 'Well deserved victory for ' + state.studioName + '!', time: '1m', likes: 145, liked: false },
-                    { id: 'caw3', user: 'nadia_sinefil', text: 'Bangga banget sinema kita tembus panggung dunia 🔥👏', time: '1m', likes: 98, liked: false }
-                ],
-                hiddenComments: []
-            });
-            state.cinegram.unreadNotif = true;
-            saveGameState(true);
-
-            playTone(660, 'triangle', 0.14, 0.06);
-            setTimeout(() => playTone(880, 'triangle', 0.22, 0.06), 140);
-
-            openModal(`
-                <div class="p-6 text-center space-y-4 bg-gradient-to-b from-amber-500/20 via-[#111520] to-[#111520]">
-                    <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500 text-black flex items-center justify-center shadow-xl shadow-amber-500/30">
-                        <i class="ph-fill ph-trophy text-4xl"></i>
-                    </div>
-                    <div>
-                        <div class="font-mono text-[11px] font-bold uppercase tracking-widest text-amber-300">${escapeHTML(festival)}</div>
-                        <h3 class="font-display font-extrabold text-xl text-white mt-1">${escapeHTML(category)}</h3>
-                        <p class="text-xs text-gray-300 mt-1">Karya pemenang: <strong class="text-white">"${escapeHTML(movieTitle)}"</strong></p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2.5 max-w-xs mx-auto font-mono text-xs">
-                        <div class="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">+${formatIDR(prizeCash)}</div>
-                        <div class="p-2.5 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 font-bold">+${repGain}% Reputasi</div>
-                    </div>
-                    <button onclick="closeModal()" class="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-display font-extrabold text-xs">
-                        Terima Penghargaan
-                    </button>
-                </div>
-            `, 'max-w-md');
-        }
-
-        function switchMainTab(tab) {
-            state.mainTab = tab;
-            if (tab === 'cinegram') {
-                state.cinegram.unreadNotif = false;
-                updateHUD();
-            }
-            if (tab === 'cinemail') {
-                state.cinemail.mobilePane = 'list';
-            }
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-amber-400', 'bg-amber-500/10');
-                btn.classList.add('text-gray-400');
-            });
-            const active = document.getElementById('nav-' + tab);
-            if (active) {
-                active.classList.remove('text-gray-400');
-                active.classList.add('text-amber-400', 'bg-amber-500/10');
-            }
-            renderCurrentTab();
-        }
-
-        function renderCurrentTab() {
-            if (state.mainTab === 'studio') renderStudioView();
-            else if (state.mainTab === 'cinemail') renderCinemailView();
-            else if (state.mainTab === 'cinegram') renderCinegramView();
-            else if (state.mainTab === 'boxoffice') renderBoxOfficeView();
-            else if (state.mainTab === 'cineflix') renderCineflixView();
-            else if (state.mainTab === 'cineboxd') renderCineboxdView();
-        }
-
         // =========================================================================
-        // 5. STUDIO VIEW (PRE-PROD, ACTIVE SET, CREW, IP)
+        // 5. STUDIO WORKSPACE (PRE-PRODUCTION, ACTIVE SHOOT, CREW, IP)
         // =========================================================================
+        function getWeeklyPayroll() {
+            return state.hiredCrewIds.reduce((sum, id) => {
+                const c = CREW_CATALOG.find(x => x.id === id);
+                return sum + (c ? c.weeklySalary : 0);
+            }, 0);
+        }
+
+        function calcEstimatedProductionBudget() {
+            const d = state.draft;
+            const loc = LOCATIONS.find(l => l.id === d.locationId) || LOCATIONS[0];
+            const formatBase = d.format === 'Series' ? 95000000 : d.format === 'Film Pendek' ? 30000000 : 70000000;
+            const styleMult = d.visualStyle === 'Animasi 3D' ? 1.35 : d.visualStyle === 'Animasi 2D' ? 1.15 : 1.0;
+            const scale = d.scaleMult || 1.0;
+            return Math.round((formatBase * styleMult + loc.cost) * scale);
+        }
+
+        function calcDraftPreviewStats() {
+            const d = state.draft;
+            const loc = LOCATIONS.find(l => l.id === d.locationId) || LOCATIONS[0];
+            const slots = [d.directorId, d.actorId, d.writerId, d.techId].filter(Boolean);
+
+            let skillSum = 0;
+            let specialtyMatches = 0;
+            slots.forEach(cid => {
+                const c = CREW_CATALOG.find(x => x.id === cid);
+                if (c) {
+                    skillSum += c.skill;
+                    if (c.specialty === d.genre) specialtyMatches += 1;
+                }
+            });
+
+            const avgSkill = slots.length > 0 ? skillSum / slots.length : 60;
+            const budget = calcEstimatedProductionBudget();
+            const budgetBoost = Math.min(18, Math.round(budget / 25000000));
+            const estQuality = Math.min(88, Math.max(28, Math.round(avgSkill * 0.45 + loc.qBonus + specialtyMatches * 4 + budgetBoost)));
+            const estHype = Math.min(85, Math.max(15, Math.round(state.hype * 0.45 + loc.hypeBonus + d.mktPct * 0.45 + specialtyMatches * 3 + (d.franchiseId ? 12 : 0))));
+
+            return { loc, estQuality, estHype, specialtyMatches, budget };
+        }
+
         function renderStudioView() {
             const main = document.getElementById('mainWorkspace');
             const sub = state.studioSubTab;
             const payroll = getWeeklyPayroll();
 
             main.innerHTML = `
-                <div class="shrink-0 px-3.5 sm:px-5 pt-3 pb-2 border-b border-white/[0.08] bg-[#0d111a] flex flex-wrap items-center justify-between gap-2">
+                <div class="shrink-0 px-3.5 sm:px-5 pt-3 pb-2.5 border-b border-white/[0.08] bg-[#0d111a] flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                        <button onclick="state.studioSubTab='production'; renderStudioView()" class="px-3 py-1.5 rounded-xl text-xs font-display font-bold shrink-0 transition ${sub === 'production' ? 'bg-amber-500 text-black' : 'bg-white/[0.05] text-gray-300 hover:text-white'}">
-                            Produksi
+                        <button onclick="state.studioSubTab='production'; renderStudioView()" class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition ${sub === 'production' ? 'bg-amber-500 text-black' : 'bg-white/[0.06] text-gray-300 hover:text-white'}">
+                            🎬 Produksi
                         </button>
-                        <button onclick="state.studioSubTab='crew'; renderStudioView()" class="px-3 py-1.5 rounded-xl text-xs font-display font-bold shrink-0 transition ${sub === 'crew' ? 'bg-amber-500 text-black' : 'bg-white/[0.05] text-gray-300 hover:text-white'}">
-                            Kru & Bintang (${state.hiredCrewIds.length})
+                        <button onclick="state.studioSubTab='crew'; renderStudioView()" class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition ${sub === 'crew' ? 'bg-amber-500 text-black' : 'bg-white/[0.06] text-gray-300 hover:text-white'}">
+                            👥 Kru & Bintang (${state.hiredCrewIds.length})
                         </button>
-                        <button onclick="state.studioSubTab='ip'; renderStudioView()" class="px-3 py-1.5 rounded-xl text-xs font-display font-bold shrink-0 transition ${sub === 'ip' ? 'bg-amber-500 text-black' : 'bg-white/[0.05] text-gray-300 hover:text-white'}">
-                            IP & Universe (${state.franchises.length})
+                        <button onclick="state.studioSubTab='ip'; renderStudioView()" class="px-3 py-1.5 rounded-xl text-xs font-extrabold transition ${sub === 'ip' ? 'bg-amber-500 text-black' : 'bg-white/[0.06] text-gray-300 hover:text-white'}">
+                            🌌 IP & Universe (${state.franchises.length})
                         </button>
                     </div>
-                    <div class="font-mono text-[10px] sm:text-[11px] text-gray-400">
-                        Operasional & Gaji: <strong class="text-rose-300">-${formatIDR(payroll + 8000000)}/mgg</strong>
+                    <div class="font-mono text-[11px] text-gray-400">
+                        Gaji Kru: <strong class="text-rose-300">-${formatIDR(payroll)}/mgg</strong>
                     </div>
                 </div>
+
                 <div id="studioBody" class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-4"></div>
             `;
 
             if (sub === 'production') {
                 if (state.activeProduction) renderActiveProduction();
-                else renderPreProductionForm();
+                else renderPreProductionTab();
             } else if (sub === 'crew') {
-                renderCrewRosterTab();
+                renderCrewTab();
             } else {
                 renderFranchiseTab();
             }
         }
 
-        function calcEstimatedProductionBudget() {
-            const d = state.draft;
-            const loc = LOCATIONS.find(l => l.id === d.locationId) || LOCATIONS[0];
-            const formatBase = d.format === 'Film Panjang' ? 95000000 : d.format === 'Series' ? 80000000 : 30000000;
-            const styleExtra = d.visualStyle === 'Animasi 3D' ? 55000000 : d.visualStyle === 'Animasi 2D' ? 30000000 : d.visualStyle === 'Stop-Motion' ? 25000000 : 0;
-            return formatBase + loc.cost + styleExtra;
-        }
-
-        function calcDraftPreviewStats() {
-            const d = state.draft;
-            const loc = LOCATIONS.find(l => l.id === d.locationId) || LOCATIONS[0];
-            const slotIds = [d.directorId, d.actorId, d.writerId, d.techId].filter(Boolean);
-            let skillSum = 0;
-            let matchedCount = 0;
-            slotIds.forEach(cid => {
-                const c = CREW_CATALOG.find(x => x.id === cid);
-                if (c) {
-                    skillSum += c.skill;
-                    if (c.specialty === d.genre) matchedCount += 1;
-                }
-            });
-            const avgSkill = slotIds.length > 0 ? skillSum / slotIds.length : 70;
-            const totalPct = Math.max(1, d.scriptPct + d.prodPct + d.mktPct);
-            const normScript = d.scriptPct / totalPct;
-            const normProd = d.prodPct / totalPct;
-            const normMkt = d.mktPct / totalPct;
-            const ageQBonus = (d.ageRating === '17+' || d.ageRating === '21+') && ['Horor', 'Thriller', 'Drama'].includes(d.genre) ? 3 : 0;
-            const ageHypeBonus = (d.ageRating === 'SU' || d.ageRating === '13+') ? 4 : 0;
-
-            const estQuality = Math.min(92, Math.max(25, Math.round(avgSkill * 0.42 + loc.qBonus + matchedCount * 4 + ageQBonus + (normScript + normProd) * 28)));
-            const estHype = Math.min(92, Math.max(15, Math.round(state.hype * 0.45 + loc.hypeBonus + ageHypeBonus + normMkt * 45 + (d.franchiseId ? 14 : 0))));
-            return { estQuality, estHype, matchedCount, loc };
-        }
-
-        function renderPreProductionForm() {
+        function renderPreProductionTab() {
             const body = document.getElementById('studioBody');
             const d = state.draft;
-            const estBudget = calcEstimatedProductionBudget();
             const preview = calcDraftPreviewStats();
             const premises = STORY_PREMISES[d.genre] || STORY_PREMISES['Horor'];
-            const dirObj = CREW_CATALOG.find(c => c.id === d.directorId);
-            const actObj = CREW_CATALOG.find(c => c.id === d.actorId);
-            const crisisMovie = state.crisisMovieId ? state.releasedMovies.find(m => m.id === state.crisisMovieId) : null;
 
-            const roleSlots = [
+            const roleConfigs = [
                 { key: 'directorId', role: 'Sutradara', label: 'Sutradara Utama' },
                 { key: 'actorId', role: 'Aktor', label: 'Pemeran Utama' },
                 { key: 'writerId', role: 'Penulis', label: 'Penulis Skenario' },
                 { key: 'techId', role: 'Teknis', label: 'Kepala Teknis / DOP' }
             ];
 
+            let extraHireCost = 0;
+            [d.directorId, d.actorId, d.writerId, d.techId].filter(Boolean).forEach(cid => {
+                if (!state.hiredCrewIds.includes(cid)) {
+                    const c = CREW_CATALOG.find(x => x.id === cid);
+                    if (c) extraHireCost += c.signFee;
+                }
+            });
+
+            const crisisMovie = state.crisisMovieId ? state.releasedMovies.find(m => m.id === state.crisisMovieId) : null;
+
             body.innerHTML = `
                 ${crisisMovie ? `
-                    <div class="p-4 rounded-3xl bg-gradient-to-r from-rose-950/90 via-[#18111a] to-[#111520] border border-rose-500/40 space-y-2.5">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="px-2 py-0.5 rounded bg-rose-500/20 font-mono text-[10px] font-extrabold text-rose-300">⚠️ KRISIS PR FILM FLOP</span>
-                            <button onclick="state.crisisMovieId=null; renderPreProductionForm()" class="text-xs text-gray-400 hover:text-white"><i class="ph ph-x"></i></button>
+                    <div class="p-4 rounded-3xl bg-rose-950/50 border border-rose-500/40 space-y-2.5">
+                        <div class="flex items-center gap-2 font-mono text-[11px] font-extrabold text-rose-300">
+                            <i class="ph-fill ph-warning text-base"></i>
+                            <span>KRISIS PR FILM FLOP: "${escapeHTML(crisisMovie.title)}" (${crisisMovie.rating.toFixed(1)}★)</span>
                         </div>
-                        <div class="text-xs text-gray-200">
-                            Kritikus mencibir <strong>"${escapeHTML(crisisMovie.title)}"</strong> (${crisisMovie.rating.toFixed(1)}★)! Pilih langkah penyelamatan PR studio:
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <button onclick="resolveFlopCrisis('meme')" class="p-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-left">
-                                <div class="font-bold text-[11px] text-amber-200">Jadikan Meme Komedi</div>
-                                <div class="font-mono text-[10px] text-gray-400">Gratis • +10 Hype & +Rating</div>
+                        <p class="text-xs text-gray-200">Kritikus dan netizen mengecam keras karya terakhir studio Anda. Pilih respons PR resmi:</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="resolveFlopCrisis('apology')" class="px-3 py-2 rounded-xl bg-white text-black font-display font-extrabold text-xs">
+                                Rilis Permintaan Maaf & Evaluasi (+3% Rep)
                             </button>
-                            <button onclick="resolveFlopCrisis('apology')" class="p-2.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-left">
-                                <div class="font-bold text-[11px] text-sky-200">Konferensi Pers Evaluasi</div>
-                                <div class="font-mono text-[10px] text-gray-400">Rp 20 Jt • Pulihkan +6% Rep</div>
-                            </button>
-                            <button onclick="resolveFlopCrisis('remaster')" class="p-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-left">
-                                <div class="font-bold text-[11px] text-emerald-200">Rilis Cut Perbaikan</div>
-                                <div class="font-mono text-[10px] text-gray-400">Rp 35 Jt • +0.5★ & +4% Rep</div>
+                            <button onclick="resolveFlopCrisis('ignore')" class="px-3 py-2 rounded-xl bg-white/10 text-gray-200 font-bold text-xs">
+                                Fokus Proyek Baru (-2% Rep)
                             </button>
                         </div>
                     </div>
                 ` : ''}
 
-                <div class="flex items-start justify-between gap-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
                     <div>
                         <h2 class="font-display font-extrabold text-base sm:text-xl text-white">Ruang Pra-Produksi & Pitching</h2>
-                        <p class="text-xs text-gray-400">Rancang konsep cerita, rating usia, dan pasang kru spesialis genre.</p>
+                        <p class="text-xs text-gray-400">Rancang naskah, pilih kru spesialis genre, dan atur skala produksi.</p>
                     </div>
-                    <span class="px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 font-mono text-[10px] font-bold text-amber-300 shrink-0">
+                    <span class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 font-mono text-[11px] font-bold text-amber-300">
                         Tren: ${state.trendingGenre} (+25%)
                     </span>
                 </div>
 
-                <!-- Live Pitch Logline Card -->
-                <div class="p-4 rounded-3xl bg-gradient-to-br from-[#161c2e] via-[#111520] to-black border border-amber-500/25 space-y-2.5">
-                    <div class="flex items-center justify-between gap-2 flex-wrap">
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <span class="px-2 py-0.5 rounded bg-amber-500 text-black font-mono text-[10px] font-extrabold">PITCH DECK</span>
-                            <span class="px-2 py-0.5 rounded bg-white/10 font-mono text-[10px] text-gray-200">${d.format} • ${d.visualStyle}</span>
-                            <span class="px-2 py-0.5 rounded bg-rose-500/20 border border-rose-500/30 font-mono text-[10px] font-bold text-rose-200">${d.ageRating || '17+'}</span>
-                        </div>
-                        <div class="font-mono text-[10px] text-emerald-300 font-bold">
-                            Est. Q ${preview.estQuality} • Hype ${preview.estHype}% • Sinergi ${preview.matchedCount}/4
+                <!-- Live Pitch Deck Summary Card -->
+                <div class="p-4 rounded-3xl bg-gradient-to-r from-[#161e31] via-[#121828] to-[#0f1320] border border-amber-500/25 space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="font-mono text-[10px] uppercase tracking-wider text-amber-300 font-extrabold">Live Pitch Deck Preview</span>
+                        <div class="flex items-center gap-3 font-mono text-[11px]">
+                            <span class="text-gray-300">Est. Kualitas: <strong class="text-emerald-300">${preview.estQuality}/100</strong></span>
+                            <span class="text-gray-300">Hype Awal: <strong class="text-fuchsia-300">${preview.estHype}%</strong></span>
                         </div>
                     </div>
-                    <div class="font-display font-extrabold text-base sm:text-lg text-white tracking-tight">${escapeHTML(d.title || 'PROYEK TANPA JUDUL')}</div>
-                    <p class="text-xs text-gray-300 italic leading-relaxed">"${escapeHTML(d.synopsis)}"</p>
-                    <div class="text-[11px] text-gray-400 flex flex-wrap gap-x-3 gap-y-1 pt-0.5">
-                        <span>Sutradara: <strong class="text-gray-200">${dirObj ? dirObj.name : '-'}</strong></span>
-                        <span>Bintang: <strong class="text-gray-200">${actObj ? actObj.name : '-'}</strong></span>
-                        <span>Lokasi: <strong class="text-gray-200">${preview.loc.name}</strong></span>
-                    </div>
+                    <div class="font-display font-extrabold text-sm sm:text-base text-white">${escapeHTML(d.title || 'PROYEK TANPA JUDUL')} <span class="text-xs font-mono text-gray-400">(${d.format} • ${d.genre} • ${d.ageRating})</span></div>
+                    <p class="text-xs text-gray-300 italic line-clamp-2">"${escapeHTML(d.synopsis)}"</p>
                 </div>
 
-                ${state.franchises.length > 0 ? `
-                    <div class="p-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/25 flex flex-wrap items-center justify-between gap-2">
-                        <div class="text-xs text-purple-200">
-                            <strong>Sekuel / Spin-Off Universe:</strong> Gunakan IP sukses studiomu untuk bonus Hype awal!
-                        </div>
-                        <select onchange="state.draft.franchiseId=this.value; renderPreProductionForm()" class="px-3 py-1.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white font-bold">
-                            <option value="">-- Proyek Orisinal Baru --</option>
-                            ${state.franchises.map(f => `<option value="${f.id}" ${d.franchiseId === f.id ? 'selected' : ''}>${escapeHTML(f.name)} (Bagian ${f.entries + 1})</option>`).join('')}
-                        </select>
-                    </div>
-                ` : ''}
-
+                <!-- Form Container -->
                 <div class="p-4 sm:p-5 rounded-3xl glass-card space-y-4">
-                    <div>
-                        <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Judul Proyek</label>
+                    <!-- Title + Randomizer -->
+                    <div class="space-y-1.5">
+                        <label class="font-mono text-[10px] uppercase tracking-wider text-gray-400 font-bold">Judul Proyek</label>
                         <div class="flex gap-2">
-                            <input type="text" value="${escapeHTML(d.title)}" oninput="state.draft.title=this.value" maxlength="40" class="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-sm font-display font-extrabold text-white focus:outline-none focus:border-amber-400">
-                            <button onclick="randomizeProjectTitle()" title="Acak Judul" class="w-11 h-11 rounded-xl bg-white/[0.07] hover:bg-white/[0.14] border border-white/10 flex items-center justify-center text-amber-300 shrink-0">
-                                <i class="ph-fill ph-dice-five text-xl"></i>
+                            <input type="text" value="${escapeHTML(d.title)}" oninput="state.draft.title=this.value" placeholder="Masukkan judul proyek..." class="flex-1 min-w-0 px-3.5 py-2.5 rounded-2xl bg-black/60 border border-white/15 font-display font-extrabold text-xs sm:text-sm text-white focus:outline-none focus:border-amber-400">
+                            <button onclick="randomizeDraftTitle()" title="Judul Acak" class="px-3.5 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-amber-300 shrink-0">
+                                <i class="ph-bold ph-dice-five text-base"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                            <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Format Tayang</label>
-                            <select onchange="state.draft.format=this.value; renderPreProductionForm()" class="w-full px-3 py-2.5 rounded-xl bg-black/50 border border-white/10 text-xs font-bold text-white">
-                                <option value="Film Panjang" ${d.format === 'Film Panjang' ? 'selected' : ''}>Film Panjang (Bioskop/OTT)</option>
-                                <option value="Series" ${d.format === 'Series' ? 'selected' : ''}>Series (CineFlix+/Fest)</option>
-                                <option value="Film Pendek" ${d.format === 'Film Pendek' ? 'selected' : ''}>Film Pendek (CineFlix+/Fest)</option>
+                    <!-- Format, Visual Style & Age Rating -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <div class="space-y-1">
+                            <label class="font-mono text-[10px] uppercase text-gray-400 font-bold">Format Tayang</label>
+                            <select onchange="state.draft.format=this.value; renderPreProductionTab()" class="w-full px-3 py-2.5 rounded-2xl bg-black/60 border border-white/15 text-xs font-bold text-white">
+                                ${['Film Panjang', 'Series', 'Film Pendek'].map(f => `<option value="${f}" ${d.format === f ? 'selected' : ''}>${f}</option>`).join('')}
                             </select>
                         </div>
-                        <div>
-                            <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Gaya Visual</label>
-                            <select onchange="state.draft.visualStyle=this.value; renderPreProductionForm()" class="w-full px-3 py-2.5 rounded-xl bg-black/50 border border-white/10 text-xs font-bold text-white">
+                        <div class="space-y-1">
+                            <label class="font-mono text-[10px] uppercase text-gray-400 font-bold">Gaya Visual</label>
+                            <select onchange="state.draft.visualStyle=this.value; renderPreProductionTab()" class="w-full px-3 py-2.5 rounded-2xl bg-black/60 border border-white/15 text-xs font-bold text-white">
                                 ${['Live-Action', 'Animasi 2D', 'Animasi 3D', 'Stop-Motion', 'Dokumenter'].map(v => `<option value="${v}" ${d.visualStyle === v ? 'selected' : ''}>${v}</option>`).join('')}
                             </select>
                         </div>
-                        <div>
-                            <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Klasifikasi Usia</label>
-                            <div class="grid grid-cols-4 gap-1">
-                                ${['SU', '13+', '17+', '21+'].map(ar => `
-                                    <button onclick="state.draft.ageRating='${ar}'; renderPreProductionForm()" class="py-2.5 rounded-xl font-mono text-[11px] font-extrabold border transition ${(d.ageRating || '17+') === ar ? 'bg-rose-500 text-white border-rose-400' : 'bg-black/50 text-gray-400 border-white/10'}">
-                                        ${ar}
-                                    </button>
-                                `).join('')}
-                            </div>
+                        <div class="space-y-1">
+                            <label class="font-mono text-[10px] uppercase text-gray-400 font-bold">Rating Usia</label>
+                            <select onchange="state.draft.ageRating=this.value; renderPreProductionTab()" class="w-full px-3 py-2.5 rounded-2xl bg-black/60 border border-white/15 text-xs font-bold text-white">
+                                ${['SU', '13+', '17+', '21+'].map(a => `<option value="${a}" ${d.ageRating === a ? 'selected' : ''}>${a}</option>`).join('')}
+                            </select>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Genre Utama</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <!-- Genre Selector -->
+                    <div class="space-y-1.5">
+                        <label class="font-mono text-[10px] uppercase text-gray-400 font-bold">Genre Utama</label>
+                        <div class="grid grid-cols-4 gap-1.5">
                             ${GENRES.map(g => {
                                 const active = d.genre === g;
                                 const isTrend = state.trendingGenre === g;
                                 return `
-                                    <button onclick="selectDraftGenre('${g}')" class="px-3 py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-1 ${active ? 'bg-amber-500 text-black border-amber-400 shadow-lg shadow-amber-500/20' : 'bg-black/40 text-gray-300 border-white/10 hover:border-white/25'}">
-                                        <span>${g}</span>
-                                        ${isTrend ? '<span>🔥</span>' : ''}
+                                    <button onclick="selectDraftGenre('${g}')" class="py-2 px-2 rounded-xl text-[11px] font-extrabold transition truncate ${active ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20' : 'bg-black/50 border border-white/10 text-gray-300 hover:text-white'}">
+                                        ${g}${isTrend ? ' 🔥' : ''}
                                     </button>
                                 `;
                             }).join('')}
                         </div>
                     </div>
 
-                    <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.07] space-y-2.5">
-                        <div class="flex items-center justify-between gap-2">
-                            <label class="font-mono text-[10px] uppercase tracking-wider text-amber-300 font-bold">Ide Cerita & Sinopsis Kustom</label>
-                            <span class="font-mono text-[10px] text-gray-500">Pilih preset atau ketik bebas</span>
+                    <!-- Story Premise Presets & Custom Synopsis Writer -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="font-mono text-[10px] uppercase text-gray-400 font-bold">Premis & Sinopsis Cerita</label>
+                            <span class="font-mono text-[10px] text-amber-300">Pilih ide atau tulis sendiri</span>
                         </div>
                         <div class="flex flex-wrap gap-1.5">
                             ${premises.map((pr, idx) => `
-                                <button onclick="applyStoryPremise(${idx})" class="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-amber-500/20 border border-white/10 text-[11px] font-semibold text-gray-200 transition">
-                                    Premis ${d.genre} #${idx + 1}
+                                <button onclick="state.draft.synopsis=STORY_PREMISES['${d.genre}'][${idx}]; renderPreProductionTab()" class="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-amber-500/20 border border-white/10 text-[10px] font-bold text-gray-200 transition">
+                                    Ide Cerita #${idx + 1}
                                 </button>
                             `).join('')}
                         </div>
-                        <textarea rows="2" oninput="state.draft.synopsis=this.value" placeholder="Tulis jalan cerita atau sinopsis film kamu di sini..." class="w-full px-3 py-2 rounded-xl bg-black/60 border border-white/10 text-xs text-gray-200 leading-relaxed focus:outline-none focus:border-amber-400">${escapeHTML(d.synopsis)}</textarea>
+                        <textarea rows="2" oninput="state.draft.synopsis=this.value" placeholder="Tulis sinopsis atau alur cerita karyamu di sini..." class="w-full px-3.5 py-2.5 rounded-2xl bg-black/60 border border-white/15 text-xs text-gray-200 leading-relaxed focus:outline-none focus:border-amber-400">${escapeHTML(d.synopsis)}</textarea>
                     </div>
 
-                    <div>
-                        <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Lokasi Syuting</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            ${LOCATIONS.map(loc => {
-                                const sel = d.locationId === loc.id;
-                                return `
-                                    <button onclick="state.draft.locationId='${loc.id}'; renderPreProductionForm()" class="p-3 rounded-2xl text-left border transition ${sel ? 'bg-amber-500/15 border-amber-400 text-white' : 'bg-black/40 border-white/10 text-gray-300 hover:border-white/25'}">
-                                        <div class="font-display font-extrabold text-xs">${loc.name}</div>
-                                        <div class="font-mono text-[10px] text-emerald-300 mt-0.5">${formatIDR(loc.cost)} • +${loc.qBonus} Q • +${loc.hypeBonus} Hype</div>
-                                        <div class="text-[10px] text-gray-400 mt-0.5">${loc.desc}</div>
-                                    </button>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-
-                    <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.07] space-y-3">
-                        <div class="flex items-center justify-between gap-2">
-                            <label class="font-mono text-[10px] uppercase tracking-wider text-sky-300 font-bold">Tim Inti & Spesialis Genre (${d.genre})</label>
-                            <span class="font-mono text-[10px] text-emerald-300">Spesialis cocok = +4 Kualitas!</span>
+                    <!-- Genre-Specialist Crew Assignment (4 Key Roles) -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="font-mono text-[10px] uppercase text-gray-400 font-bold">Tim Inti Produksi (Sinergi Genre: ${preview.specialtyMatches}/4 Cocok)</label>
+                            ${extraHireCost > 0 ? `<span class="font-mono text-[10px] text-amber-300">+Kontrak baru: ${formatIDR(extraHireCost)}</span>` : ''}
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            ${roleSlots.map(slot => {
-                                const candidates = CREW_CATALOG.filter(c => c.role === slot.role);
-                                const selectedId = d[slot.key];
-                                const chosen = candidates.find(c => c.id === selectedId) || candidates[0];
-                                const isHired = state.hiredCrewIds.includes(chosen.id);
-                                const isGenreMatch = chosen.specialty === d.genre;
+                            ${roleConfigs.map(rc => {
+                                const candidates = CREW_CATALOG.filter(c => c.role === rc.role).sort((a, b) => (b.specialty === d.genre ? 1 : 0) - (a.specialty === d.genre ? 1 : 0) || b.skill - a.skill);
+                                const selectedId = d[rc.key];
                                 return `
-                                    <div class="p-2.5 rounded-xl bg-[#111520] border ${isGenreMatch ? 'border-emerald-500/40' : 'border-white/10'} space-y-1.5">
-                                        <div class="flex items-center justify-between text-[10px] font-mono">
-                                            <span class="text-gray-400 font-bold">${slot.label}</span>
-                                            ${isGenreMatch ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-extrabold">★ COCOK</span>' : `<span class="text-gray-500">Ahli ${chosen.specialty}</span>`}
-                                        </div>
-                                        <select onchange="assignPreProdCrew('${slot.key}', this.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-black/60 border border-white/10 text-xs font-bold text-white">
+                                    <div class="p-2.5 rounded-2xl bg-black/45 border border-white/10 space-y-1">
+                                        <div class="font-mono text-[10px] text-gray-400 font-bold">${rc.label}</div>
+                                        <select onchange="state.draft['${rc.key}']=this.value; renderPreProductionTab()" class="w-full px-2.5 py-2 rounded-xl bg-[#131826] border border-white/10 text-xs font-bold text-white">
                                             ${candidates.map(c => {
-                                                const hiredTag = state.hiredCrewIds.includes(c.id) ? '✓ Kontrak' : 'Rekrut ' + formatIDR(c.signFee);
-                                                const matchTag = c.specialty === d.genre ? '★ ' : '';
-                                                return `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${matchTag}${c.name} (${c.specialty} • Skill ${c.skill}) [${hiredTag}]</option>`;
+                                                const match = c.specialty === d.genre;
+                                                const hired = state.hiredCrewIds.includes(c.id);
+                                                return `<option value="${c.id}" ${selectedId === c.id ? 'selected' : ''}>${c.name} (${c.specialty} • Skill ${c.skill})${match ? ' ★ COCOK' : ''}${hired ? '' : ' [+' + formatIDR(c.signFee) + ']'}</option>`;
                                             }).join('')}
                                         </select>
-                                        <div class="flex items-center justify-between text-[10px] text-gray-400">
-                                            <span>Gaji: ${formatIDR(chosen.weeklySalary)}/mgg</span>
-                                            ${!isHired ? `<button onclick="hireCrewMember('${chosen.id}', true)" class="px-2 py-0.5 rounded bg-sky-500 text-black font-extrabold">Rekrut (${formatIDR(chosen.signFee)})</button>` : '<span class="text-emerald-300 font-bold">Aktif di Studio</span>'}
-                                        </div>
                                     </div>
                                 `;
                             }).join('')}
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                        <div class="p-3 rounded-2xl bg-black/40 border border-white/10">
-                            <div class="flex justify-between text-[11px] font-bold mb-1">
-                                <span class="text-gray-300">Naskah & Cerita</span>
-                                <span class="font-mono text-amber-300">${d.scriptPct}%</span>
-                            </div>
-                            <input type="range" min="15" max="60" value="${d.scriptPct}" oninput="state.draft.scriptPct=Number(this.value); renderPreProductionForm()" class="w-full">
+                    <!-- Location & Production Scale -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div class="space-y-1">
+                            <label class="font-mono text-[10px] uppercase text-gray-400 font-bold">Lokasi Syuting</label>
+                            <select onchange="state.draft.locationId=this.value; renderPreProductionTab()" class="w-full px-3 py-2.5 rounded-2xl bg-black/60 border border-white/15 text-xs font-bold text-white">
+                                ${LOCATIONS.map(l => `<option value="${l.id}" ${d.locationId === l.id ? 'selected' : ''}>${l.name} (${formatIDR(l.cost)} • +${l.qBonus} Q)</option>`).join('')}
+                            </select>
                         </div>
-                        <div class="p-3 rounded-2xl bg-black/40 border border-white/10">
-                            <div class="flex justify-between text-[11px] font-bold mb-1">
-                                <span class="text-gray-300">Produksi & VFX</span>
-                                <span class="font-mono text-amber-300">${d.prodPct}%</span>
-                            </div>
-                            <input type="range" min="15" max="60" value="${d.prodPct}" oninput="state.draft.prodPct=Number(this.value); renderPreProductionForm()" class="w-full">
-                        </div>
-                        <div class="p-3 rounded-2xl bg-black/40 border border-white/10">
-                            <div class="flex justify-between text-[11px] font-bold mb-1">
-                                <span class="text-gray-300">Pemasaran & Hype</span>
-                                <span class="font-mono text-amber-300">${d.mktPct}%</span>
-                            </div>
-                            <input type="range" min="10" max="60" value="${d.mktPct}" oninput="state.draft.mktPct=Number(this.value); renderPreProductionForm()" class="w-full">
+                        <div class="space-y-1">
+                            <label class="font-mono text-[10px] uppercase text-gray-400 font-bold">Skala Anggaran</label>
+                            <select onchange="state.draft.scaleMult=Number(this.value); renderPreProductionTab()" class="w-full px-3 py-2.5 rounded-2xl bg-black/60 border border-white/15 text-xs font-bold text-white">
+                                <option value="0.85" ${d.scaleMult === 0.85 ? 'selected' : ''}>Indie Hemat (0.85x)</option>
+                                <option value="1.0" ${d.scaleMult === 1.0 ? 'selected' : ''}>Standar Studio (1.0x)</option>
+                                <option value="1.45" ${d.scaleMult === 1.45 ? 'selected' : ''}>Produksi Besar (1.45x)</option>
+                                <option value="2.0" ${d.scaleMult === 2.0 ? 'selected' : ''}>Mega Blockbuster (2.0x)</option>
+                            </select>
                         </div>
                     </div>
 
+                    <!-- Start Production CTA -->
                     <div class="pt-2 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                            <div class="font-mono text-[10px] text-gray-400">ESTIMASI BIAYA PRODUKSI</div>
-                            <div class="font-mono font-extrabold text-lg text-emerald-300">${formatIDR(estBudget)}</div>
+                        <div class="font-mono text-xs">
+                            <div class="text-gray-400">Total Modal Awal Produksi:</div>
+                            <div class="text-base font-extrabold text-emerald-300">${formatIDR(preview.budget + extraHireCost)}</div>
                         </div>
-                        <button onclick="startProduction()" class="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 active:scale-98 text-black font-display font-extrabold text-xs sm:text-sm shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 transition">
-                            <i class="ph-fill ph-clapperboard text-lg"></i>
+                        <button onclick="startProduction()" class="px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-black font-display font-extrabold text-xs sm:text-sm shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition">
+                            <i class="ph-fill ph-clapperboard text-base"></i>
                             <span>Mulai Syuting Sekarang</span>
                         </button>
                     </div>
@@ -1334,154 +1242,117 @@
             `;
         }
 
+        function selectDraftGenre(g) {
+            state.draft.genre = g;
+            state.draft.synopsis = (STORY_PREMISES[g] || STORY_PREMISES['Horor'])[0];
+            renderPreProductionTab();
+        }
+
+        function randomizeDraftTitle() {
+            state.draft.title = RANDOM_TITLES[Math.floor(Math.random() * RANDOM_TITLES.length)];
+            renderPreProductionTab();
+        }
+
         function resolveFlopCrisis(mode) {
-            const m = state.releasedMovies.find(x => x.id === state.crisisMovieId);
-            if (!m) {
-                state.crisisMovieId = null;
-                return renderPreProductionForm();
-            }
-            if (mode === 'meme') {
-                state.hype = Math.min(100, state.hype + 10);
-                m.rating = Math.min(5.0, Number((m.rating + 0.3).toFixed(1)));
-                showToast('Kampanye meme viral! "' + m.title + '" berubah jadi cult-comedy (+10% Hype).', 'success');
-            } else if (mode === 'apology') {
-                if (state.cash < 20000000) return showToast('Kas tidak cukup (butuh Rp 20 Jt)!', 'error');
-                state.cash -= 20000000;
-                state.reputation = Math.min(100, state.reputation + 6);
-                showToast('Konferensi pers diapresiasi publik (+6% Reputasi Studio).', 'success');
-            } else if (mode === 'remaster') {
-                if (state.cash < 35000000) return showToast('Kas tidak cukup (butuh Rp 35 Jt)!', 'error');
-                state.cash -= 35000000;
-                m.rating = Math.min(5.0, Number((m.rating + 0.5).toFixed(1)));
-                state.reputation = Math.min(100, state.reputation + 4);
-                showToast('Versi perbaikan dirilis! Skor "' + m.title + '" naik menjadi ' + m.rating.toFixed(1) + '★.', 'success');
+            if (mode === 'apology') {
+                state.reputation = Math.min(100, state.reputation + 3);
+                showToast('Pernyataan evaluasi resmi meredakan kritik netizen (+3% Reputasi).', 'success');
+            } else {
+                state.reputation = Math.max(5, state.reputation - 2);
+                showToast('Studio memilih bungkam dan fokus ke proyek berikutnya.', 'info');
             }
             state.crisisMovieId = null;
             saveGameState(true);
             updateHUD();
-            renderPreProductionForm();
+            renderPreProductionTab();
         }
 
-        function randomizeProjectTitle() {
-            const adj = ['BISIKAN', 'BAYANGAN', 'RAHASIA', 'MALAM', 'JEJAK', 'JANJI', 'GERBANG', 'SANDI', 'CAHAYA', 'LANGIT'];
-            const noun = ['KERATON', 'JAKARTA', 'NUSANTARA', 'SENJA', 'KERETA', 'RIMBA', 'ORBIT', 'TERAKHIR', 'KELABU', 'MERAH'];
-            state.draft.title = adj[Math.floor(Math.random() * adj.length)] + ' ' + noun[Math.floor(Math.random() * noun.length)];
-            renderPreProductionForm();
-        }
-
-        function selectDraftGenre(g) {
-            state.draft.genre = g;
-            state.draft.synopsis = (STORY_PREMISES[g] || STORY_PREMISES['Horor'])[0];
-            const matchDir = CREW_CATALOG.find(c => c.role === 'Sutradara' && c.specialty === g && state.hiredCrewIds.includes(c.id));
-            const matchAct = CREW_CATALOG.find(c => c.role === 'Aktor' && c.specialty === g && state.hiredCrewIds.includes(c.id));
-            const matchWrt = CREW_CATALOG.find(c => c.role === 'Penulis' && c.specialty === g && state.hiredCrewIds.includes(c.id));
-            const matchTec = CREW_CATALOG.find(c => c.role === 'Teknis' && c.specialty === g && state.hiredCrewIds.includes(c.id));
-            if (matchDir) state.draft.directorId = matchDir.id;
-            if (matchAct) state.draft.actorId = matchAct.id;
-            if (matchWrt) state.draft.writerId = matchWrt.id;
-            if (matchTec) state.draft.techId = matchTec.id;
-            renderPreProductionForm();
-        }
-
-        function applyStoryPremise(idx) {
-            const list = STORY_PREMISES[state.draft.genre] || STORY_PREMISES['Horor'];
-            state.draft.synopsis = list[idx] || list[0];
-            renderPreProductionForm();
-        }
-
-        function assignPreProdCrew(slotKey, crewId) {
-            state.draft[slotKey] = crewId;
-            renderPreProductionForm();
-        }
-
-        function hireCrewMember(crewId, stayInPreProd = false) {
-            const c = CREW_CATALOG.find(x => x.id === crewId);
-            if (!c || state.hiredCrewIds.includes(crewId)) return;
-            if (state.cash < c.signFee) return showToast('Kas studio tidak cukup untuk kontrak ' + c.name + '!', 'error');
-
-            state.cash -= c.signFee;
-            state.hiredCrewIds.push(crewId);
-            saveGameState(true);
-            playTone(620, 'triangle', 0.1, 0.04);
-            updateHUD();
-            showToast(c.name + ' (' + c.role + ' • ' + c.specialty + ') bergabung dengan studio!', 'success');
-            if (stayInPreProd) renderPreProductionForm();
-            else renderCrewRosterTab();
-        }
-
-        function releaseCrewMember(crewId) {
-            if (state.hiredCrewIds.length <= 2) return showToast('Minimal pertahankan 2 anggota kru inti di studio!', 'warn');
-            state.hiredCrewIds = state.hiredCrewIds.filter(id => id !== crewId);
-            saveGameState(true);
-            updateHUD();
-            renderCrewRosterTab();
-            showToast('Kontrak anggota kru diakhiri.', 'info');
-        }
-
-        function renderCrewRosterTab() {
+        function renderCrewTab() {
             const body = document.getElementById('studioBody');
-            const roleFilter = state.crewFilterRole || 'Semua';
-            const genreFilter = state.crewFilterGenre || 'Semua';
+            const rFilter = state.crewFilterRole || 'Semua';
+            const gFilter = state.crewFilterGenre || 'Semua';
 
-            const filteredCrew = CREW_CATALOG.filter(c => {
-                const matchRole = roleFilter === 'Semua' || c.role === roleFilter;
-                const matchGenre = genreFilter === 'Semua' || c.specialty === genreFilter;
-                return matchRole && matchGenre;
+            const filtered = CREW_CATALOG.filter(c => {
+                const matchR = rFilter === 'Semua' || c.role === rFilter;
+                const matchG = gFilter === 'Semua' || c.specialty === gFilter;
+                return matchR && matchG;
             });
 
             body.innerHTML = `
-                <div class="space-y-2.5">
+                <div class="space-y-3">
                     <div>
-                        <h2 class="font-display font-extrabold text-base sm:text-xl text-white">Agensi Kru & Talenta Spesialis (${CREW_CATALOG.length})</h2>
-                        <p class="text-xs text-gray-400">Filter berdasarkan peran atau spesialisasi genre untuk melengkapi tim studionya.</p>
+                        <h2 class="font-display font-extrabold text-base sm:text-xl text-white">Agensi Kru & Bintang (28 Talenta)</h2>
+                        <p class="text-xs text-gray-400">Rekrut talenta spesialis genre untuk meningkatkan kualitas & daya tarik karya studiomu.</p>
                     </div>
+
                     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                         ${['Semua', 'Sutradara', 'Aktor', 'Penulis', 'Teknis'].map(r => `
-                            <button onclick="state.crewFilterRole='${r}'; renderCrewRosterTab()" class="px-3 py-1 rounded-full text-[11px] font-bold shrink-0 transition ${roleFilter === r ? 'bg-amber-500 text-black' : 'bg-white/[0.06] text-gray-300 hover:text-white'}">
-                                ${r}
-                            </button>
+                            <button onclick="state.crewFilterRole='${r}'; renderCrewTab()" class="px-3 py-1 rounded-full text-[11px] font-bold shrink-0 ${rFilter === r ? 'bg-amber-500 text-black' : 'bg-white/[0.06] text-gray-300'}">${r}</button>
                         `).join('')}
                     </div>
+
                     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                         ${['Semua', ...GENRES].map(g => `
-                            <button onclick="state.crewFilterGenre='${g}'; renderCrewRosterTab()" class="px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold shrink-0 transition ${genreFilter === g ? 'bg-sky-500 text-black' : 'bg-black/40 border border-white/10 text-gray-400 hover:text-white'}">
-                                ${g}
-                            </button>
+                            <button onclick="state.crewFilterGenre='${g}'; renderCrewTab()" class="px-2.5 py-1 rounded-full text-[10px] font-bold shrink-0 ${gFilter === g ? 'bg-sky-500 text-black' : 'bg-white/[0.05] text-gray-400'}">${g}</button>
                         `).join('')}
                     </div>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4">
-                    ${filteredCrew.map(c => {
-                        const hired = state.hiredCrewIds.includes(c.id);
-                        return `
-                            <div class="p-3.5 rounded-2xl glass-card border ${hired ? 'border-emerald-500/35' : 'border-white/[0.08]'} flex flex-col justify-between gap-2.5">
-                                <div>
-                                    <div class="flex items-center justify-between gap-2">
-                                        <span class="px-2 py-0.5 rounded bg-white/10 font-mono text-[10px] font-bold text-amber-300">${c.role} • ${c.specialty}</span>
-                                        <span class="font-mono text-xs font-extrabold text-sky-300">Skill ${c.skill}</span>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4">
+                        ${filtered.map(c => {
+                            const hired = state.hiredCrewIds.includes(c.id);
+                            return `
+                                <div class="p-3.5 rounded-2xl glass-card border ${hired ? 'border-emerald-500/35' : 'border-white/[0.08]'} flex flex-col justify-between gap-2.5">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div>
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="font-display font-extrabold text-sm text-white">${escapeHTML(c.name)}</span>
+                                                <span class="px-1.5 py-0.5 rounded bg-amber-500/15 font-mono text-[9px] font-bold text-amber-300">${c.specialty}</span>
+                                            </div>
+                                            <div class="font-mono text-[10px] text-gray-400 mt-0.5">${c.role} • Skill ${c.skill}/100</div>
+                                        </div>
+                                        <span class="font-mono text-[10px] text-rose-300 font-bold shrink-0">-${formatIDR(c.weeklySalary)}/mgg</span>
                                     </div>
-                                    <div class="font-display font-extrabold text-sm text-white mt-1.5">${c.name}</div>
-                                    <p class="text-[11px] text-gray-400 mt-0.5">${c.bio}</p>
-                                </div>
-                                <div class="pt-2 border-t border-white/[0.06] flex items-center justify-between gap-2">
-                                    <div class="font-mono text-[10px] text-gray-400">
-                                        Gaji: <strong class="text-white">${formatIDR(c.weeklySalary)}/mgg</strong>
+                                    <p class="text-[11px] text-gray-300 leading-snug">${escapeHTML(c.bio)}</p>
+                                    <div class="pt-1 flex items-center justify-between gap-2">
+                                        ${hired ? `
+                                            <span class="font-mono text-[10px] text-emerald-300 font-bold">✓ Kontrak Aktif</span>
+                                            <button onclick="releaseCrewMember('${c.id}')" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 font-bold text-[11px]">
+                                                Lepas Kontrak
+                                            </button>
+                                        ` : `
+                                            <span class="font-mono text-[10px] text-gray-400">Biaya rekrut: ${formatIDR(c.signFee)}</span>
+                                            <button onclick="hireCrewMember('${c.id}')" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-display font-extrabold text-[11px]">
+                                                Rekrut
+                                            </button>
+                                        `}
                                     </div>
-                                    ${hired ? `
-                                        <button onclick="releaseCrewMember('${c.id}')" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-[11px] font-bold">
-                                            Lepas Kontrak
-                                        </button>
-                                    ` : `
-                                        <button onclick="hireCrewMember('${c.id}', false)" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-[11px] font-extrabold">
-                                            Rekrut (${formatIDR(c.signFee)})
-                                        </button>
-                                    `}
                                 </div>
-                            </div>
-                        `;
-                    }).join('')}
+                            `;
+                        }).join('')}
+                    </div>
                 </div>
             `;
+        }
+
+        function hireCrewMember(cid) {
+            const c = CREW_CATALOG.find(x => x.id === cid);
+            if (!c || state.hiredCrewIds.includes(cid)) return;
+            if (state.cash < c.signFee) return showToast('Kas studio tidak cukup (' + formatIDR(c.signFee) + ')!', 'error');
+            state.cash -= c.signFee;
+            state.hiredCrewIds.push(cid);
+            saveGameState(true);
+            playTone(620, 'triangle', 0.09, 0.04);
+            updateHUD();
+            renderStudioView();
+            showToast(c.name + ' (' + c.role + ' ' + c.specialty + ') bergabung dengan studio!', 'success');
+        }
+
+        function releaseCrewMember(cid) {
+            state.hiredCrewIds = state.hiredCrewIds.filter(id => id !== cid);
+            saveGameState(true);
+            updateHUD();
+            renderStudioView();
+            showToast('Kontrak talenta diakhiri.', 'info');
         }
 
         function renderFranchiseTab() {
@@ -2086,7 +1957,7 @@
         }
 
         // =========================================================================
-        // 6. REDESIGNED GMAIL-GRADE CINEMAIL WORKSPACE (MOBILE MASTER-DETAIL + CLEAN UI)
+        // 6. REDESIGNED GMAIL-GRADE CINEMAIL WORKSPACE & FUNDING HUB
         // =========================================================================
         function getSenderAvatarStyle(sender) {
             const palettes = [
@@ -2139,7 +2010,7 @@
             const isDetailOnMobile = cm.mobilePane === 'detail' && selectedMail;
 
             main.innerHTML = `
-                <!-- Clean Top Search & Folder Pills (Hidden on Mobile Detail Pane for Clean Reader) -->
+                <!-- Clean Top Search & Folder Pills -->
                 <div class="${isDetailOnMobile ? 'hidden md:block' : 'block'} shrink-0 px-3.5 sm:px-5 pt-3 pb-2.5 border-b border-white/[0.08] bg-[#0e121b] space-y-2.5">
                     <div class="flex items-center gap-2">
                         <div class="flex items-center gap-2.5 flex-1 px-3.5 py-2 rounded-2xl bg-[#151b28] border border-white/10 focus-within:border-rose-400/50 transition">
@@ -2173,7 +2044,7 @@
                     </div>
                 </div>
 
-                <!-- Master-Detail Container: Fullscreen Switch on Mobile, Clean 5/7 Split on Desktop -->
+                <!-- Master-Detail Container -->
                 <div class="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
                     <!-- Inbox Thread List -->
                     <div class="${isDetailOnMobile ? 'hidden md:block' : 'block'} md:col-span-5 md:border-r border-white/[0.08] overflow-y-auto app-scroll divide-y divide-white/[0.05]">
@@ -2189,12 +2060,10 @@
                                 <div onclick="openCinemailThread('${m.id}')" class="relative px-3.5 sm:px-4 py-3.5 cursor-pointer transition flex items-start gap-3 ${active ? 'md:bg-rose-500/[0.09]' : 'hover:bg-white/[0.03]'} ${m.unread ? 'bg-white/[0.025]' : ''}">
                                     ${active ? '<div class="hidden md:block absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-rose-500"></div>' : ''}
 
-                                    <!-- Sender Monogram Avatar -->
                                     <div class="w-9 h-9 rounded-full bg-gradient-to-br ${av.grad} flex items-center justify-center font-display font-extrabold text-xs text-white shrink-0 shadow-md mt-0.5">
                                         ${av.initials}
                                     </div>
 
-                                    <!-- Thread Summary -->
                                     <div class="min-w-0 flex-1 space-y-1">
                                         <div class="flex items-center justify-between gap-2">
                                             <div class="flex items-center gap-1.5 min-w-0">
@@ -2231,7 +2100,6 @@
                         ` : (() => {
                             const av = getSenderAvatarStyle(selectedMail.sender);
                             return `
-                                <!-- Reader Sticky Action Toolbar -->
                                 <div class="shrink-0 px-3.5 sm:px-5 py-2.5 border-b border-white/[0.08] bg-[#0e121c] flex items-center justify-between gap-2">
                                     <button onclick="state.cinemail.mobilePane='list'; renderCinemailView()" class="md:hidden flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.07] text-xs font-bold text-white">
                                         <i class="ph-bold ph-arrow-left"></i>
@@ -2252,14 +2120,10 @@
                                     </div>
                                 </div>
 
-                                <!-- Scrollable Email Body & Action Card -->
                                 <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-4 sm:p-6 space-y-5">
                                     <div class="space-y-3">
-                                        <div class="flex items-start justify-between gap-2">
-                                            <h3 class="font-display font-extrabold text-base sm:text-lg text-white leading-snug">${escapeHTML(selectedMail.subject)}</h3>
-                                        </div>
+                                        <h3 class="font-display font-extrabold text-base sm:text-lg text-white leading-snug">${escapeHTML(selectedMail.subject)}</h3>
 
-                                        <!-- Sender Info Card -->
                                         <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.07] flex items-center justify-between gap-3">
                                             <div class="flex items-center gap-3 min-w-0">
                                                 <div class="w-9 h-9 rounded-full bg-gradient-to-br ${av.grad} flex items-center justify-center font-display font-extrabold text-xs text-white shrink-0">
@@ -2274,10 +2138,8 @@
                                         </div>
                                     </div>
 
-                                    <!-- Message Body -->
                                     <div class="text-xs sm:text-sm text-gray-200 leading-relaxed whitespace-pre-line bg-[#111520]/60 p-4 rounded-2xl border border-white/[0.05]">${escapeHTML(selectedMail.body)}</div>
 
-                                    <!-- Interactive Contract Box: Licensing Offer -->
                                     ${selectedMail.actionType === 'license_offer' && !selectedMail.resolved ? `
                                         <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-sky-500/15 via-[#131a2b] to-[#111520] border border-sky-500/35 space-y-3.5">
                                             <div class="flex items-center justify-between gap-2">
@@ -2304,7 +2166,6 @@
                                         </div>
                                     ` : ''}
 
-                                    <!-- Interactive Contract Box: Brand Sponsorship -->
                                     ${selectedMail.actionType === 'sponsorship' && !selectedMail.resolved ? `
                                         <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-emerald-500/15 via-[#13241f] to-[#111520] border border-emerald-500/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                             <div>
@@ -2317,7 +2178,6 @@
                                         </div>
                                     ` : ''}
 
-                                    <!-- Interactive Contract Box: Investor Loan -->
                                     ${selectedMail.actionType === 'investor_loan' && !selectedMail.resolved ? `
                                         <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-purple-500/15 via-[#1a1429] to-[#111520] border border-purple-500/35 space-y-3">
                                             <div class="flex items-center justify-between gap-2">
@@ -2334,7 +2194,6 @@
                                         </div>
                                     ` : ''}
 
-                                    <!-- Interactive Contract Box: Film Company Co-Production Investment -->
                                     ${selectedMail.actionType === 'coproduction_invest' && !selectedMail.resolved ? `
                                         <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-500/15 via-[#241b12] to-[#111520] border border-amber-500/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                             <div>
@@ -2522,13 +2381,30 @@
                 return;
             }
 
-            const roll = Math.random();
-            if (roll < 0.4) {
+            if (state.cash < 180000000) {
+                const principal = 250000000;
+                const weekly = 27500000;
+                state.cinemail.messages.unshift({
+                    id: 'mail_loan_' + Date.now() + '_' + Math.floor(Math.random() * 999),
+                    folder: 'business',
+                    sender: 'Garuda Film Capital (VC)',
+                    email: 'credit@garudafilmvc.id',
+                    subject: 'Pinjaman Darurat Modal Produksi (' + formatIDR(principal) + ')',
+                    time: 'Pekan ' + state.week,
+                    unread: true,
+                    starred: false,
+                    body: 'Halo Pimpinan ' + state.studioName + ',\n\nKami memantau arus kas studio Anda sedang ketat. Kami menawarkan pinjaman modal kerja sebesar ' + formatIDR(principal) + ' agar jadwal syuting dan gaji kru Anda tetap aman, dengan cicilan ' + formatIDR(weekly) + '/pekan selama 10 pekan.',
+                    actionType: 'investor_loan',
+                    principal,
+                    weeklyPayment: weekly,
+                    durationWeeks: 10,
+                    resolved: false
+                });
+            } else {
                 const sponsors = [
-                    { name: 'Teh Melati Nusantara', email: 'promo@tehmelati.id', payout: 35000000 },
-                    { name: 'KilatNet 5G Fiber', email: 'brand@kilatnet.id', payout: 50000000 },
-                    { name: 'Indomie Rasa Nusantara', email: 'sponsorship@indofood-brand.id', payout: 65000000 },
-                    { name: 'Garuda Sky Airlines', email: 'partnership@garudasky.id', payout: 80000000 }
+                    { name: 'Teh Botol Nusantara', email: 'promo@tehbotolnusantara.id', payout: 35000000 },
+                    { name: 'Indomie Rasa Sinema', email: 'brand@indomie-creative.id', payout: 50000000 },
+                    { name: 'GoPay Entertainment', email: 'partners@gopay-ent.id', payout: 65000000 }
                 ];
                 const sp = sponsors[Math.floor(Math.random() * sponsors.length)];
                 state.cinemail.messages.unshift({
@@ -2536,60 +2412,15 @@
                     folder: 'business',
                     sender: sp.name,
                     email: sp.email,
-                    subject: 'Penawaran Sponsor Resmi Proyek Studio (+' + formatIDR(sp.payout) + ')',
+                    subject: 'Kontrak Sponsor Brand Komersial (+' + formatIDR(sp.payout) + ')',
                     time: 'Pekan ' + state.week,
                     unread: true,
                     starred: false,
-                    body: 'Halo Produser ' + state.studioName + ',\n\nMelihat reputasi studio Anda (' + state.reputation + '%), brand kami ingin menjadi sponsor resmi produksi berikutnya dengan dana segar sebesar ' + formatIDR(sp.payout) + '.',
+                    body: 'Halo Tim ' + state.studioName + ',\n\nKami ingin berkolaborasi dalam kampanye promosi dan penempatan produk pada proyek studio Anda pekan ini dengan pencairan dana sponsor sebesar ' + formatIDR(sp.payout) + '.',
                     actionType: 'sponsorship',
                     payout: sp.payout,
                     resolved: false
                 });
-            } else if (roll < 0.75) {
-                const lenders = [
-                    { name: 'Sinema Capital Ventura', email: 'loan@sinemacapital.id', principal: 180000000, weekly: 20000000, weeks: 10 },
-                    { name: 'Bank Kreatif Nusantara', email: 'kredit@bankkreatif.id', principal: 320000000, weekly: 35000000, weeks: 10 },
-                    { name: 'Asia Film Angel Fund', email: 'funding@asiafilmangel.com', principal: 450000000, weekly: 48000000, weeks: 10 }
-                ];
-                const ln = lenders[Math.floor(Math.random() * lenders.length)];
-                state.cinemail.messages.unshift({
-                    id: 'mail_ln_' + Date.now() + '_' + Math.floor(Math.random() * 999),
-                    folder: 'business',
-                    sender: ln.name,
-                    email: ln.email,
-                    subject: 'Pinjaman Modal Ekspansi Studio (' + formatIDR(ln.principal) + ')',
-                    time: 'Pekan ' + state.week,
-                    unread: true,
-                    starred: false,
-                    body: 'Halo Pimpinan ' + state.studioName + ',\n\nKami menawarkan fasilitas kredit modal produksi sebesar ' + formatIDR(ln.principal) + ' yang dapat dicairkan langsung ke kas Anda dengan cicilan ' + formatIDR(ln.weekly) + '/pekan selama ' + ln.weeks + ' pekan.',
-                    actionType: 'investor_loan',
-                    principal: ln.principal,
-                    weeklyPayment: ln.weekly,
-                    durationWeeks: ln.weeks,
-                    resolved: false
-                });
-            } else {
-                const acclaimed = state.releasedMovies
-                    .filter(m => m.studio === state.studioName && m.rating >= 3.6)
-                    .sort((a, b) => b.rating - a.rating)[0];
-                if (acclaimed) {
-                    generateSmartFundingMail(acclaimed);
-                } else {
-                    state.cinemail.messages.unshift({
-                        id: 'mail_sp2_' + Date.now() + '_' + Math.floor(Math.random() * 999),
-                        folder: 'business',
-                        sender: 'Bioskop XXI & CGV Promo',
-                        email: 'partner@jaringanbioskop.id',
-                        subject: 'Dukungan Dana Promosi & Trailer (+Rp 45 Jt)',
-                        time: 'Pekan ' + state.week,
-                        unread: true,
-                        starred: false,
-                        body: 'Halo Tim ' + state.studioName + ',\n\nKami memberikan dana dukungan promosi layar bioskop sebesar Rp 45.000.000 untuk membantu kelancaran produksi studio Anda bulan ini.',
-                        actionType: 'sponsorship',
-                        payout: 45000000,
-                        resolved: false
-                    });
-                }
             }
         }
 
@@ -2634,7 +2465,7 @@
                         <button onclick="requestFundingOffer('loan')" class="w-full p-3.5 rounded-2xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-left space-y-1 transition">
                             <div class="flex items-center justify-between">
                                 <span class="font-display font-extrabold text-xs sm:text-sm text-purple-200">🏦 Ajukan Pinjaman Investor Ventura</span>
-                                <span class="font-mono text-xs font-extrabold text-emerald-300">+Rp 180 Jt – Rp 450 Jt</span>
+                                <span class="font-mono text-xs font-extrabold text-emerald-300">+Rp 220 Jt – Rp 400 Jt</span>
                             </div>
                             <p class="text-[11px] text-gray-300">Dapatkan penawaran kredit modal produksi instan dengan cicilan mingguan ringan.</p>
                         </button>
@@ -2716,6 +2547,198 @@
             updateHUD();
             switchMainTab('cinemail');
             showToast('Penawaran pendanaan baru masuk ke CineMail!', 'success');
+        }
+
+        // =========================================================================
+        // 7. INSTAGRAM-STYLE CINEGRAM FEED
+        // =========================================================================
+        function renderCinegramView() {
+            const main = document.getElementById('mainWorkspace');
+            const cg = state.cinegram;
+            const filter = cg.regionFilter || 'all';
+
+            const stories = [
+                { name: state.studioName, badge: 'STUDIO', grad: 'from-amber-500 to-orange-600', icon: 'ph-film-slate' },
+                { name: 'cinephile_id', badge: 'LIVE', grad: 'from-pink-500 to-rose-600', icon: 'ph-popcorn' },
+                { name: 'cannes_news', badge: 'GLOBAL', grad: 'from-purple-500 to-indigo-600', icon: 'ph-trophy' },
+                { name: 'boxoffice_id', badge: 'DATA', grad: 'from-emerald-500 to-teal-600', icon: 'ph-chart-line-up' }
+            ];
+
+            const visiblePosts = cg.posts.filter(p => {
+                if (filter === 'saved') return p.bookmarked;
+                if (filter === 'id') return p.region === 'id';
+                if (filter === 'intl') return p.region === 'intl';
+                return true;
+            });
+
+            main.innerHTML = `
+                <div class="shrink-0 px-3.5 sm:px-5 pt-3 pb-2 border-b border-white/[0.08] bg-[#0d111a] flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-xl ig-story-ring flex items-center justify-center text-white shadow">
+                            <i class="ph-fill ph-camera text-sm"></i>
+                        </div>
+                        <span class="font-display font-extrabold text-base sm:text-lg tracking-tight text-white">CineGram</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openCreateStudioPostModal()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-amber-500 hover:opacity-95 text-white font-display font-extrabold text-[11px] flex items-center gap-1 shadow-md">
+                            <i class="ph-bold ph-plus"></i>
+                            <span>Unggah</span>
+                        </button>
+                        <button onclick="openCinegramActivityModal()" class="relative w-8 h-8 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 flex items-center justify-center text-gray-200">
+                            <i class="ph-fill ph-heart text-sm text-rose-400"></i>
+                            ${cg.activities.length > 0 ? '<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-500"></span>' : ''}
+                        </button>
+                    </div>
+                </div>
+
+                <div id="cinegramFeedScroll" class="flex-1 min-h-0 overflow-y-auto app-scroll">
+                    <div class="max-w-xl mx-auto p-3.5 sm:p-4 space-y-4">
+                        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1">
+                            ${stories.map((st, idx) => `
+                                <button onclick="openStoryModal(${idx})" class="flex flex-col items-center gap-1 shrink-0 group">
+                                    <div class="p-[2px] rounded-full ig-story-ring">
+                                        <div class="w-12 h-12 rounded-full bg-[#0b0e16] p-0.5 flex items-center justify-center">
+                                            <div class="w-full h-full rounded-full bg-gradient-to-br ${st.grad} flex items-center justify-center text-white">
+                                                <i class="ph-fill ${st.icon} text-lg"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="text-[10px] font-semibold text-gray-300 max-w-[66px] truncate group-hover:text-white">${escapeHTML(st.name)}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                            ${[
+                                { id: 'all', label: 'Semua Feed' },
+                                { id: 'id', label: '🇮🇩 Indonesia' },
+                                { id: 'intl', label: '🌍 Internasional' },
+                                { id: 'saved', label: '🔖 Tersimpan' }
+                            ].map(f => `
+                                <button onclick="state.cinegram.regionFilter='${f.id}'; renderCinegramView()" class="px-3 py-1 rounded-full text-[11px] font-bold shrink-0 transition ${filter === f.id ? 'bg-white text-black' : 'bg-white/[0.06] text-gray-300 hover:text-white'}">
+                                    ${f.label}
+                                </button>
+                            `).join('')}
+                        </div>
+
+                        ${visiblePosts.length === 0 ? `
+                            <div class="p-8 rounded-3xl glass-card text-center text-xs text-gray-400">
+                                Belum ada postingan pada kategori ini.
+                            </div>
+                        ` : visiblePosts.map(post => {
+                            const totalPollVotes = post.poll ? post.poll.options.reduce((s, o) => s + o.votes, 0) : 0;
+                            const displayedCaption = (post.showTranslation && post.translatedCaption) ? post.translatedCaption : post.caption;
+                            return `
+                                <article class="rounded-3xl glass-card overflow-hidden border border-white/[0.08]">
+                                    <div class="px-3.5 py-2.5 flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-2.5 min-w-0">
+                                            <div class="w-8 h-8 rounded-full ig-story-ring p-[1.5px] shrink-0">
+                                                <div class="w-full h-full rounded-full bg-[#111520] flex items-center justify-center font-display font-extrabold text-xs text-white">
+                                                    ${escapeHTML(post.author.slice(0, 2).toUpperCase())}
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div class="flex items-center gap-1">
+                                                    <span class="font-display font-extrabold text-xs text-white truncate">${escapeHTML(post.author)}</span>
+                                                    ${post.verified ? '<i class="ph-fill ph-seal-check text-sky-400 text-xs shrink-0"></i>' : ''}
+                                                </div>
+                                                <div class="text-[10px] text-gray-400 truncate">${escapeHTML(post.location)}</div>
+                                            </div>
+                                        </div>
+                                        <button onclick="toggleFollowAuthor('${post.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 transition ${post.following ? 'bg-white/[0.07] text-gray-300' : 'bg-sky-500 text-black font-extrabold'}">
+                                            ${post.following ? 'Mengikuti' : 'Ikuti'}
+                                        </button>
+                                    </div>
+
+                                    <div ondblclick="doubleTapPost('${post.id}')" class="relative bg-gradient-to-br ${post.grad} px-5 py-7 sm:py-9 border-y border-white/[0.07] cursor-pointer select-none overflow-hidden">
+                                        <div id="heartBurst-${post.id}" class="hidden pointer-events-none absolute inset-0 flex items-center justify-center z-20">
+                                            <i class="ph-fill ph-heart text-6xl text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.8)] animate-heart-pop"></i>
+                                        </div>
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="space-y-2 max-w-md">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-black/45 border border-white/10 font-mono text-[9px] uppercase tracking-wider text-amber-300">
+                                                    <i class="ph-fill ${post.icon}"></i>
+                                                    <span>${post.region === 'intl' ? 'World Cinema Dispatch' : 'Sorotan Sinema ID'}</span>
+                                                </span>
+                                                <h3 class="font-display font-extrabold text-base sm:text-xl text-white leading-snug">${escapeHTML(post.headline)}</h3>
+                                                ${post.movieId ? `
+                                                    <button onclick="event.stopPropagation(); jumpToCineboxdMovie('${post.movieId}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/55 hover:bg-black/75 border border-emerald-400/40 text-[10px] font-bold text-emerald-300 transition">
+                                                        <span>Lihat Skor & Ulasan di CineBoxd</span>
+                                                        <i class="ph-bold ph-arrow-right"></i>
+                                                    </button>
+                                                ` : ''}
+                                            </div>
+                                            <i class="ph-fill ${post.icon} text-4xl sm:text-5xl text-white/15 shrink-0"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3.5 space-y-2.5">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-3.5">
+                                                <button onclick="togglePostLike('${post.id}')" class="text-xl transition active:scale-125 ${post.liked ? 'text-rose-500' : 'text-gray-200 hover:text-white'}">
+                                                    <i class="${post.liked ? 'ph-fill' : 'ph'} ph-heart"></i>
+                                                </button>
+                                                <button onclick="openPostDetailModal('${post.id}')" class="text-xl text-gray-200 hover:text-white">
+                                                    <i class="ph ph-chat-circle"></i>
+                                                </button>
+                                            </div>
+                                            <button onclick="togglePostBookmark('${post.id}')" class="text-xl ${post.bookmarked ? 'text-amber-400' : 'text-gray-300 hover:text-white'}">
+                                                <i class="${post.bookmarked ? 'ph-fill' : 'ph'} ph-bookmark-simple"></i>
+                                            </button>
+                                        </div>
+
+                                        <div class="font-display font-extrabold text-xs text-white">${post.likes.toLocaleString('id-ID')} suka</div>
+
+                                        <div class="text-xs text-gray-200 leading-relaxed">
+                                            <strong class="text-white mr-1">${escapeHTML(post.author)}</strong>${escapeHTML(displayedCaption)}
+                                            ${post.translatedCaption ? `
+                                                <button onclick="togglePostTranslation('${post.id}')" class="block mt-1 font-mono text-[10px] font-bold text-sky-400 hover:text-sky-300">
+                                                    ${post.showTranslation ? 'Lihat teks asli' : 'Lihat terjemahan Bahasa Indonesia'}
+                                                </button>
+                                            ` : ''}
+                                        </div>
+
+                                        ${post.poll ? `
+                                            <div class="p-3 rounded-2xl bg-black/40 border border-white/10 space-y-2">
+                                                <div class="font-display font-bold text-[11px] text-amber-300">${escapeHTML(post.poll.question)}</div>
+                                                <div class="space-y-1.5">
+                                                    ${post.poll.options.map((opt, oIdx) => {
+                                                        const voted = post.poll.votedIndex !== null;
+                                                        const pct = totalPollVotes > 0 ? Math.round((opt.votes / totalPollVotes) * 100) : 0;
+                                                        const isChoice = post.poll.votedIndex === oIdx;
+                                                        return `
+                                                            <button onclick="voteCinegramPoll('${post.id}', ${oIdx})" ${voted ? 'disabled' : ''} class="relative w-full px-3 py-2 rounded-xl border text-left text-[11px] overflow-hidden transition ${isChoice ? 'border-amber-400 text-white font-extrabold' : 'border-white/10 text-gray-200 hover:border-white/25'}">
+                                                                ${voted ? `<div class="absolute inset-y-0 left-0 bg-amber-500/20" style="width:${pct}%"></div>` : ''}
+                                                                <div class="relative flex items-center justify-between gap-2">
+                                                                    <span>${escapeHTML(opt.label)}</span>
+                                                                    ${voted ? `<span class="font-mono text-[10px] text-amber-300 font-bold">${pct}%</span>` : ''}
+                                                                </div>
+                                                            </button>
+                                                        `;
+                                                    }).join('')}
+                                                </div>
+                                            </div>
+                                        ` : ''}
+
+                                        <div class="space-y-1 pt-0.5">
+                                            ${post.comments.slice(0, 2).map(c => `
+                                                <div class="text-[11px] text-gray-300 truncate">
+                                                    <strong class="text-white mr-1">${escapeHTML(c.user)}</strong>${escapeHTML(c.text)}
+                                                </div>
+                                            `).join('')}
+                                            <button onclick="openPostDetailModal('${post.id}')" class="text-[11px] text-gray-400 hover:text-white font-medium pt-0.5">
+                                                Lihat semua ${post.comments.length} komentar & balas...
+                                            </button>
+                                        </div>
+
+                                        <div class="font-mono text-[9px] uppercase text-gray-500">${post.time}</div>
+                                    </div>
+                                </article>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
         }
 
         function openCreateStudioPostModal() {
@@ -2980,7 +3003,7 @@
                                 <div class="pt-2 border-t border-white/[0.06]">
                                     <button onclick="openPostDetailModal('${post.id}', ${!showHidden})" class="text-[11px] text-gray-400 hover:text-white flex items-center gap-1.5">
                                         <i class="ph ph-eye-slash"></i>
-                                        <span>${showHidden ? 'Sembunyikan komentar tersembunyi' : 'Lihat komentar yang disembunyikan (' + post.hiddenComments.length + ')'}</span>
+                                        <span>${showHidden ? 'Sembunyikan komentar tersembunyyi' : 'Lihat komentar yang disembunyikan (' + post.hiddenComments.length + ')'}</span>
                                     </button>
                                     ${showHidden ? `
                                         <div class="mt-2 space-y-2 pl-2 border-l border-white/10">
@@ -3062,6 +3085,7 @@
                 liked: false
             });
 
+            saveGameState(true);
             playTone(620, 'sine', 0.08, 0.04);
             renderCinegramView();
             openPostDetailModal(postId);
@@ -3075,38 +3099,56 @@
         }
 
         // =========================================================================
-        // 8. BOX OFFICE CHARTS
+        // 8. COMPETITIVE BOX OFFICE CHARTS (WEEKLY & ALL-TIME)
         // =========================================================================
         function renderBoxOfficeView() {
             const main = document.getElementById('mainWorkspace');
             const region = state.boxoffice.region;
+            const mode = state.boxoffice.mode || 'weekly';
             const mult = region === 'global' ? 3.2 : 1.0;
 
             const activeMovies = state.releasedMovies
                 .filter(m => m.inTheater)
                 .sort((a, b) => b.weeklyGross - a.weeklyGross);
 
+            const allTimeMovies = state.releasedMovies
+                .filter(m => (m.totalGross || 0) > 0)
+                .sort((a, b) => b.totalGross - a.totalGross)
+                .slice(0, 15);
+
+            const shownList = mode === 'weekly' ? activeMovies : allTimeMovies;
+
             main.innerHTML = `
-                <div class="shrink-0 px-3.5 sm:px-5 pt-3 pb-2.5 border-b border-white/[0.08] bg-[#0d111a] flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                        <h2 class="font-display font-extrabold text-base sm:text-lg text-white">Tangga Box Office (${region === 'id' ? 'Nasional' : 'Global'})</h2>
-                        <p class="text-[11px] text-gray-400">Kondisi: <strong class="text-amber-300">${state.marketMood.label}</strong> • Bagi hasil studio: <strong>50%</strong></p>
+                <div class="shrink-0 px-3.5 sm:px-5 pt-3 pb-2.5 border-b border-white/[0.08] bg-[#0d111a] space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <h2 class="font-display font-extrabold text-base sm:text-lg text-white">Tangga Box Office (${region === 'id' ? 'Nasional' : 'Global'})</h2>
+                            <p class="text-[11px] text-gray-400">Kondisi: <strong class="text-amber-300">${state.marketMood.label}</strong> • Bagi hasil studio: <strong>50%</strong></p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="state.boxoffice.region='id'; renderBoxOfficeView()" class="px-3 py-1.5 rounded-xl text-xs font-bold ${region === 'id' ? 'bg-amber-500 text-black' : 'bg-white/[0.06] text-gray-300'}">🇮🇩 Nasional</button>
+                            <button onclick="state.boxoffice.region='global'; renderBoxOfficeView()" class="px-3 py-1.5 rounded-xl text-xs font-bold ${region === 'global' ? 'bg-amber-500 text-black' : 'bg-white/[0.06] text-gray-300'}">🌍 Global</button>
+                        </div>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <button onclick="state.boxoffice.region='id'; renderBoxOfficeView()" class="px-3 py-1.5 rounded-xl text-xs font-bold ${region === 'id' ? 'bg-amber-500 text-black' : 'bg-white/[0.06] text-gray-300'}">🇮🇩 Nasional</button>
-                        <button onclick="state.boxoffice.region='global'; renderBoxOfficeView()" class="px-3 py-1.5 rounded-xl text-xs font-bold ${region === 'global' ? 'bg-amber-500 text-black' : 'bg-white/[0.06] text-gray-300'}">🌍 Global</button>
+                        <button onclick="state.boxoffice.mode='weekly'; renderBoxOfficeView()" class="px-3 py-1 rounded-full text-[11px] font-bold transition ${mode === 'weekly' ? 'bg-white text-black' : 'bg-white/[0.06] text-gray-300'}">
+                            Sedang Tayang (${activeMovies.length})
+                        </button>
+                        <button onclick="state.boxoffice.mode='alltime'; renderBoxOfficeView()" class="px-3 py-1 rounded-full text-[11px] font-bold transition ${mode === 'alltime' ? 'bg-white text-black' : 'bg-white/[0.06] text-gray-300'}">
+                            Rekor Terlaris Sepanjang Masa (${allTimeMovies.length})
+                        </button>
                     </div>
                 </div>
 
                 <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-2.5">
-                    ${activeMovies.length === 0 ? `
+                    ${shownList.length === 0 ? `
                         <div class="p-8 rounded-3xl glass-card text-center text-xs text-gray-400">
-                            Belum ada film yang tayang di bioskop pekan ini.
+                            Belum ada film di daftar Box Office ini.
                         </div>
-                    ` : activeMovies.map((m, idx) => {
+                    ` : shownList.map((m, idx) => {
                         const isOurs = m.studio === state.studioName;
-                        const wkGross = Math.round(m.weeklyGross * mult);
-                        const totGross = Math.round(m.totalGross * mult);
+                        const wkGross = Math.round((m.weeklyGross || 0) * mult);
+                        const totGross = Math.round((m.totalGross || 0) * mult);
                         return `
                             <div onclick="jumpToCineboxdMovie('${m.id}')" class="p-3.5 rounded-2xl glass-card border ${isOurs ? 'border-amber-400/50 bg-amber-500/[0.06]' : 'border-white/[0.08]'} flex items-center justify-between gap-3 cursor-pointer hover:border-white/25 transition">
                                 <div class="flex items-center gap-3 min-w-0">
@@ -3117,15 +3159,21 @@
                                         <div class="flex items-center gap-1.5">
                                             <span class="font-display font-extrabold text-xs sm:text-sm text-white truncate">${escapeHTML(m.title)}</span>
                                             ${isOurs ? '<span class="px-1.5 py-0.2 rounded bg-amber-500 text-black font-mono text-[9px] font-extrabold shrink-0">STUDIO ANDA</span>' : ''}
+                                            ${m.theaterWeek === 1 && m.inTheater ? '<span class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[9px] font-bold shrink-0">BARU</span>' : ''}
                                         </div>
                                         <div class="text-[11px] text-gray-400 truncate">
-                                            ${escapeHTML(m.studio)} • ${m.genre} • ${m.rating.toFixed(1)}★ • <span class="text-sky-300">Mgg ${m.theaterWeek}/${m.maxTheaterWeeks}</span>
+                                            ${escapeHTML(m.studio)} • ${m.genre} • ${m.rating.toFixed(1)}★ • ${m.inTheater ? `<span class="text-sky-300">Mgg ${m.theaterWeek}/${m.maxTheaterWeeks}</span>` : '<span class="text-gray-500">Selesai Tayang</span>'}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="text-right font-mono shrink-0">
-                                    <div class="text-xs sm:text-sm font-extrabold text-emerald-300">${formatIDR(wkGross)}/mgg</div>
-                                    <div class="text-[10px] text-gray-400">Total: ${formatIDR(totGross)} • ${m.screens} layar</div>
+                                    ${mode === 'weekly' ? `
+                                        <div class="text-xs sm:text-sm font-extrabold text-emerald-300">${formatIDR(wkGross)}/mgg</div>
+                                        <div class="text-[10px] text-gray-400">Total: ${formatIDR(totGross)} • ${m.screens} layar</div>
+                                    ` : `
+                                        <div class="text-xs sm:text-sm font-extrabold text-amber-300">${formatIDR(totGross)}</div>
+                                        <div class="text-[10px] text-gray-400">Tahun ${m.year} • ${m.inTheater ? 'Aktif' : 'Arsip'}</div>
+                                    `}
                                 </div>
                             </div>
                         `;
@@ -3135,7 +3183,7 @@
         }
 
         // =========================================================================
-        // 9. APPLE TV+ INSPIRED CINEFLIX+
+        // 9. APPLE TV+ INSPIRED CINEFLIX+ (3 TIERS & REALISTIC NET ECONOMICS)
         // =========================================================================
         const CINEFLIX_TIERS = {
             1: {
@@ -3587,7 +3635,7 @@
                 state.year += 1;
             }
 
-            // 1. Studio Overhead & Crew Payroll
+            // 1. Studio Overhead, Crew Payroll & Active Investor Loan Repayment
             const payroll = getWeeklyPayroll();
             const studioOverhead = 8000000;
             let loanRepaymentTotal = 0;
@@ -3677,28 +3725,42 @@
                 }
             }
 
-            // 5. Rival AI Studio Release & Licensing Offer every 3 weeks
+            // 5. Smart Funding Mail & Competitive Weekly Rival Releases
             if (state.week % 2 === 0 || state.cash < 180000000) {
                 generateSmartFundingMail(null);
             }
 
-            if (state.week % 3 === 0) {
-                const rivalTitles = [
-                    { title: 'MALAM SATU SURO', studio: 'Rapi Films', director: 'Joko Anwar', genre: 'Horor', rating: 4.3, icon: 'ph-skull', grad: 'from-red-950 via-stone-950 to-black', synopsis: 'Ritual malam keramat membuka portal arwah leluhur di desa terpencil.' },
-                    { title: 'GARUDA TAKTIKAL', studio: 'Merantau Pictures', director: 'Timo Tjahjanto', genre: 'Aksi', rating: 4.5, icon: 'ph-fire', grad: 'from-orange-950 via-zinc-950 to-black', synopsis: 'Operasi penyelamatan sandera di pelabuhan peti kemas saat badai.' },
-                    { title: 'KOPI PAGI DI BANDUNG', studio: 'Miles Cinema', director: 'Riri Riza', genre: 'Romansa', rating: 4.0, icon: 'ph-heart', grad: 'from-rose-950 via-stone-950 to-black', synopsis: 'Dua barista beda prinsip bekerja sama menyelamatkan kedai kopi legendaris.' },
-                    { title: 'POCONG DISCO 3000', studio: 'Kaki Lima Pictures', director: 'Ujang Bensin', genre: 'Komedi', rating: 1.8, icon: 'ph-ghost', grad: 'from-lime-950 via-zinc-950 to-black', synopsis: 'Komedi horor dengan efek lampu disko yang bikin penonton pusing.' }
-                ];
-                const pick = rivalTitles[(state.week / 3) % rivalTitles.length];
-                const rivalId = 'riv_' + state.week + '_' + Date.now();
-                const rivalHype = Math.round(50 + pick.rating * 8);
-                const rivalMaxWeeks = Math.max(2, Math.min(9, Math.round(rivalHype / 10)));
-                const rivalScreens = Math.round(280 + pick.rating * 95);
-                const rivalGross = Math.round(rivalScreens * (95000 + pick.rating * 35000));
+            const rivalCatalog = [
+                { title: 'MALAM SATU SURO', studio: 'Rapi Films', director: 'Joko Anwar', genre: 'Horor', rating: 4.3, icon: 'ph-skull', grad: 'from-red-950 via-stone-950 to-black', synopsis: 'Ritual malam keramat membuka portal arwah leluhur di desa terpencil.' },
+                { title: 'GARUDA TAKTIKAL', studio: 'Merantau Pictures', director: 'Timo Tjahjanto', genre: 'Aksi', rating: 4.5, icon: 'ph-fire', grad: 'from-orange-950 via-zinc-950 to-black', synopsis: 'Operasi penyelamatan sandera di pelabuhan peti kemas saat badai.' },
+                { title: 'KOPI PAGI DI BANDUNG', studio: 'Miles Cinema', director: 'Riri Riza', genre: 'Romansa', rating: 4.0, icon: 'ph-heart', grad: 'from-rose-950 via-stone-950 to-black', synopsis: 'Dua barista beda prinsip bekerja sama menyelamatkan kedai kopi legendaris.' },
+                { title: 'POCONG DISCO 3000', studio: 'Kaki Lima Pictures', director: 'Ujang Bensin', genre: 'Komedi', rating: 2.1, icon: 'ph-ghost', grad: 'from-lime-950 via-zinc-950 to-black', synopsis: 'Komedi horor dengan efek lampu disko yang bikin penonton pusing.' },
+                { title: 'EKSODUS JAKARTA 2088', studio: 'Visinema Global', director: 'Angga Sasongko', genre: 'Sci-Fi', rating: 4.4, icon: 'ph-planet', grad: 'from-cyan-950 via-slate-950 to-black', synopsis: 'Misi evakuasi kota pesisir raksasa menjelang gelombang pasang abad ini.' },
+                { title: 'JEJAK DI BALIK KABUT', studio: 'CJ ENM Asia', director: 'Na Hong-jin', genre: 'Thriller', rating: 4.6, icon: 'ph-detective', grad: 'from-indigo-950 via-zinc-950 to-black', synopsis: 'Penyelidikan kasus orang hilang di kota pegunungan mengungkap konspirasi tua.' },
+                { title: 'KELUARGA CEMARA RAYA', studio: 'Imajinari Studio', director: 'Ernest Prakasa', genre: 'Drama', rating: 4.2, icon: 'ph-masks-theater', grad: 'from-amber-950 via-stone-950 to-black', synopsis: 'Reuni keluarga besar di hari raya membuka rahasia surat wasiat kakek.' },
+                { title: 'PEDANG NAGA NUSANTARA', studio: 'Falcon Epic', director: 'Hanung Bramantyo', genre: 'Fantasi', rating: 4.1, icon: 'ph-sparkle', grad: 'from-teal-950 via-emerald-950 to-black', synopsis: 'Pendekar muda mencari pusaka penjaga keseimbangan alam di kepulauan timur.' },
+                { title: 'TEROR KERETA TERAKHIR', studio: 'MD Horror Lab', director: 'Awi Suryadi', genre: 'Horor', rating: 3.9, icon: 'ph-skull', grad: 'from-red-950 via-zinc-950 to-black', synopsis: 'Penumpang kereta komuter tengah malam terjebak di stasiun yang tidak ada di peta.' },
+                { title: 'OPERASI KILAT MERAH', studio: 'Screenplay Action', director: 'Gareth Evans', genre: 'Aksi', rating: 4.4, icon: 'ph-fire', grad: 'from-orange-950 via-stone-950 to-black', synopsis: 'Tim penyusup berpacu dengan waktu menggagalkan peretasan satelit nasional.' }
+            ];
+
+            const activeTheaterCount = state.releasedMovies.filter(m => m.inTheater).length;
+            const releasesThisWeek = activeTheaterCount < 6 ? 2 : 1;
+
+            for (let r = 0; r < releasesThisWeek; r++) {
+                const idx = (state.week * 3 + r) % rivalCatalog.length;
+                const cycle = Math.floor((state.week * 3 + r) / rivalCatalog.length);
+                const pick = rivalCatalog[idx];
+                const finalRivalTitle = cycle > 0 ? pick.title + ' ' + (cycle + 1) : pick.title;
+                const rivalId = 'riv_' + state.week + '_' + r + '_' + Date.now();
+                const trendBoost = pick.genre === state.trendingGenre ? 1.18 : 1.0;
+                const rivalHype = Math.round(52 + pick.rating * 8);
+                const rivalMaxWeeks = Math.max(4, Math.min(9, Math.round(rivalHype / 10)));
+                const rivalScreens = Math.round((310 + pick.rating * 95) * trendBoost);
+                const rivalGross = Math.round(rivalScreens * (105000 + pick.rating * 36000) * state.marketMood.mult);
 
                 state.releasedMovies.unshift({
                     id: rivalId,
-                    title: pick.title,
+                    title: finalRivalTitle,
                     studio: pick.studio,
                     director: pick.director,
                     genre: pick.genre,
@@ -3714,27 +3776,29 @@
                     icon: pick.icon,
                     grad: pick.grad,
                     synopsis: pick.synopsis,
-                    reviews: getInitialMovieReviews(pick)
+                    reviews: getInitialMovieReviews({ ...pick, title: finalRivalTitle })
                 });
 
-                const offerPrice = Math.round(65000000 + pick.rating * 18000000);
-                state.cinemail.messages.unshift({
-                    id: 'mail_lic_' + Date.now(),
-                    folder: 'licensing',
-                    sender: pick.studio + ' Distribution',
-                    email: 'sales@' + pick.studio.toLowerCase().replace(/\s+/g, '') + '.id',
-                    subject: 'Penawaran Hak Tayang CineFlix+: ' + pick.title + ' (' + pick.rating.toFixed(1) + '★)',
-                    time: 'Pekan ' + state.week,
-                    unread: true,
-                    starred: false,
-                    body: 'Halo Tim CineFlix+,\n\nKami menawarkan lisensi tayang streaming untuk "' + pick.title + '" (' + pick.genre + ', ' + pick.rating.toFixed(1) + '★). Tambah judul ini untuk meningkatkan retensi pelanggan Anda!',
-                    actionType: 'license_offer',
-                    movieId: rivalId,
-                    price: offerPrice,
-                    subBoost: Math.round(2500 + pick.rating * 1200),
-                    negotiated: false,
-                    resolved: false
-                });
+                if (r === 0 && state.week % 2 === 1) {
+                    const offerPrice = Math.round(65000000 + pick.rating * 18000000);
+                    state.cinemail.messages.unshift({
+                        id: 'mail_lic_' + Date.now() + '_' + r,
+                        folder: 'licensing',
+                        sender: pick.studio + ' Distribution',
+                        email: 'sales@' + pick.studio.toLowerCase().replace(/\s+/g, '') + '.id',
+                        subject: 'Penawaran Hak Tayang CineFlix+: ' + finalRivalTitle + ' (' + pick.rating.toFixed(1) + '★)',
+                        time: 'Pekan ' + state.week,
+                        unread: true,
+                        starred: false,
+                        body: 'Halo Tim CineFlix+,\n\nKami menawarkan lisensi tayang streaming untuk "' + finalRivalTitle + '" (' + pick.genre + ', ' + pick.rating.toFixed(1) + '★). Tambah judul ini untuk meningkatkan retensi pelanggan Anda!',
+                        actionType: 'license_offer',
+                        movieId: rivalId,
+                        price: offerPrice,
+                        subBoost: Math.round(2500 + pick.rating * 1200),
+                        negotiated: false,
+                        resolved: false
+                    });
+                }
             }
 
             // 6. Procedural Weekly CineGram News
