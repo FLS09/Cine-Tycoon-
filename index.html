@@ -10,51 +10,63 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Plus Jakarta Sans', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    animation: {
-                        'screen-push': 'screenPush 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                        'heart-pop': 'heartPop 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                        'focus-sweep': 'focusSweep 1.35s ease-in-out infinite alternate',
-                    },
-                    keyframes: {
-                        screenPush: {
-                            '0%': { opacity: '0', transform: 'translateY(6px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
+        if (window.tailwind) {
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
                         },
-                        heartPop: {
-                            '0%': { opacity: '0', transform: 'scale(0.3)' },
-                            '40%': { opacity: '1', transform: 'scale(1.25)' },
-                            '75%': { opacity: '1', transform: 'scale(0.95)' },
-                            '100%': { opacity: '0', transform: 'scale(1.1)' },
+                        animation: {
+                            'screen-push': 'screenPush 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                            'heart-pop': 'heartPop 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                            'focus-sweep': 'focusSweep 1.35s ease-in-out infinite alternate',
                         },
-                        focusSweep: {
-                            '0%': { left: '4%' },
-                            '100%': { left: '92%' },
+                        keyframes: {
+                            screenPush: {
+                                '0%': { opacity: '0', transform: 'translateY(8px)' },
+                                '100%': { opacity: '1', transform: 'translateY(0)' },
+                            },
+                            heartPop: {
+                                '0%': { opacity: '0', transform: 'scale(0.3)' },
+                                '40%': { opacity: '1', transform: 'scale(1.25)' },
+                                '75%': { opacity: '1', transform: 'scale(0.95)' },
+                                '100%': { opacity: '0', transform: 'scale(1.1)' },
+                            },
+                            focusSweep: {
+                                '0%': { left: '4%' },
+                                '100%': { left: '92%' },
+                            }
                         }
                     }
                 }
-            }
+            };
         }
     </script>
     <style>
+        /* Core & Offline-Safe Base Styles */
+        * { box-sizing: border-box; }
         html, body {
             background-color: #06080d;
             color: #f3f4f6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             height: 100%;
+            margin: 0;
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        .app-scroll {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+            scroll-behavior: smooth;
+        }
         .app-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
         .app-scroll::-webkit-scrollbar-track { background: transparent; }
         .app-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 999px; }
@@ -63,10 +75,14 @@
         .ig-story-ring {
             background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
         }
+        .glass-card {
+            background: linear-gradient(180deg, rgba(22, 28, 44, 0.85) 0%, rgba(15, 19, 30, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.12);
             height: 6px;
             border-radius: 999px;
         }
@@ -90,29 +106,38 @@
 
         <!-- Compact Mobile-First Two-Row Top Studio HUD -->
         <header class="shrink-0 bg-[#0e121c]/95 backdrop-blur-xl border-b border-white/[0.08] px-3 sm:px-5 pt-2.5 pb-2 z-30">
-            <!-- Row 1: Studio Identity + Trophy + Cash + Advance Week -->
-            <div class="flex items-center justify-between gap-2">
+            <!-- Row 1: Studio Identity + Save Status + Trophy + Cash + Advance Week -->
+            <div class="flex items-center justify-between gap-1.5 sm:gap-2">
                 <div class="flex items-center gap-2 min-w-0">
                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-black shadow-lg shadow-amber-500/20 shrink-0">
                         <i class="ph-fill ph-film-slate text-base sm:text-lg"></i>
                     </div>
                     <button onclick="openRenameStudioModal()" class="flex items-center gap-1 min-w-0 text-left group">
-                        <span id="hudStudioName" class="font-display font-extrabold text-xs sm:text-sm text-white truncate max-w-[115px] sm:max-w-[210px] group-hover:text-amber-300 transition">Nusantara Pictures</span>
+                        <span id="hudStudioName" class="font-display font-extrabold text-xs sm:text-sm text-white truncate max-w-[105px] sm:max-w-[200px] group-hover:text-amber-300 transition">Nusantara Pictures</span>
                         <i class="ph ph-pencil-simple text-[11px] text-gray-500 group-hover:text-amber-300 shrink-0"></i>
                     </button>
                 </div>
 
-                <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-                    <button onclick="openAwardsCabinetModal()" title="Lemari Penghargaan" class="flex items-center gap-1 px-2 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 text-amber-300 transition">
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <!-- LocalStorage Save Manager Button -->
+                    <button onclick="openSaveManagerModal()" title="Simpan & Cadangan Data (LocalStorage)" class="flex items-center gap-1 px-2 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-gray-200 transition">
+                        <i id="hudSaveIcon" class="ph-fill ph-floppy-disk text-xs text-emerald-400"></i>
+                        <span class="hidden md:inline font-mono text-[10px] font-bold">Save</span>
+                    </button>
+
+                    <!-- Trophy Cabinet Button -->
+                    <button onclick="openAwardsCabinetModal()" title="Lemari Penghargaan" class="flex items-center gap-1 px-2 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 text-amber-300 transition">
                         <i class="ph-fill ph-trophy text-xs"></i>
                         <span id="hudAwardCount" class="font-mono text-[11px] font-extrabold">0</span>
                     </button>
 
+                    <!-- Cash Pill -->
                     <div class="px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-right">
                         <div class="hidden sm:block text-[9px] font-mono uppercase tracking-wider text-emerald-300/75 leading-none">KAS STUDIO</div>
                         <div id="hudCash" class="font-mono font-extrabold text-[11px] sm:text-xs text-emerald-300 leading-tight">Rp 600 Jt</div>
                     </div>
 
+                    <!-- Advance Week CTA -->
                     <button onclick="advanceWeek()" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-black font-display font-extrabold text-[11px] sm:text-xs flex items-center gap-1 shadow-lg shadow-amber-500/20 transition">
                         <span>Pekan +1</span>
                         <i class="ph-bold ph-fast-forward text-[11px]"></i>
@@ -123,7 +148,7 @@
             <!-- Row 2: Week, Trend, Reputation & Hype -->
             <div class="flex items-center justify-between gap-2 mt-1.5 pt-1.5 border-t border-white/[0.05] text-[10px] sm:text-[11px] font-mono">
                 <div class="flex items-center gap-1.5 min-w-0 truncate text-gray-400">
-                    <span id="hudWeekYear" class="text-gray-300 font-bold shrink-0">Pekan 1 • 2026</span>
+                    <span id="hudWeekYear" class="text-gray-200 font-bold shrink-0">Pekan 1 • 2026</span>
                     <span class="text-gray-600">•</span>
                     <span id="hudTrend" class="text-amber-300 truncate">Tren: Horor (+25%)</span>
                 </div>
@@ -140,8 +165,8 @@
         <!-- Main Workspace (Locked Internal Scroll Container) -->
         <main id="mainWorkspace" class="flex-1 min-h-0 flex flex-col overflow-hidden bg-[#0b0e16]"></main>
 
-        <!-- Bottom 6-Tab Navigation Bar with Mobile Safe Bottom Spacing -->
-        <nav class="shrink-0 bg-[#0e121c]/95 backdrop-blur-xl border-t border-white/[0.08] px-1.5 sm:px-4 pt-1.5 pb-6 sm:pb-2.5 z-30">
+        <!-- Bottom 6-Tab Navigation Bar -->
+        <nav class="shrink-0 bg-[#0e121c]/95 backdrop-blur-xl border-t border-white/[0.08] px-1.5 sm:px-4 pt-1.5 pb-5 sm:pb-2.5 z-30">
             <div class="grid grid-cols-6 gap-1 max-w-3xl mx-auto">
                 <button onclick="switchMainTab('studio')" id="nav-studio" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-amber-400 bg-amber-500/10 transition">
                     <i class="ph-fill ph-video-camera text-lg"></i>
@@ -180,9 +205,11 @@
 
     <script>
         // =========================================================================
-        // 1. AUDIO SYNTHESIZER & UTILITIES
+        // 1. AUDIO SYNTHESIZER, STORAGE CONSTANTS & UTILITIES
         // =========================================================================
+        const SAVE_KEY = 'cinetycoon_save';
         let audioCtx = null;
+
         function playTone(freq = 520, type = 'sine', duration = 0.08, gainVal = 0.04) {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -209,6 +236,15 @@
             return sign + 'Rp ' + abs;
         }
 
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
         function showToast(msg, type = 'info') {
             const box = document.getElementById('toastContainer');
             if (!box) return;
@@ -226,11 +262,11 @@
                 el.style.opacity = '0';
                 el.style.transition = 'opacity 0.25s ease';
                 setTimeout(() => el.remove(), 260);
-            }, 3400);
+            }, 3200);
         }
 
         // =========================================================================
-        // 2. DATA CATALOGS (GENRE SPECIALIST CREW, STORY PRESETS, MOVIES, SOCIAL)
+        // 2. DATA CATALOGS (CREW, STORY PRESETS, MOVIES, SOCIAL)
         // =========================================================================
         const GENRES = ['Horor', 'Aksi', 'Drama', 'Komedi', 'Sci-Fi', 'Thriller', 'Romansa', 'Fantasi'];
 
@@ -285,7 +321,6 @@
         ];
 
         const CREW_CATALOG = [
-            // Directors
             { id: 'dir_1', name: 'Raka Wijaya', role: 'Sutradara', specialty: 'Horor', skill: 78, weeklySalary: 14000000, signFee: 25000000, bio: 'Master atmosfer mencekam & horor psikologis lokal.' },
             { id: 'dir_2', name: 'Gareth Santoso', role: 'Sutradara', specialty: 'Aksi', skill: 84, weeklySalary: 18000000, signFee: 35000000, bio: 'Koreografer pertarungan jarak dekat & aksi tanpa CGI.' },
             { id: 'dir_3', name: 'Kamila Andini-S', role: 'Sutradara', specialty: 'Drama', skill: 82, weeklySalary: 16000000, signFee: 30000000, bio: 'Sutradara langganan festival dengan pendekatan puitis.' },
@@ -295,7 +330,6 @@
             { id: 'dir_7', name: 'Celine Song-W', role: 'Sutradara', specialty: 'Romansa', skill: 81, weeklySalary: 16000000, signFee: 30000000, bio: 'Pencerita kisah cinta intim yang menyentuh penonton.' },
             { id: 'dir_8', name: 'Angga Sasongko-P', role: 'Sutradara', specialty: 'Fantasi', skill: 85, weeklySalary: 20000000, signFee: 40000000, bio: 'Pembangun dunia mitologi & petualangan epik.' },
 
-            // Actors
             { id: 'act_1', name: 'Tara Basro-K', role: 'Aktor', specialty: 'Horor', skill: 82, weeklySalary: 16000000, signFee: 32000000, bio: 'Ratu teriakan & ekspresi emosional film horor.' },
             { id: 'act_2', name: 'Iko Uwais-R', role: 'Aktor', specialty: 'Aksi', skill: 87, weeklySalary: 22000000, signFee: 45000000, bio: 'Bintang laga internasional dengan stamina luar biasa.' },
             { id: 'act_3', name: 'Reza Rahadian-M', role: 'Aktor', specialty: 'Drama', skill: 90, weeklySalary: 25000000, signFee: 55000000, bio: 'Aktor bunglon peraih puluhan piala pemeran terbaik.' },
@@ -305,7 +339,6 @@
             { id: 'act_7', name: 'Nicholas Saputra-A', role: 'Aktor', specialty: 'Romansa', skill: 86, weeklySalary: 21000000, signFee: 42000000, bio: 'Karisma klasik magnet penonton film romansa.' },
             { id: 'act_8', name: 'Chelsea Islan-F', role: 'Aktor', specialty: 'Fantasi', skill: 81, weeklySalary: 16000000, signFee: 30000000, bio: 'Bintang petualangan fantasi & pahlawan muda.' },
 
-            // Writers
             { id: 'wrt_1', name: 'Lele Laila-H', role: 'Penulis', specialty: 'Horor', skill: 81, weeklySalary: 11000000, signFee: 18000000, bio: 'Penulis naskah horor terlaris dengan riset folklor.' },
             { id: 'wrt_2', name: 'Upi Avianto-X', role: 'Penulis', specialty: 'Aksi', skill: 80, weeklySalary: 12000000, signFee: 20000000, bio: 'Perancang tempo cerita cepat & konflik padat.' },
             { id: 'wrt_3', name: 'Gina S. Noer-D', role: 'Penulis', specialty: 'Drama', skill: 86, weeklySalary: 15000000, signFee: 26000000, bio: 'Penulis dialog keluarga paling tajam & empatik.' },
@@ -313,7 +346,6 @@
             { id: 'wrt_5', name: 'Min-Jae Park', role: 'Penulis', specialty: 'Thriller', skill: 85, weeklySalary: 15000000, signFee: 28000000, bio: 'Penulis struktur misteri berlapis ala sinema Seoul.' },
             { id: 'wrt_6', name: 'Salman Aristo-R', role: 'Penulis', specialty: 'Romansa', skill: 82, weeklySalary: 12000000, signFee: 20000000, bio: 'Perangkai kisah cinta ikonik lintas generasi.' },
 
-            // Technical / DOP & VFX
             { id: 'tec_1', name: 'Ical Tanjung-DOP', role: 'Teknis', specialty: 'Horor', skill: 84, weeklySalary: 13000000, signFee: 22000000, bio: 'Tata cahaya gelap & pergerakan kamera menghantui.' },
             { id: 'tec_2', name: 'Yunus Pasolang-DOP', role: 'Teknis', specialty: 'Drama', skill: 83, weeklySalary: 13000000, signFee: 22000000, bio: 'Komposisi warna natural & framing kontemplatif.' },
             { id: 'tec_3', name: 'Haruki Sato-VFX', role: 'Teknis', specialty: 'Sci-Fi', skill: 89, weeklySalary: 19000000, signFee: 36000000, bio: 'Supervisor CGI & simulasi partikel kelas dunia.' },
@@ -471,117 +503,267 @@
         ];
 
         // =========================================================================
-        // 3. CENTRAL GAME STATE
+        // 3. DEFAULT STATE & LOCALSTORAGE SAVE / LOAD SYSTEM
         // =========================================================================
-        const state = {
-            studioName: 'Nusantara Pictures',
-            cash: 600000000,
-            week: 1,
-            year: 2026,
-            reputation: 28,
-            hype: 25,
-            trendingGenre: 'Horor',
-            marketMood: { label: 'Pasar Normal', mult: 1.0 },
-            mainTab: 'studio',
-            studioSubTab: 'production',
-            crewFilterRole: 'Semua',
-            crewFilterGenre: 'Semua',
-            crisisMovieId: null,
+        function createDefaultState() {
+            return {
+                studioName: 'Nusantara Pictures',
+                cash: 600000000,
+                week: 1,
+                year: 2026,
+                reputation: 28,
+                hype: 25,
+                trendingGenre: 'Horor',
+                marketMood: { label: 'Pasar Normal', mult: 1.0 },
+                mainTab: 'studio',
+                studioSubTab: 'production',
+                crewFilterRole: 'Semua',
+                crewFilterGenre: 'Semua',
+                crisisMovieId: null,
+                lastSavedAt: null,
 
-            hiredCrewIds: ['dir_1', 'act_1', 'wrt_1', 'tec_1'],
-            awards: [],
+                hiredCrewIds: ['dir_1', 'act_1', 'wrt_1', 'tec_1'],
+                awards: [],
 
-            draft: {
-                title: 'BISIKAN KERATON',
-                format: 'Film Panjang',
-                visualStyle: 'Live-Action',
-                genre: 'Horor',
-                ageRating: '17+',
-                locationId: 'loc_local',
-                synopsis: STORY_PREMISES['Horor'][0],
-                franchiseId: '',
-                directorId: 'dir_1',
-                actorId: 'act_1',
-                writerId: 'wrt_1',
-                techId: 'tec_1',
-                scriptPct: 35,
-                prodPct: 40,
-                mktPct: 25
-            },
+                draft: {
+                    title: 'BISIKAN KERATON',
+                    format: 'Film Panjang',
+                    visualStyle: 'Live-Action',
+                    genre: 'Horor',
+                    ageRating: '17+',
+                    locationId: 'loc_local',
+                    synopsis: STORY_PREMISES['Horor'][0],
+                    franchiseId: '',
+                    directorId: 'dir_1',
+                    actorId: 'act_1',
+                    writerId: 'wrt_1',
+                    techId: 'tec_1',
+                    scriptPct: 35,
+                    prodPct: 40,
+                    mktPct: 25
+                },
 
-            activeProduction: null,
-            releasedMovies: SEED_MOVIES.map(m => ({ ...m, reviews: getInitialMovieReviews(m) })),
-            franchises: [],
+                activeProduction: null,
+                releasedMovies: SEED_MOVIES.map(m => ({ ...m, reviews: getInitialMovieReviews(m) })),
+                franchises: [],
 
-            cinemail: {
-                folder: 'inbox',
-                search: '',
-                selectedId: 'mail_1',
-                messages: [
-                    {
-                        id: 'mail_1',
-                        folder: 'licensing',
-                        sender: 'Rapi Films Licensing',
-                        email: 'licensing@rapifilms.co.id',
-                        subject: 'Penawaran Lisensi Perdana CineFlix+: PENGABDI KUBURAN TUA',
-                        time: 'Pekan 1',
-                        unread: true,
-                        starred: true,
-                        body: 'Halo Tim Akuisisi Nusantara Pictures,\n\nSelamat atas peluncuran platform streaming CineFlix+! Kami menawarkan hak tayang streaming perdana untuk film box office "PENGABDI KUBURAN TUA" (4.5★) guna menarik pelanggan pertama Anda.',
-                        actionType: 'license_offer',
-                        movieId: 'seed_1',
-                        price: 115000000,
-                        subBoost: 6500,
-                        negotiated: false,
-                        resolved: false
-                    },
-                    {
-                        id: 'mail_2',
-                        folder: 'business',
-                        sender: 'Kopi Kenangan Senja',
-                        email: 'brand@kopisenja.id',
-                        subject: 'Sponsor Product Placement Film Studio Anda (+Rp 30 Jt)',
-                        time: 'Pekan 1',
-                        unread: true,
-                        starred: false,
-                        body: 'Halo Produser,\n\nKami tertarik menempatkan produk minuman kopi kami di salah satu adegan produksi studio Anda bulan ini. Dana sponsor sebesar Rp 30.000.000 siap langsung dicairkan ke kas studio.',
-                        actionType: 'sponsorship',
-                        payout: 30000000,
-                        resolved: false
-                    }
-                ]
-            },
+                cinemail: {
+                    folder: 'inbox',
+                    search: '',
+                    selectedId: 'mail_1',
+                    mobilePane: 'list',
+                    messages: [
+                        {
+                            id: 'mail_1',
+                            folder: 'licensing',
+                            sender: 'Rapi Films Licensing',
+                            email: 'licensing@rapifilms.co.id',
+                            subject: 'Penawaran Lisensi Perdana CineFlix+: PENGABDI KUBURAN TUA',
+                            time: 'Pekan 1',
+                            unread: true,
+                            starred: true,
+                            body: 'Halo Tim Akuisisi Nusantara Pictures,\n\nSelamat atas peluncuran platform streaming CineFlix+! Kami menawarkan hak tayang streaming perdana untuk film box office "PENGABDI KUBURAN TUA" (4.5★) guna menarik pelanggan pertama Anda.\n\nDengan menambahkan judul horor terlaris ini ke katalog perdana Anda, proyeksi pertumbuhan pelanggan awal akan meningkat signifikan.',
+                            actionType: 'license_offer',
+                            movieId: 'seed_1',
+                            price: 115000000,
+                            subBoost: 6500,
+                            negotiated: false,
+                            resolved: false
+                        },
+                        {
+                            id: 'mail_2',
+                            folder: 'business',
+                            sender: 'Kopi Kenangan Senja',
+                            email: 'brand@kopisenja.id',
+                            subject: 'Sponsor Product Placement Film Studio Anda (+Rp 30 Jt)',
+                            time: 'Pekan 1',
+                            unread: true,
+                            starred: false,
+                            body: 'Halo Produser,\n\nKami tertarik menempatkan produk minuman kopi kami di salah satu adegan produksi studio Anda bulan ini. Dana sponsor sebesar Rp 30.000.000 siap langsung dicairkan ke kas studio tanpa mengurangi kualitas cerita Anda.',
+                            actionType: 'sponsorship',
+                            payout: 30000000,
+                            resolved: false
+                        }
+                    ]
+                },
 
-            cinegram: {
-                regionFilter: 'all',
-                posts: JSON.parse(JSON.stringify(INITIAL_POSTS)),
-                activities: [
-                    { user: 'cinephile_jakarta', text: 'mulai mengikuti studio Anda.', time: 'Pekan 1' },
-                    { user: 'variety_asia', text: 'menyebut studio Anda dalam daftar Studio Baru Potensial 2026.', time: 'Pekan 1' }
-                ],
-                unreadNotif: true
-            },
+                cinegram: {
+                    regionFilter: 'all',
+                    posts: JSON.parse(JSON.stringify(INITIAL_POSTS)),
+                    activities: [
+                        { user: 'cinephile_jakarta', text: 'mulai mengikuti studio Anda.', time: 'Pekan 1' },
+                        { user: 'variety_asia', text: 'menyebut studio Anda dalam daftar Studio Baru Potensial 2026.', time: 'Pekan 1' }
+                    ],
+                    unreadNotif: true
+                },
 
-            boxoffice: {
-                region: 'id'
-            },
+                boxoffice: {
+                    region: 'id'
+                },
 
-            cineflix: {
-                tier: 1,
-                subscribers: 0,
-                monthlyPrice: 25000,
-                licensedMovieIds: [],
-                activeCategory: 'Semua',
-                weeksSinceNewCatalog: 0
-            },
+                cineflix: {
+                    tier: 1,
+                    subscribers: 0,
+                    monthlyPrice: 25000,
+                    licensedMovieIds: [],
+                    activeCategory: 'Semua',
+                    weeksSinceNewCatalog: 0
+                },
 
-            cineboxd: {
-                search: '',
-                sort: 'recent',
-                selectedMovieId: null,
-                diary: []
+                cineboxd: {
+                    search: '',
+                    sort: 'recent',
+                    selectedMovieId: null,
+                    diary: []
+                }
+            };
+        }
+
+        let state = createDefaultState();
+
+        function saveGameState(silent = true) {
+            try {
+                state.lastSavedAt = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+                const icon = document.getElementById('hudSaveIcon');
+                if (icon) {
+                    icon.classList.remove('text-emerald-400');
+                    icon.classList.add('text-amber-300');
+                    setTimeout(() => {
+                        icon.classList.remove('text-amber-300');
+                        icon.classList.add('text-emerald-400');
+                    }, 500);
+                }
+                if (!silent) showToast('Progres permainan tersimpan di browser!', 'success');
+            } catch (e) {
+                if (!silent) showToast('Gagal menyimpan ke LocalStorage browser.', 'error');
             }
-        };
+        }
+
+        function loadGameState() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if (!raw) return false;
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== 'object') return false;
+
+                const fresh = createDefaultState();
+                state = {
+                    ...fresh,
+                    ...parsed,
+                    marketMood: { ...fresh.marketMood, ...(parsed.marketMood || {}) },
+                    draft: { ...fresh.draft, ...(parsed.draft || {}) },
+                    cinemail: {
+                        ...fresh.cinemail,
+                        ...(parsed.cinemail || {}),
+                        mobilePane: 'list',
+                        messages: Array.isArray(parsed.cinemail?.messages) ? parsed.cinemail.messages : fresh.cinemail.messages
+                    },
+                    cinegram: {
+                        ...fresh.cinegram,
+                        ...(parsed.cinegram || {}),
+                        posts: Array.isArray(parsed.cinegram?.posts) ? parsed.cinegram.posts : fresh.cinegram.posts,
+                        activities: Array.isArray(parsed.cinegram?.activities) ? parsed.cinegram.activities : fresh.cinegram.activities
+                    },
+                    boxoffice: { ...fresh.boxoffice, ...(parsed.boxoffice || {}) },
+                    cineflix: { ...fresh.cineflix, ...(parsed.cineflix || {}) },
+                    cineboxd: { ...fresh.cineboxd, ...(parsed.cineboxd || {}) },
+                    releasedMovies: Array.isArray(parsed.releasedMovies) && parsed.releasedMovies.length > 0 ? parsed.releasedMovies : fresh.releasedMovies,
+                    hiredCrewIds: Array.isArray(parsed.hiredCrewIds) ? parsed.hiredCrewIds : fresh.hiredCrewIds,
+                    awards: Array.isArray(parsed.awards) ? parsed.awards : [],
+                    franchises: Array.isArray(parsed.franchises) ? parsed.franchises : []
+                };
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function openSaveManagerModal() {
+            const lastText = state.lastSavedAt ? 'Terakhir tersimpan pukul ' + state.lastSavedAt : 'Belum ada simpanan manual';
+            openModal(`
+                <div class="p-5 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                <i class="ph-fill ph-floppy-disk text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display font-extrabold text-sm sm:text-base text-white">Penyimpanan Lokal (LocalStorage)</h3>
+                                <p class="font-mono text-[10px] text-emerald-300">${lastText}</p>
+                            </div>
+                        </div>
+                        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 flex items-center justify-center"><i class="ph ph-x"></i></button>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10 space-y-1.5 text-xs text-gray-300">
+                        <div>Studio: <strong class="text-white">${escapeHTML(state.studioName)}</strong></div>
+                        <div>Waktu: <strong class="text-amber-300">Pekan ${state.week} • Tahun ${state.year}</strong></div>
+                        <div>Kas & Rilisan: <strong class="text-emerald-300">${formatIDR(state.cash)}</strong> • ${state.releasedMovies.filter(m => m.studio === state.studioName).length} Karya Studio</div>
+                        <p class="text-[11px] text-gray-400 pt-1 leading-relaxed">
+                            Progres otomatis disimpan setiap kali <strong>Pekan +1</strong> atau transaksi penting dijalankan, sehingga tetap aman saat halaman dimuat ulang di GitHub Pages.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button onclick="saveGameState(false); closeModal()" class="py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-display font-extrabold text-xs flex items-center justify-center gap-1.5">
+                            <i class="ph-bold ph-floppy-disk"></i>
+                            <span>Simpan Sekarang</span>
+                        </button>
+                        <button onclick="exportSaveJSON()" class="py-2.5 px-4 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/30 text-sky-200 font-display font-bold text-xs flex items-center justify-center gap-1.5">
+                            <i class="ph-bold ph-copy"></i>
+                            <span>Salin Kode Cadangan</span>
+                        </button>
+                    </div>
+
+                    <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-gray-400">Ingin mulai karier dari awal?</span>
+                        <button onclick="confirmResetSaveModal()" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-bold text-[11px]">
+                            Reset Save Baru
+                        </button>
+                    </div>
+                </div>
+            `, 'max-w-md');
+        }
+
+        function exportSaveJSON() {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = JSON.stringify(state);
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                showToast('Kode JSON save berhasil disalin ke clipboard!', 'success');
+            } catch (e) {
+                showToast('Tidak dapat menyalin kode save.', 'error');
+            }
+        }
+
+        function confirmResetSaveModal() {
+            openModal(`
+                <div class="p-5 space-y-4">
+                    <h3 class="font-display font-extrabold text-base text-rose-300">Reset Semua Progres Permainan?</h3>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        Data simpanan <strong>${escapeHTML(state.studioName)}</strong> (Pekan ${state.week}, ${formatIDR(state.cash)}) akan dihapus dan permainan dimulai ulang dari Pekan 1.
+                    </p>
+                    <div class="flex justify-end gap-2">
+                        <button onclick="openSaveManagerModal()" class="px-4 py-2 rounded-xl bg-white/10 text-xs font-bold text-gray-300">Batal</button>
+                        <button onclick="executeResetSave()" class="px-4 py-2 rounded-xl bg-rose-500 text-white text-xs font-extrabold">Ya, Mulai Baru</button>
+                    </div>
+                </div>
+            `, 'max-w-sm');
+        }
+
+        function executeResetSave() {
+            try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+            state = createDefaultState();
+            saveGameState(true);
+            closeModal();
+            updateHUD();
+            switchMainTab('studio');
+            showToast('Permainan baru dimulai dari Pekan 1!', 'info');
+        }
 
         // =========================================================================
         // 4. HUD, MODAL & NAVIGATION HELPERS
@@ -641,7 +823,7 @@
                         <h3 class="font-display font-extrabold text-base text-white">Ubah Nama Studio</h3>
                         <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 flex items-center justify-center"><i class="ph ph-x"></i></button>
                     </div>
-                    <input id="renameStudioInput" type="text" maxlength="28" value="${state.studioName}" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-sm text-white font-bold focus:outline-none focus:border-amber-400">
+                    <input id="renameStudioInput" type="text" maxlength="28" value="${escapeHTML(state.studioName)}" class="w-full px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/15 text-sm text-white font-bold focus:outline-none focus:border-amber-400">
                     <div class="flex justify-end gap-2">
                         <button onclick="closeModal()" class="px-4 py-2 rounded-xl bg-white/10 text-xs font-bold text-gray-300">Batal</button>
                         <button onclick="saveStudioName()" class="px-4 py-2 rounded-xl bg-amber-500 text-black text-xs font-extrabold">Simpan</button>
@@ -654,6 +836,7 @@
             const val = document.getElementById('renameStudioInput')?.value.trim();
             if (val) {
                 state.studioName = val;
+                saveGameState(true);
                 updateHUD();
                 renderCurrentTab();
                 showToast('Nama studio diperbarui menjadi ' + val + '!', 'success');
@@ -679,9 +862,9 @@
                         ` : state.awards.map(a => `
                             <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 to-transparent border border-amber-500/30 flex items-center justify-between gap-3">
                                 <div>
-                                    <div class="font-mono text-[10px] text-amber-300 font-bold">${a.festival} • Pekan ${a.week}</div>
-                                    <div class="font-display font-extrabold text-sm text-white">${a.category}</div>
-                                    <div class="text-xs text-gray-300">Karya: <strong>${a.movieTitle}</strong></div>
+                                    <div class="font-mono text-[10px] text-amber-300 font-bold">${escapeHTML(a.festival)} • Pekan ${a.week}</div>
+                                    <div class="font-display font-extrabold text-sm text-white">${escapeHTML(a.category)}</div>
+                                    <div class="text-xs text-gray-300">Karya: <strong>${escapeHTML(a.movieTitle)}</strong></div>
                                 </div>
                                 <i class="ph-fill ph-trophy text-2xl text-amber-400 shrink-0"></i>
                             </div>
@@ -707,7 +890,7 @@
                 folder: 'business',
                 sender: festival,
                 email: 'committee@festival-awards.org',
-                subject: '🏆 Pemenang Resmi: ' + category + ' — "' + movieTitle + '"',
+                subject: 'Pemenang Resmi: ' + category + ' — "' + movieTitle + '"',
                 time: 'Pekan ' + state.week,
                 unread: true,
                 starred: true,
@@ -748,6 +931,7 @@
                 hiddenComments: []
             });
             state.cinegram.unreadNotif = true;
+            saveGameState(true);
 
             playTone(660, 'triangle', 0.14, 0.06);
             setTimeout(() => playTone(880, 'triangle', 0.22, 0.06), 140);
@@ -758,9 +942,9 @@
                         <i class="ph-fill ph-trophy text-4xl"></i>
                     </div>
                     <div>
-                        <div class="font-mono text-[11px] font-bold uppercase tracking-widest text-amber-300">${festival}</div>
-                        <h3 class="font-display font-extrabold text-xl text-white mt-1">${category}</h3>
-                        <p class="text-xs text-gray-300 mt-1">Karya pemenang: <strong class="text-white">"${movieTitle}"</strong></p>
+                        <div class="font-mono text-[11px] font-bold uppercase tracking-widest text-amber-300">${escapeHTML(festival)}</div>
+                        <h3 class="font-display font-extrabold text-xl text-white mt-1">${escapeHTML(category)}</h3>
+                        <p class="text-xs text-gray-300 mt-1">Karya pemenang: <strong class="text-white">"${escapeHTML(movieTitle)}"</strong></p>
                     </div>
                     <div class="grid grid-cols-2 gap-2.5 max-w-xs mx-auto font-mono text-xs">
                         <div class="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">+${formatIDR(prizeCash)}</div>
@@ -778,6 +962,9 @@
             if (tab === 'cinegram') {
                 state.cinegram.unreadNotif = false;
                 updateHUD();
+            }
+            if (tab === 'cinemail') {
+                state.cinemail.mobilePane = 'list';
             }
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-amber-400', 'bg-amber-500/10');
@@ -801,7 +988,7 @@
         }
 
         // =========================================================================
-        // 5. STUDIO VIEW (PRE-PROD WITH GENRE SPECIALISTS, ACTIVE SET, CREW, IP)
+        // 5. STUDIO VIEW (PRE-PROD, ACTIVE SET, CREW, IP)
         // =========================================================================
         function renderStudioView() {
             const main = document.getElementById('mainWorkspace');
@@ -897,7 +1084,7 @@
                             <button onclick="state.crisisMovieId=null; renderPreProductionForm()" class="text-xs text-gray-400 hover:text-white"><i class="ph ph-x"></i></button>
                         </div>
                         <div class="text-xs text-gray-200">
-                            Kritikus mencibir <strong>"${crisisMovie.title}"</strong> (${crisisMovie.rating.toFixed(1)}★)! Pilih langkah penyelamatan PR studio:
+                            Kritikus mencibir <strong>"${escapeHTML(crisisMovie.title)}"</strong> (${crisisMovie.rating.toFixed(1)}★)! Pilih langkah penyelamatan PR studio:
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                             <button onclick="resolveFlopCrisis('meme')" class="p-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-left">
@@ -938,8 +1125,8 @@
                             Est. Q ${preview.estQuality} • Hype ${preview.estHype}% • Sinergi ${preview.matchedCount}/4
                         </div>
                     </div>
-                    <div class="font-display font-extrabold text-base sm:text-lg text-white tracking-tight">${d.title || 'PROYEK TANPA JUDUL'}</div>
-                    <p class="text-xs text-gray-300 italic leading-relaxed">"${d.synopsis}"</p>
+                    <div class="font-display font-extrabold text-base sm:text-lg text-white tracking-tight">${escapeHTML(d.title || 'PROYEK TANPA JUDUL')}</div>
+                    <p class="text-xs text-gray-300 italic leading-relaxed">"${escapeHTML(d.synopsis)}"</p>
                     <div class="text-[11px] text-gray-400 flex flex-wrap gap-x-3 gap-y-1 pt-0.5">
                         <span>Sutradara: <strong class="text-gray-200">${dirObj ? dirObj.name : '-'}</strong></span>
                         <span>Bintang: <strong class="text-gray-200">${actObj ? actObj.name : '-'}</strong></span>
@@ -954,24 +1141,22 @@
                         </div>
                         <select onchange="state.draft.franchiseId=this.value; renderPreProductionForm()" class="px-3 py-1.5 rounded-xl bg-black/60 border border-white/15 text-xs text-white font-bold">
                             <option value="">-- Proyek Orisinal Baru --</option>
-                            ${state.franchises.map(f => `<option value="${f.id}" ${d.franchiseId === f.id ? 'selected' : ''}>${f.name} (Bagian ${f.entries + 1})</option>`).join('')}
+                            ${state.franchises.map(f => `<option value="${f.id}" ${d.franchiseId === f.id ? 'selected' : ''}>${escapeHTML(f.name)} (Bagian ${f.entries + 1})</option>`).join('')}
                         </select>
                     </div>
                 ` : ''}
 
-                <div class="p-4 sm:p-5 rounded-3xl bg-[#111520] border border-white/[0.08] space-y-4">
-                    <!-- Title + Dice -->
+                <div class="p-4 sm:p-5 rounded-3xl glass-card space-y-4">
                     <div>
                         <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Judul Proyek</label>
                         <div class="flex gap-2">
-                            <input type="text" value="${d.title}" oninput="state.draft.title=this.value" maxlength="40" class="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-sm font-display font-extrabold text-white focus:outline-none focus:border-amber-400">
+                            <input type="text" value="${escapeHTML(d.title)}" oninput="state.draft.title=this.value" maxlength="40" class="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl bg-black/50 border border-white/10 text-sm font-display font-extrabold text-white focus:outline-none focus:border-amber-400">
                             <button onclick="randomizeProjectTitle()" title="Acak Judul" class="w-11 h-11 rounded-xl bg-white/[0.07] hover:bg-white/[0.14] border border-white/10 flex items-center justify-center text-amber-300 shrink-0">
                                 <i class="ph-fill ph-dice-five text-xl"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Format, Visual Style & Age Rating -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div>
                             <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Format Tayang</label>
@@ -999,7 +1184,6 @@
                         </div>
                     </div>
 
-                    <!-- Genre -->
                     <div>
                         <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Genre Utama</label>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -1016,7 +1200,6 @@
                         </div>
                     </div>
 
-                    <!-- Story Premise Selector & Custom Writer -->
                     <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.07] space-y-2.5">
                         <div class="flex items-center justify-between gap-2">
                             <label class="font-mono text-[10px] uppercase tracking-wider text-amber-300 font-bold">Ide Cerita & Sinopsis Kustom</label>
@@ -1029,10 +1212,9 @@
                                 </button>
                             `).join('')}
                         </div>
-                        <textarea rows="2" oninput="state.draft.synopsis=this.value" placeholder="Tulis jalan cerita atau sinopsis film kamu di sini..." class="w-full px-3 py-2 rounded-xl bg-black/60 border border-white/10 text-xs text-gray-200 leading-relaxed focus:outline-none focus:border-amber-400">${d.synopsis}</textarea>
+                        <textarea rows="2" oninput="state.draft.synopsis=this.value" placeholder="Tulis jalan cerita atau sinopsis film kamu di sini..." class="w-full px-3 py-2 rounded-xl bg-black/60 border border-white/10 text-xs text-gray-200 leading-relaxed focus:outline-none focus:border-amber-400">${escapeHTML(d.synopsis)}</textarea>
                     </div>
 
-                    <!-- Filming Location -->
                     <div>
                         <label class="block font-mono text-[10px] uppercase tracking-wider text-gray-400 mb-1.5">Lokasi Syuting</label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1049,7 +1231,6 @@
                         </div>
                     </div>
 
-                    <!-- Direct Genre-Specialist Crew Assignment in Pre-Production -->
                     <div class="p-3.5 rounded-2xl bg-black/40 border border-white/[0.07] space-y-3">
                         <div class="flex items-center justify-between gap-2">
                             <label class="font-mono text-[10px] uppercase tracking-wider text-sky-300 font-bold">Tim Inti & Spesialis Genre (${d.genre})</label>
@@ -1085,7 +1266,6 @@
                         </div>
                     </div>
 
-                    <!-- Department Allocation -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                         <div class="p-3 rounded-2xl bg-black/40 border border-white/10">
                             <div class="flex justify-between text-[11px] font-bold mb-1">
@@ -1110,7 +1290,6 @@
                         </div>
                     </div>
 
-                    <!-- Start Production Bar -->
                     <div class="pt-2 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
                             <div class="font-mono text-[10px] text-gray-400">ESTIMASI BIAYA PRODUKSI</div>
@@ -1148,6 +1327,7 @@
                 showToast('Versi perbaikan dirilis! Skor "' + m.title + '" naik menjadi ' + m.rating.toFixed(1) + '★.', 'success');
             }
             state.crisisMovieId = null;
+            saveGameState(true);
             updateHUD();
             renderPreProductionForm();
         }
@@ -1191,6 +1371,7 @@
 
             state.cash -= c.signFee;
             state.hiredCrewIds.push(crewId);
+            saveGameState(true);
             playTone(620, 'triangle', 0.1, 0.04);
             updateHUD();
             showToast(c.name + ' (' + c.role + ' • ' + c.specialty + ') bergabung dengan studio!', 'success');
@@ -1201,6 +1382,7 @@
         function releaseCrewMember(crewId) {
             if (state.hiredCrewIds.length <= 2) return showToast('Minimal pertahankan 2 anggota kru inti di studio!', 'warn');
             state.hiredCrewIds = state.hiredCrewIds.filter(id => id !== crewId);
+            saveGameState(true);
             updateHUD();
             renderCrewRosterTab();
             showToast('Kontrak anggota kru diakhiri.', 'info');
@@ -1242,7 +1424,7 @@
                     ${filteredCrew.map(c => {
                         const hired = state.hiredCrewIds.includes(c.id);
                         return `
-                            <div class="p-3.5 rounded-2xl bg-[#111520] border ${hired ? 'border-emerald-500/35' : 'border-white/[0.08]'} flex flex-col justify-between gap-2.5">
+                            <div class="p-3.5 rounded-2xl glass-card border ${hired ? 'border-emerald-500/35' : 'border-white/[0.08]'} flex flex-col justify-between gap-2.5">
                                 <div>
                                     <div class="flex items-center justify-between gap-2">
                                         <span class="px-2 py-0.5 rounded bg-white/10 font-mono text-[10px] font-bold text-amber-300">${c.role} • ${c.specialty}</span>
@@ -1280,7 +1462,7 @@
                     <p class="text-xs text-gray-400">Karya orisinal studiomu dengan rating minimal <strong>3.8★</strong> otomatis menjadi IP waralaba untuk dibuat sekuelnya.</p>
                 </div>
                 ${state.franchises.length === 0 ? `
-                    <div class="p-8 rounded-3xl bg-[#111520] border border-white/[0.08] text-center space-y-2">
+                    <div class="p-8 rounded-3xl glass-card text-center space-y-2">
                         <i class="ph-fill ph-planet text-3xl text-purple-400"></i>
                         <div class="font-display font-extrabold text-sm text-white">Belum Ada IP Waralaba</div>
                         <p class="text-xs text-gray-400 max-w-md mx-auto">Rilis film, series, atau animasi orisinal berkualitas tinggi (≥ 3.8★) untuk membangun semesta IP pertamamu!</p>
@@ -1293,9 +1475,9 @@
                                     <span class="px-2 py-0.5 rounded bg-purple-500/20 font-mono text-[10px] font-bold text-purple-200">${f.genre} • ${f.entries} Rilisan</span>
                                     <span class="font-mono text-xs text-amber-300 font-bold">Puncak ${f.bestRating.toFixed(1)}★</span>
                                 </div>
-                                <div class="font-display font-extrabold text-base text-white">${f.name}</div>
-                                <button onclick="state.draft.franchiseId='${f.id}'; state.draft.genre='${f.genre}'; state.draft.title='${f.name} ${f.entries + 1}'; state.studioSubTab='production'; renderStudioView()" class="w-full py-2 rounded-xl bg-purple-500 hover:bg-purple-400 text-black font-display font-extrabold text-xs">
-                                    + Kembangkan Sekuel (${f.name} ${f.entries + 1})
+                                <div class="font-display font-extrabold text-base text-white">${escapeHTML(f.name)}</div>
+                                <button onclick="state.draft.franchiseId='${f.id}'; state.draft.genre='${f.genre}'; state.draft.title='${escapeHTML(f.name)} ${f.entries + 1}'; state.studioSubTab='production'; renderStudioView()" class="w-full py-2 rounded-xl bg-purple-500 hover:bg-purple-400 text-black font-display font-extrabold text-xs">
+                                    + Kembangkan Sekuel (${escapeHTML(f.name)} ${f.entries + 1})
                                 </button>
                             </div>
                         `).join('')}
@@ -1351,6 +1533,7 @@
                 audioPolished: false
             };
 
+            saveGameState(true);
             playTone(580, 'triangle', 0.12, 0.05);
             updateHUD();
             renderStudioView();
@@ -1415,6 +1598,7 @@
             p.quality = Math.max(15, Math.min(100, p.quality + ch.q));
             p.hype = Math.max(10, Math.min(100, p.hype + ch.h));
             p.incident = null;
+            saveGameState(true);
             playTone(640, 'triangle', 0.1, 0.04);
             updateHUD();
             renderActiveProduction();
@@ -1454,8 +1638,8 @@
                                 <span class="px-2 py-0.5 rounded bg-amber-500/20 font-mono text-[10px] font-extrabold text-amber-300">${p.format} • ${p.visualStyle}</span>
                                 <span class="px-2 py-0.5 rounded bg-white/10 font-mono text-[10px] font-bold text-gray-300">${p.genre} • ${p.ageRating || '17+'}</span>
                             </div>
-                            <h2 class="font-display font-extrabold text-lg sm:text-2xl text-white mt-1">${p.title}</h2>
-                            <p class="text-xs text-gray-400 mt-0.5 line-clamp-2">${p.synopsis}</p>
+                            <h2 class="font-display font-extrabold text-lg sm:text-2xl text-white mt-1">${escapeHTML(p.title)}</h2>
+                            <p class="text-xs text-gray-400 mt-0.5 line-clamp-2">${escapeHTML(p.synopsis)}</p>
                         </div>
                         <div class="text-right font-mono">
                             <div class="text-[10px] text-gray-400">ANGGARAN</div>
@@ -1480,7 +1664,6 @@
                         </div>
                     ` : ''}
 
-                    <!-- Progress & Metrics -->
                     <div class="space-y-1.5">
                         <div class="flex justify-between font-mono text-xs">
                             <span class="text-gray-300 font-bold">Progres Syuting: ${p.progress}%</span>
@@ -1491,7 +1674,6 @@
                         </div>
                     </div>
 
-                    <!-- 4-Act Scene Milestone Tracker -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         ${acts.map(a => `
                             <div class="p-2 rounded-xl border text-center font-mono text-[10px] font-bold ${a.done ? 'bg-emerald-500/15 border-emerald-500/35 text-emerald-300' : 'bg-black/35 border-white/10 text-gray-500'}">
@@ -1500,7 +1682,6 @@
                         `).join('')}
                     </div>
 
-                    <!-- On-Set Camera Focus Mini-Game (Max 2 Takes per Week) -->
                     <div class="p-4 rounded-2xl bg-black/45 border border-white/[0.08] space-y-3">
                         <div class="flex items-center justify-between gap-2">
                             <div>
@@ -1529,7 +1710,6 @@
                         </button>
                     </div>
 
-                    <!-- 4 Director & Post-Production Actions -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <button onclick="runOnSetAction('promo')" class="p-2.5 rounded-2xl bg-fuchsia-500/15 hover:bg-fuchsia-500/25 border border-fuchsia-500/30 text-left transition">
                             <div class="font-display font-extrabold text-[11px] text-fuchsia-200">Teaser Promo</div>
@@ -1549,7 +1729,6 @@
                         </button>
                     </div>
 
-                    <!-- Distribution Release Options (Format-Specific Rules) -->
                     <div class="pt-3 border-t border-white/10 space-y-2.5">
                         <div class="flex items-center justify-between">
                             <span class="font-mono text-[10px] uppercase tracking-wider text-gray-400">Jalur Distribusi (${p.format})</span>
@@ -1617,6 +1796,7 @@
                 showToast('Take Melenceng! (+1 Kualitas, +10% Progres)', 'warn');
             }
             maybeTriggerOnSetIncident();
+            saveGameState(true);
             renderActiveProduction();
         }
 
@@ -1645,6 +1825,7 @@
                 p.hype = Math.min(100, p.hype + 3);
                 showToast('Tata suara Dolby Atmos & Color Grading selesai! (+5 Kualitas, +3 Hype)', 'success');
             }
+            saveGameState(true);
             updateHUD();
             renderActiveProduction();
         }
@@ -1694,7 +1875,7 @@
                         <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 flex items-center justify-center"><i class="ph ph-x"></i></button>
                     </div>
                     <div class="space-y-2.5">
-                        ${tiers.map((t, idx) => `
+                        ${tiers.map(t => `
                             <div class="p-3.5 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between gap-3">
                                 <div>
                                     <div class="font-display font-extrabold text-sm text-white">${t.name}</div>
@@ -1786,7 +1967,6 @@
 
             state.releasedMovies.unshift(newMovie);
 
-            // If released directly to CineFlix+ or after Festival, add to CineFlix+ catalog & attract OTT subscribers
             if (!isTheater) {
                 if (!state.cineflix.licensedMovieIds.includes(newMovie.id)) {
                     state.cineflix.licensedMovieIds.unshift(newMovie.id);
@@ -1798,7 +1978,6 @@
                 state.cineflix.subscribers = Math.min(cap, state.cineflix.subscribers + subGain);
             }
 
-            // Update or create Franchise IP
             if (p.franchiseId) {
                 const fr = state.franchises.find(x => x.id === p.franchiseId);
                 if (fr) {
@@ -1815,12 +1994,10 @@
                 });
             }
 
-            // Update studio reputation & hype
             const repDelta = finalRating >= 4.0 ? 5 : finalRating >= 3.0 ? 2 : -4;
             state.reputation = Math.max(5, Math.min(100, state.reputation + repDelta));
             state.hype = Math.max(15, Math.min(100, Math.round((state.hype + p.hype) * 0.45)));
 
-            // Post release news to CineGram
             state.cinegram.posts.unshift({
                 id: 'post_rel_' + Date.now(),
                 region: 'id',
@@ -1853,6 +2030,7 @@
             }
 
             state.activeProduction = null;
+            saveGameState(true);
             updateHUD();
             renderStudioView();
 
@@ -1876,8 +2054,33 @@
         }
 
         // =========================================================================
-        // 6. GMAIL-STYLE CINEMAIL WORKSPACE
+        // 6. REDESIGNED GMAIL-GRADE CINEMAIL WORKSPACE (MOBILE MASTER-DETAIL + CLEAN UI)
         // =========================================================================
+        function getSenderAvatarStyle(sender) {
+            const palettes = [
+                'from-rose-500 to-pink-600',
+                'from-sky-500 to-indigo-600',
+                'from-amber-500 to-orange-600',
+                'from-emerald-500 to-teal-600',
+                'from-purple-500 to-fuchsia-600'
+            ];
+            let hash = 0;
+            for (let i = 0; i < sender.length; i++) hash = sender.charCodeAt(i) + ((hash << 5) - hash);
+            const grad = palettes[Math.abs(hash) % palettes.length];
+            const initials = sender.split(' ').slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || 'CM';
+            return { grad, initials };
+        }
+
+        function getMailCategoryBadge(m) {
+            if (m.actionType === 'license_offer' || m.folder === 'licensing') {
+                return '<span class="px-2 py-0.5 rounded-md bg-sky-500/15 border border-sky-500/30 font-mono text-[9px] font-bold text-sky-300 shrink-0">Lisensi OTT</span>';
+            }
+            if (m.actionType === 'sponsorship') {
+                return '<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 font-mono text-[9px] font-bold text-emerald-300 shrink-0">Sponsor</span>';
+            }
+            return '<span class="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 font-mono text-[9px] font-bold text-amber-300 shrink-0">Studio</span>';
+        }
+
         function renderCinemailView() {
             const main = document.getElementById('mainWorkspace');
             const cm = state.cinemail;
@@ -1890,121 +2093,227 @@
             });
 
             const selectedMail = filtered.find(m => m.id === cm.selectedId) || filtered[0] || null;
-            if (selectedMail && selectedMail.unread) {
+            if (selectedMail && cm.mobilePane === 'detail' && selectedMail.unread) {
                 selectedMail.unread = false;
                 updateHUD();
             }
 
+            const isDetailOnMobile = cm.mobilePane === 'detail' && selectedMail;
+
             main.innerHTML = `
-                <!-- Gmail Top Search & Folder Pills -->
-                <div class="shrink-0 px-3.5 sm:px-5 pt-3 pb-2 border-b border-white/[0.08] bg-[#0d111a] space-y-2">
+                <!-- Clean Top Search & Folder Pills (Hidden on Mobile Detail Pane for Clean Reader) -->
+                <div class="${isDetailOnMobile ? 'hidden md:block' : 'block'} shrink-0 px-3.5 sm:px-5 pt-3 pb-2.5 border-b border-white/[0.08] bg-[#0e121b] space-y-2.5">
                     <div class="flex items-center gap-2">
-                        <div class="flex items-center gap-2 flex-1 px-3 py-1.5 rounded-2xl bg-[#161c2a] border border-white/10">
-                            <i class="ph ph-magnifying-glass text-gray-400"></i>
-                            <input type="text" value="${cm.search}" oninput="state.cinemail.search=this.value; renderCinemailView()" placeholder="Telusuri email lisensi, sponsor, festival..." class="w-full bg-transparent text-xs text-white focus:outline-none">
+                        <div class="flex items-center gap-2.5 flex-1 px-3.5 py-2 rounded-2xl bg-[#151b28] border border-white/10 focus-within:border-rose-400/50 transition">
+                            <i class="ph ph-magnifying-glass text-gray-400 text-sm"></i>
+                            <input type="text" value="${escapeHTML(cm.search)}" oninput="state.cinemail.search=this.value; renderCinemailView()" placeholder="Cari penawaran lisensi, sponsor, atau pengirim..." class="w-full bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none">
+                            ${cm.search ? `<button onclick="state.cinemail.search=''; renderCinemailView()" class="text-gray-400 hover:text-white"><i class="ph-bold ph-x text-xs"></i></button>` : ''}
                         </div>
+                        <button onclick="markAllMailsRead()" title="Tandai semua dibaca" class="px-3 py-2 rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-[11px] font-bold text-gray-300 shrink-0 flex items-center gap-1.5">
+                            <i class="ph ph-checks text-sm text-emerald-400"></i>
+                            <span class="hidden sm:inline">Baca Semua</span>
+                        </button>
                     </div>
+
                     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                         ${[
-                            { id: 'inbox', label: 'Kotak Masuk', icon: 'ph-tray' },
-                            { id: 'starred', label: 'Berbintang', icon: 'ph-star' },
-                            { id: 'licensing', label: 'Lisensi CineFlix+', icon: 'ph-television-simple' },
-                            { id: 'business', label: 'Bisnis & Penghargaan', icon: 'ph-briefcase' }
+                            { id: 'inbox', label: 'Kotak Masuk', icon: 'ph-tray', count: cm.messages.length },
+                            { id: 'starred', label: 'Berbintang', icon: 'ph-star', count: cm.messages.filter(x => x.starred).length },
+                            { id: 'licensing', label: 'Lisensi OTT', icon: 'ph-television-simple', count: cm.messages.filter(x => x.folder === 'licensing').length },
+                            { id: 'business', label: 'Bisnis & Award', icon: 'ph-briefcase', count: cm.messages.filter(x => x.folder === 'business').length }
                         ].map(f => `
-                            <button onclick="state.cinemail.folder='${f.id}'; renderCinemailView()" class="px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 shrink-0 transition ${cm.folder === f.id ? 'bg-rose-500 text-white' : 'bg-white/[0.05] text-gray-300 hover:text-white'}">
+                            <button onclick="state.cinemail.folder='${f.id}'; state.cinemail.mobilePane='list'; renderCinemailView()" class="px-3 py-1.5 rounded-xl text-[11px] font-bold flex items-center gap-1.5 shrink-0 transition ${cm.folder === f.id ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20' : 'bg-white/[0.05] text-gray-300 hover:text-white'}">
                                 <i class="ph ${f.icon}"></i>
                                 <span>${f.label}</span>
+                                <span class="font-mono text-[10px] opacity-80">(${f.count})</span>
                             </button>
                         `).join('')}
                     </div>
                 </div>
 
-                <!-- Split-Pane Mail List & Reader -->
+                <!-- Master-Detail Container: Fullscreen Switch on Mobile, Clean 5/7 Split on Desktop -->
                 <div class="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
-                    <div class="md:col-span-5 border-b md:border-b-0 md:border-r border-white/[0.08] overflow-y-auto app-scroll divide-y divide-white/[0.05] max-h-[38%] md:max-h-none">
+                    <!-- Inbox Thread List -->
+                    <div class="${isDetailOnMobile ? 'hidden md:block' : 'block'} md:col-span-5 md:border-r border-white/[0.08] overflow-y-auto app-scroll divide-y divide-white/[0.05]">
                         ${filtered.length === 0 ? `
-                            <div class="p-6 text-center text-xs text-gray-500">Tidak ada email di folder ini.</div>
+                            <div class="p-10 text-center space-y-2">
+                                <i class="ph ph-envelope-open text-3xl text-gray-600"></i>
+                                <div class="text-xs font-bold text-gray-400">Tidak ada pesan di folder ini</div>
+                            </div>
                         ` : filtered.map(m => {
                             const active = selectedMail && selectedMail.id === m.id;
+                            const av = getSenderAvatarStyle(m.sender);
                             return `
-                                <div onclick="state.cinemail.selectedId='${m.id}'; renderCinemailView()" class="p-3 sm:p-3.5 cursor-pointer transition flex items-start gap-2.5 ${active ? 'bg-rose-500/10' : 'hover:bg-white/[0.03]'}">
-                                    <button onclick="event.stopPropagation(); toggleMailStar('${m.id}')" class="mt-0.5 text-sm ${m.starred ? 'text-amber-400' : 'text-gray-600 hover:text-gray-300'}">
-                                        <i class="${m.starred ? 'ph-fill' : 'ph'} ph-star"></i>
-                                    </button>
-                                    <div class="min-w-0 flex-1">
+                                <div onclick="openCinemailThread('${m.id}')" class="relative px-3.5 sm:px-4 py-3.5 cursor-pointer transition flex items-start gap-3 ${active ? 'md:bg-rose-500/[0.09]' : 'hover:bg-white/[0.03]'} ${m.unread ? 'bg-white/[0.025]' : ''}">
+                                    ${active ? '<div class="hidden md:block absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-rose-500"></div>' : ''}
+
+                                    <!-- Sender Monogram Avatar -->
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br ${av.grad} flex items-center justify-center font-display font-extrabold text-xs text-white shrink-0 shadow-md mt-0.5">
+                                        ${av.initials}
+                                    </div>
+
+                                    <!-- Thread Summary -->
+                                    <div class="min-w-0 flex-1 space-y-1">
                                         <div class="flex items-center justify-between gap-2">
-                                            <span class="text-xs font-extrabold truncate ${m.unread ? 'text-white' : 'text-gray-300'}">${m.sender}</span>
-                                            <span class="font-mono text-[10px] text-gray-500 shrink-0">${m.time}</span>
+                                            <div class="flex items-center gap-1.5 min-w-0">
+                                                ${m.unread ? '<span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>' : ''}
+                                                <span class="text-xs truncate ${m.unread ? 'font-extrabold text-white' : 'font-semibold text-gray-300'}">${escapeHTML(m.sender)}</span>
+                                            </div>
+                                            <span class="font-mono text-[10px] ${m.unread ? 'text-rose-300 font-bold' : 'text-gray-500'} shrink-0">${m.time}</span>
                                         </div>
-                                        <div class="text-[11px] font-bold text-gray-200 truncate mt-0.5">${m.subject}</div>
-                                        <div class="text-[11px] text-gray-500 truncate mt-0.5">${m.body.replace(/\n/g, ' ')}</div>
+
+                                        <div class="text-xs truncate ${m.unread ? 'font-bold text-gray-100' : 'font-medium text-gray-400'}">${escapeHTML(m.subject)}</div>
+
+                                        <div class="flex items-center justify-between gap-2 pt-0.5">
+                                            <span class="text-[11px] text-gray-500 truncate">${escapeHTML(m.body.replace(/\n/g, ' '))}</span>
+                                            <div class="flex items-center gap-1.5 shrink-0">
+                                                ${getMailCategoryBadge(m)}
+                                                <button onclick="event.stopPropagation(); toggleMailStar('${m.id}')" class="p-1 text-sm ${m.starred ? 'text-amber-400' : 'text-gray-600 hover:text-gray-300'}">
+                                                    <i class="${m.starred ? 'ph-fill' : 'ph'} ph-star"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             `;
                         }).join('')}
                     </div>
 
-                    <div class="md:col-span-7 overflow-y-auto app-scroll p-4 sm:p-5">
+                    <!-- Email Detail Reader -->
+                    <div class="${isDetailOnMobile ? 'flex' : 'hidden md:flex'} md:col-span-7 flex-col min-h-0 overflow-hidden bg-[#0c0f18]">
                         ${!selectedMail ? `
-                            <div class="h-full flex items-center justify-center text-xs text-gray-500">Pilih email untuk membaca detailnya.</div>
-                        ` : `
-                            <div class="space-y-4">
-                                <div class="flex items-start justify-between gap-3 pb-3 border-b border-white/[0.08]">
-                                    <div>
-                                        <h3 class="font-display font-extrabold text-sm sm:text-base text-white leading-snug">${selectedMail.subject}</h3>
-                                        <div class="text-[11px] text-gray-400 mt-1">
-                                            <strong class="text-gray-200">${selectedMail.sender}</strong> &lt;${selectedMail.email}&gt; • ${selectedMail.time}
-                                        </div>
-                                    </div>
-                                    <button onclick="toggleMailStar('${selectedMail.id}')" class="text-lg ${selectedMail.starred ? 'text-amber-400' : 'text-gray-500'}">
-                                        <i class="${selectedMail.starred ? 'ph-fill' : 'ph'} ph-star"></i>
+                            <div class="flex-1 flex flex-col items-center justify-center p-6 text-center text-gray-500 space-y-2">
+                                <i class="ph ph-envelope-simple-open text-4xl text-gray-600"></i>
+                                <div class="text-xs">Pilih pesan di sebelah kiri untuk membaca detailnya.</div>
+                            </div>
+                        ` : (() => {
+                            const av = getSenderAvatarStyle(selectedMail.sender);
+                            return `
+                                <!-- Reader Sticky Action Toolbar -->
+                                <div class="shrink-0 px-3.5 sm:px-5 py-2.5 border-b border-white/[0.08] bg-[#0e121c] flex items-center justify-between gap-2">
+                                    <button onclick="state.cinemail.mobilePane='list'; renderCinemailView()" class="md:hidden flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.07] text-xs font-bold text-white">
+                                        <i class="ph-bold ph-arrow-left"></i>
+                                        <span>Kotak Masuk</span>
                                     </button>
-                                </div>
-
-                                <div class="text-xs sm:text-sm text-gray-200 leading-relaxed whitespace-pre-line">${selectedMail.body}</div>
-
-                                ${selectedMail.actionType === 'license_offer' && !selectedMail.resolved ? `
-                                    <div class="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/30 space-y-3">
-                                        <div class="flex items-center justify-between">
-                                            <span class="font-mono text-[10px] uppercase font-bold text-sky-300">Kontrak Lisensi CineFlix+</span>
-                                            <span class="font-mono text-xs font-extrabold text-white">${formatIDR(selectedMail.price)}</span>
-                                        </div>
-                                        <div class="text-[11px] text-gray-300">Estimasi dorongan pelanggan baru: <strong class="text-emerald-300">+${selectedMail.subBoost.toLocaleString('id-ID')} pelanggan</strong></div>
-                                        <div class="flex flex-wrap gap-2">
-                                            <button onclick="acceptLicenseMail('${selectedMail.id}')" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-display font-extrabold text-xs">
-                                                Tanda Tangani Kontrak (${formatIDR(selectedMail.price)})
-                                            </button>
-                                            ${!selectedMail.negotiated ? `
-                                                <button onclick="negotiateLicenseMail('${selectedMail.id}')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-amber-300">
-                                                    Tawar Diskon 15%
-                                                </button>
-                                            ` : ''}
-                                        </div>
+                                    <div class="hidden md:flex items-center gap-2">
+                                        ${getMailCategoryBadge(selectedMail)}
+                                        <span class="font-mono text-[10px] text-gray-500">${selectedMail.time}</span>
                                     </div>
-                                ` : ''}
 
-                                ${selectedMail.actionType === 'sponsorship' && !selectedMail.resolved ? `
-                                    <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3">
-                                        <div>
-                                            <div class="font-mono text-[10px] uppercase font-bold text-emerald-300">Kontrak Sponsor Aktif</div>
-                                            <div class="text-xs text-white font-bold">Dana cair: +${formatIDR(selectedMail.payout)}</div>
-                                        </div>
-                                        <button onclick="acceptSponsorMail('${selectedMail.id}')" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-display font-extrabold text-xs">
-                                            Terima Sponsor
+                                    <div class="flex items-center gap-1.5">
+                                        <button onclick="toggleMailStar('${selectedMail.id}')" title="Bintangi" class="w-8 h-8 rounded-xl bg-white/[0.05] hover:bg-white/[0.12] flex items-center justify-center text-sm ${selectedMail.starred ? 'text-amber-400' : 'text-gray-400'}">
+                                            <i class="${selectedMail.starred ? 'ph-fill' : 'ph'} ph-star"></i>
+                                        </button>
+                                        <button onclick="deleteCinemailThread('${selectedMail.id}')" title="Hapus Pesan" class="w-8 h-8 rounded-xl bg-white/[0.05] hover:bg-rose-500/20 flex items-center justify-center text-sm text-gray-400 hover:text-rose-300">
+                                            <i class="ph ph-trash"></i>
                                         </button>
                                     </div>
-                                ` : ''}
+                                </div>
 
-                                ${selectedMail.resolved && selectedMail.actionType !== 'none' ? `
-                                    <div class="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 font-mono text-[11px] text-emerald-300">
-                                        ✓ Kontrak pada pesan ini telah diselesaikan.
+                                <!-- Scrollable Email Body & Action Card -->
+                                <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-4 sm:p-6 space-y-5">
+                                    <div class="space-y-3">
+                                        <div class="flex items-start justify-between gap-2">
+                                            <h3 class="font-display font-extrabold text-base sm:text-lg text-white leading-snug">${escapeHTML(selectedMail.subject)}</h3>
+                                        </div>
+
+                                        <!-- Sender Info Card -->
+                                        <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.07] flex items-center justify-between gap-3">
+                                            <div class="flex items-center gap-3 min-w-0">
+                                                <div class="w-9 h-9 rounded-full bg-gradient-to-br ${av.grad} flex items-center justify-center font-display font-extrabold text-xs text-white shrink-0">
+                                                    ${av.initials}
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="text-xs font-extrabold text-white truncate">${escapeHTML(selectedMail.sender)}</div>
+                                                    <div class="font-mono text-[10px] text-gray-400 truncate">&lt;${escapeHTML(selectedMail.email)}&gt; → ${escapeHTML(state.studioName)}</div>
+                                                </div>
+                                            </div>
+                                            <span class="font-mono text-[10px] text-gray-400 shrink-0">${selectedMail.time}</span>
+                                        </div>
                                     </div>
-                                ` : ''}
-                            </div>
-                        `}
+
+                                    <!-- Message Body -->
+                                    <div class="text-xs sm:text-sm text-gray-200 leading-relaxed whitespace-pre-line bg-[#111520]/60 p-4 rounded-2xl border border-white/[0.05]">${escapeHTML(selectedMail.body)}</div>
+
+                                    <!-- Interactive Contract Box: Licensing Offer -->
+                                    ${selectedMail.actionType === 'license_offer' && !selectedMail.resolved ? `
+                                        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-sky-500/15 via-[#131a2b] to-[#111520] border border-sky-500/35 space-y-3.5">
+                                            <div class="flex items-center justify-between gap-2">
+                                                <div class="flex items-center gap-2">
+                                                    <i class="ph-fill ph-television-simple text-sky-400 text-lg"></i>
+                                                    <span class="font-mono text-[11px] uppercase font-extrabold text-sky-300">Kontrak Lisensi CineFlix+</span>
+                                                </div>
+                                                <span class="font-mono text-sm font-extrabold text-white">${formatIDR(selectedMail.price)}</span>
+                                            </div>
+                                            <div class="p-3 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between text-xs">
+                                                <span class="text-gray-400">Proyeksi Pelanggan Baru:</span>
+                                                <strong class="font-mono text-emerald-300">+${selectedMail.subBoost.toLocaleString('id-ID')} pelanggan</strong>
+                                            </div>
+                                            <div class="flex flex-wrap gap-2">
+                                                <button onclick="acceptLicenseMail('${selectedMail.id}')" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-display font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition">
+                                                    Tanda Tangani (${formatIDR(selectedMail.price)})
+                                                </button>
+                                                ${!selectedMail.negotiated ? `
+                                                    <button onclick="negotiateLicenseMail('${selectedMail.id}')" class="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-amber-300 transition">
+                                                        Tawar Diskon 15%
+                                                    </button>
+                                                ` : `<span class="px-3 py-2 text-[11px] font-mono text-gray-400">Sudah dinegosiasi</span>`}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+
+                                    <!-- Interactive Contract Box: Brand Sponsorship -->
+                                    ${selectedMail.actionType === 'sponsorship' && !selectedMail.resolved ? `
+                                        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-emerald-500/15 via-[#13241f] to-[#111520] border border-emerald-500/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                            <div>
+                                                <div class="font-mono text-[10px] uppercase font-extrabold text-emerald-300">Kontrak Sponsor Product Placement</div>
+                                                <div class="font-display font-extrabold text-sm text-white mt-0.5">Pencairan Langsung: +${formatIDR(selectedMail.payout)}</div>
+                                            </div>
+                                            <button onclick="acceptSponsorMail('${selectedMail.id}')" class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-display font-extrabold text-xs shadow-lg shadow-emerald-500/20 shrink-0">
+                                                Terima Dana Sponsor
+                                            </button>
+                                        </div>
+                                    ` : ''}
+
+                                    ${selectedMail.resolved && selectedMail.actionType !== 'none' ? `
+                                        <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 font-mono text-xs text-emerald-300 flex items-center justify-between gap-2">
+                                            <span>✓ Kontrak pada pesan ini telah resmi ditandatangani.</span>
+                                            ${selectedMail.actionType === 'license_offer' ? `<button onclick="switchMainTab('cineflix')" class="px-3 py-1 rounded-lg bg-sky-500 text-black font-sans font-extrabold text-[11px]">Buka CineFlix+</button>` : ''}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        })()}
                     </div>
                 </div>
             `;
+        }
+
+        function openCinemailThread(mailId) {
+            state.cinemail.selectedId = mailId;
+            state.cinemail.mobilePane = 'detail';
+            const m = state.cinemail.messages.find(x => x.id === mailId);
+            if (m && m.unread) {
+                m.unread = false;
+                updateHUD();
+            }
+            renderCinemailView();
+        }
+
+        function markAllMailsRead() {
+            state.cinemail.messages.forEach(m => m.unread = false);
+            updateHUD();
+            renderCinemailView();
+            showToast('Semua pesan ditandai sudah dibaca.', 'info');
+        }
+
+        function deleteCinemailThread(mailId) {
+            state.cinemail.messages = state.cinemail.messages.filter(m => m.id !== mailId);
+            state.cinemail.mobilePane = 'list';
+            saveGameState(true);
+            updateHUD();
+            renderCinemailView();
+            showToast('Pesan dihapus dari kotak masuk.', 'info');
         }
 
         function toggleMailStar(mailId) {
@@ -2025,6 +2334,7 @@
             } else {
                 showToast('Studio pemilik hak cipta menolak diskon dan bertahan di harga awal.', 'warn');
             }
+            saveGameState(true);
             renderCinemailView();
         }
 
@@ -2043,6 +2353,7 @@
             const cap = tierCaps[state.cineflix.tier] || 25000;
             state.cineflix.subscribers = Math.min(cap, state.cineflix.subscribers + m.subBoost);
 
+            saveGameState(true);
             playTone(640, 'triangle', 0.12, 0.05);
             updateHUD();
             renderCinemailView();
@@ -2054,6 +2365,7 @@
             if (!m || m.resolved) return;
             state.cash += m.payout;
             m.resolved = true;
+            saveGameState(true);
             playTone(680, 'triangle', 0.1, 0.05);
             updateHUD();
             renderCinemailView();
@@ -2061,7 +2373,7 @@
         }
 
         // =========================================================================
-        // 7. INSTAGRAM-STYLE CINEGRAM (MOBILE SAFE COMMENT MODAL + ID/INTL FEEDS)
+        // 7. INSTAGRAM-STYLE CINEGRAM
         // =========================================================================
         function renderCinegramView() {
             const main = document.getElementById('mainWorkspace');
@@ -2076,7 +2388,6 @@
             ];
 
             main.innerHTML = `
-                <!-- Instagram Top Bar -->
                 <div class="shrink-0 px-3.5 sm:px-5 pt-2.5 pb-2 border-b border-white/[0.08] bg-[#0d111a] flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
                         <i class="ph-fill ph-instagram-logo text-xl text-pink-500"></i>
@@ -2101,9 +2412,7 @@
                     </div>
                 </div>
 
-                <!-- Scrollable Feed -->
                 <div id="cinegramFeedScroll" class="flex-1 min-h-0 overflow-y-auto app-scroll">
-                    <!-- Stories Tray -->
                     <div class="px-3.5 sm:px-5 py-3 border-b border-white/[0.06] flex items-center gap-3.5 overflow-x-auto no-scrollbar">
                         ${stories.map((s, idx) => `
                             <button onclick="openStoryModal(${idx})" class="flex flex-col items-center gap-1 shrink-0 group">
@@ -2117,14 +2426,12 @@
                         `).join('')}
                     </div>
 
-                    <!-- Posts Feed -->
                     <div class="max-w-xl mx-auto divide-y divide-white/[0.08] pb-6">
                         ${visiblePosts.map(post => {
                             const totalVotes = post.poll ? post.poll.options.reduce((a, b) => a + b.votes, 0) : 0;
                             const displayedCaption = (post.showTranslation && post.translatedCaption) ? post.translatedCaption : post.caption;
                             return `
                                 <article class="py-3.5 px-3.5 sm:px-4 space-y-2.5">
-                                    <!-- Author Row -->
                                     <div class="flex items-center justify-between gap-2">
                                         <div class="flex items-center gap-2.5 min-w-0">
                                             <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-pink-600 flex items-center justify-center font-display font-extrabold text-xs text-white shrink-0">
@@ -2144,14 +2451,13 @@
                                         </button>
                                     </div>
 
-                                    <!-- Poster Artwork (Double-Tap Heart + Click to Open Full Comment Lightbox) -->
                                     <div ondblclick="doubleTapPost('${post.id}')" onclick="openPostDetailModal('${post.id}')" class="relative rounded-2xl bg-gradient-to-br ${post.grad} border border-white/10 p-5 sm:p-6 min-h-[210px] sm:min-h-[245px] flex flex-col justify-between cursor-pointer overflow-hidden">
                                         <div class="flex items-center justify-between text-white/60">
                                             <span class="font-mono text-[10px] tracking-widest uppercase">${post.location}</span>
                                             <i class="ph-fill ${post.icon} text-2xl text-white/80"></i>
                                         </div>
                                         <div class="my-3">
-                                            <h3 class="font-display font-extrabold text-lg sm:text-2xl text-white leading-tight tracking-tight">${post.headline}</h3>
+                                            <h3 class="font-display font-extrabold text-lg sm:text-2xl text-white leading-tight tracking-tight">${escapeHTML(post.headline)}</h3>
                                             ${post.movieId ? `
                                                 <button onclick="event.stopPropagation(); jumpToCineboxdMovie('${post.movieId}')" class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 hover:bg-black/75 border border-emerald-400/40 text-[11px] font-bold text-emerald-300">
                                                     <span>Buka Halaman Film di CineBoxd</span>
@@ -2165,7 +2471,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Action Bar -->
                                     <div class="flex items-center justify-between pt-0.5">
                                         <div class="flex items-center gap-4">
                                             <button onclick="togglePostLike('${post.id}')" class="text-xl transition active:scale-125 ${post.liked ? 'text-rose-500' : 'text-white hover:text-gray-300'}">
@@ -2183,11 +2488,10 @@
                                         </button>
                                     </div>
 
-                                    <!-- Likes & Caption -->
                                     <div class="space-y-1">
                                         <div class="font-display font-extrabold text-xs text-white">${post.likes.toLocaleString('id-ID')} suka</div>
                                         <p class="text-xs text-gray-200 leading-relaxed">
-                                            <strong class="text-white mr-1">${post.author}</strong>${displayedCaption}
+                                            <strong class="text-white mr-1">${post.author}</strong>${escapeHTML(displayedCaption)}
                                         </p>
                                         ${post.translatedCaption ? `
                                             <button onclick="togglePostTranslation('${post.id}')" class="text-[11px] font-bold text-gray-400 hover:text-white">
@@ -2196,7 +2500,6 @@
                                         ` : ''}
                                     </div>
 
-                                    <!-- Poll if available -->
                                     ${post.poll ? `
                                         <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2">
                                             <div class="text-xs font-bold text-white">${post.poll.question}</div>
@@ -2216,14 +2519,13 @@
                                         </div>
                                     ` : ''}
 
-                                    <!-- Top 2 Comment Previews + Open Full Comments -->
                                     <div class="space-y-1 pt-0.5">
                                         <button onclick="openPostDetailModal('${post.id}')" class="text-[11px] text-gray-400 hover:text-gray-200 font-medium">
                                             Lihat semua ${post.comments.length} komentar...
                                         </button>
                                         ${post.comments.slice(0, 2).map(c => `
                                             <div class="text-xs text-gray-300 truncate">
-                                                <strong class="text-white mr-1">${c.user}</strong>${c.text}
+                                                <strong class="text-white mr-1">${c.user}</strong>${escapeHTML(c.text)}
                                             </div>
                                         `).join('')}
                                     </div>
@@ -2242,7 +2544,7 @@
                         <h3 class="font-display font-extrabold text-base text-white">Unggah Konten Resmi Studio</h3>
                         <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 flex items-center justify-center"><i class="ph ph-x"></i></button>
                     </div>
-                    <p class="text-xs text-gray-400">Bagikan kabar terbaru <strong>${state.studioName}</strong> ke penggemar di CineGram untuk mendongkrak Hype!</p>
+                    <p class="text-xs text-gray-400">Bagikan kabar terbaru <strong>${escapeHTML(state.studioName)}</strong> ke penggemar di CineGram untuk mendongkrak Hype!</p>
                     <div class="grid grid-cols-1 gap-2">
                         <button onclick="publishStudioSocialPost('bts')" class="p-3 rounded-2xl bg-white/[0.05] hover:bg-amber-500/20 border border-white/10 text-left">
                             <div class="font-display font-extrabold text-xs text-white">📸 Behind The Scenes Lokasi Syuting</div>
@@ -2308,6 +2610,7 @@
                 hiddenComments: []
             });
 
+            saveGameState(true);
             closeModal();
             updateHUD();
             renderCinegramView();
@@ -2404,12 +2707,12 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
-                            <span class="font-display font-extrabold text-xs text-white">${s.name}</span>
+                            <span class="font-display font-extrabold text-xs text-white">${escapeHTML(s.name)}</span>
                         </div>
                         <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 flex items-center justify-center"><i class="ph ph-x"></i></button>
                     </div>
                     <div class="py-10 px-4 text-center font-display font-extrabold text-base sm:text-lg text-white leading-relaxed">
-                        "${s.text}"
+                        "${escapeHTML(s.text)}"
                     </div>
                 </div>
             `, 'max-w-md');
@@ -2426,7 +2729,7 @@
                     <div class="flex-1 overflow-y-auto app-scroll space-y-2.5">
                         ${acts.map(a => `
                             <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/[0.07] text-xs text-gray-200">
-                                <strong class="text-white">${a.user}</strong> ${a.text}
+                                <strong class="text-white">${escapeHTML(a.user)}</strong> ${escapeHTML(a.text)}
                                 <span class="block font-mono text-[10px] text-gray-500 mt-0.5">${a.time}</span>
                             </div>
                         `).join('')}
@@ -2441,14 +2744,13 @@
 
             openModal(`
                 <div class="flex flex-col md:flex-row h-[80dvh] md:h-[520px] bg-[#0e1118] overflow-hidden">
-                    <!-- Left / Top Compact Poster Banner on Mobile, Full Poster on Desktop -->
                     <div class="shrink-0 md:w-[46%] bg-gradient-to-br ${post.grad} p-4 sm:p-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10">
                         <div class="flex items-center justify-between text-white/70">
                             <span class="font-mono text-[10px] uppercase tracking-wider truncate">${post.location}</span>
                             <button onclick="closeModal()" class="md:hidden w-7 h-7 rounded-full bg-black/50 text-white flex items-center justify-center"><i class="ph ph-x text-sm"></i></button>
                         </div>
                         <div class="my-2 md:my-0">
-                            <h3 class="font-display font-extrabold text-sm sm:text-xl text-white leading-snug line-clamp-2 md:line-clamp-none">${post.headline}</h3>
+                            <h3 class="font-display font-extrabold text-sm sm:text-xl text-white leading-snug line-clamp-2 md:line-clamp-none">${escapeHTML(post.headline)}</h3>
                             ${post.movieId ? `
                                 <button onclick="closeModal(); jumpToCineboxdMovie('${post.movieId}')" class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/55 border border-emerald-400/40 text-[10px] font-bold text-emerald-300">
                                     <span>Lihat di CineBoxd</span>
@@ -2459,9 +2761,7 @@
                         <div class="hidden md:block font-mono text-[10px] text-white/55">${post.time}</div>
                     </div>
 
-                    <!-- Right / Bottom Comments Column with Always-Visible Pinned Bottom Input -->
                     <div class="flex-1 min-h-0 flex flex-col bg-[#111520]">
-                        <!-- Header -->
                         <div class="shrink-0 px-3.5 py-2.5 border-b border-white/[0.08] flex items-center justify-between">
                             <div class="flex items-center gap-2 min-w-0">
                                 <span class="font-display font-extrabold text-xs text-white truncate">${post.author}</span>
@@ -2474,16 +2774,15 @@
                             <button onclick="closeModal()" class="hidden md:flex w-7 h-7 rounded-full bg-white/10 text-gray-300 items-center justify-center"><i class="ph ph-x text-sm"></i></button>
                         </div>
 
-                        <!-- Scrollable Comments List -->
                         <div id="modalCommentScroll" class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 space-y-3">
                             <div class="text-xs text-gray-200 leading-relaxed pb-2.5 border-b border-white/[0.06]">
-                                <strong class="text-white mr-1">${post.author}</strong>${post.caption}
+                                <strong class="text-white mr-1">${post.author}</strong>${escapeHTML(post.caption)}
                             </div>
 
                             ${post.comments.map((c, cIdx) => `
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="text-xs text-gray-200 leading-snug">
-                                        <strong class="text-white mr-1">${c.user}</strong>${c.text}
+                                        <strong class="text-white mr-1">${c.user}</strong>${escapeHTML(c.text)}
                                         <div class="flex items-center gap-3 mt-1 font-mono text-[10px] text-gray-500">
                                             <span>${c.time}</span>
                                             <span>${c.likes} suka</span>
@@ -2505,7 +2804,7 @@
                                     ${showHidden ? `
                                         <div class="mt-2 space-y-2 pl-2 border-l border-white/10">
                                             ${post.hiddenComments.map(hc => `
-                                                <div class="text-[11px] text-gray-400"><strong class="text-gray-300 mr-1">${hc.user}</strong>${hc.text}</div>
+                                                <div class="text-[11px] text-gray-400"><strong class="text-gray-300 mr-1">${hc.user}</strong>${escapeHTML(hc.text)}</div>
                                             `).join('')}
                                         </div>
                                     ` : ''}
@@ -2513,7 +2812,6 @@
                             ` : ''}
                         </div>
 
-                        <!-- Pinned Bottom Action & Comment Input Bar (Always Visible on Mobile) -->
                         <div class="shrink-0 px-3.5 py-2.5 border-t border-white/[0.08] bg-[#0d111a] space-y-2">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3.5">
@@ -2525,7 +2823,7 @@
                                 <span class="font-mono text-[10px] text-gray-500">${post.comments.length} komentar</span>
                             </div>
                             <form onsubmit="event.preventDefault(); submitCinegramComment('${post.id}')" class="flex items-center gap-2">
-                                <input id="cgModalCommentInput" type="text" placeholder="Tambahkan komentar sebagai ${state.studioName}..." class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-black/60 border border-white/15 text-xs text-white focus:outline-none focus:border-amber-400">
+                                <input id="cgModalCommentInput" type="text" placeholder="Tambahkan komentar sebagai ${escapeHTML(state.studioName)}..." class="flex-1 min-w-0 px-3 py-2 rounded-xl bg-black/60 border border-white/15 text-xs text-white focus:outline-none focus:border-amber-400">
                                 <button type="submit" class="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-display font-extrabold text-xs shrink-0">
                                     Kirim
                                 </button>
@@ -2596,7 +2894,7 @@
         }
 
         // =========================================================================
-        // 8. BOX OFFICE CHARTS (HYPE-DRIVEN DURATION & BALANCED ECONOMY)
+        // 8. BOX OFFICE CHARTS
         // =========================================================================
         function renderBoxOfficeView() {
             const main = document.getElementById('mainWorkspace');
@@ -2621,7 +2919,7 @@
 
                 <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-2.5">
                     ${activeMovies.length === 0 ? `
-                        <div class="p-8 rounded-3xl bg-[#111520] border border-white/10 text-center text-xs text-gray-400">
+                        <div class="p-8 rounded-3xl glass-card text-center text-xs text-gray-400">
                             Belum ada film yang tayang di bioskop pekan ini.
                         </div>
                     ` : activeMovies.map((m, idx) => {
@@ -2629,18 +2927,18 @@
                         const wkGross = Math.round(m.weeklyGross * mult);
                         const totGross = Math.round(m.totalGross * mult);
                         return `
-                            <div onclick="jumpToCineboxdMovie('${m.id}')" class="p-3.5 rounded-2xl bg-[#111520] border ${isOurs ? 'border-amber-400/50 bg-amber-500/[0.06]' : 'border-white/[0.08]'} flex items-center justify-between gap-3 cursor-pointer hover:border-white/25 transition">
+                            <div onclick="jumpToCineboxdMovie('${m.id}')" class="p-3.5 rounded-2xl glass-card border ${isOurs ? 'border-amber-400/50 bg-amber-500/[0.06]' : 'border-white/[0.08]'} flex items-center justify-between gap-3 cursor-pointer hover:border-white/25 transition">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-8 h-8 rounded-xl ${idx === 0 ? 'bg-amber-500 text-black' : 'bg-white/10 text-white'} font-display font-extrabold text-sm flex items-center justify-center shrink-0">
                                         #${idx + 1}
                                     </div>
                                     <div class="min-w-0">
                                         <div class="flex items-center gap-1.5">
-                                            <span class="font-display font-extrabold text-xs sm:text-sm text-white truncate">${m.title}</span>
+                                            <span class="font-display font-extrabold text-xs sm:text-sm text-white truncate">${escapeHTML(m.title)}</span>
                                             ${isOurs ? '<span class="px-1.5 py-0.2 rounded bg-amber-500 text-black font-mono text-[9px] font-extrabold shrink-0">STUDIO ANDA</span>' : ''}
                                         </div>
                                         <div class="text-[11px] text-gray-400 truncate">
-                                            ${m.studio} • ${m.genre} • ${m.rating.toFixed(1)}★ • <span class="text-sky-300">Mgg ${m.theaterWeek}/${m.maxTheaterWeeks}</span>
+                                            ${escapeHTML(m.studio)} • ${m.genre} • ${m.rating.toFixed(1)}★ • <span class="text-sky-300">Mgg ${m.theaterWeek}/${m.maxTheaterWeeks}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -2656,7 +2954,7 @@
         }
 
         // =========================================================================
-        // 9. APPLE TV+ INSPIRED CINEFLIX+ (STARTS EMPTY + 3-TIER INFRASTRUCTURE)
+        // 9. APPLE TV+ INSPIRED CINEFLIX+
         // =========================================================================
         const CINEFLIX_TIERS = {
             1: {
@@ -2726,7 +3024,6 @@
                 && state.cash >= econ.tierCfg.nextCost;
 
             main.innerHTML = `
-                <!-- Apple TV+ Frosted Header -->
                 <div class="shrink-0 px-3.5 sm:px-5 pt-3 pb-2.5 border-b border-white/[0.08] bg-[#0d111a] flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
                         <span class="px-2 py-0.5 rounded-lg bg-white text-black font-display font-extrabold text-xs tracking-tight">tv+</span>
@@ -2744,7 +3041,6 @@
                 </div>
 
                 <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-4">
-                    <!-- Post-Theatrical Releases Ready for CineFlix+ -->
                     ${postTheaterReadyMovies.length > 0 ? `
                         <div class="p-3.5 rounded-2xl bg-gradient-to-r from-sky-500/15 to-purple-500/10 border border-sky-400/35 space-y-2">
                             <div class="font-mono text-[10px] font-extrabold text-sky-300 uppercase">📺 Turun Layar Bioskop — Siap Rilis ke CineFlix+</div>
@@ -2752,7 +3048,7 @@
                                 ${postTheaterReadyMovies.map(m => `
                                     <div class="flex items-center justify-between gap-2 bg-black/40 p-2.5 rounded-xl">
                                         <div class="min-w-0">
-                                            <div class="font-display font-extrabold text-xs text-white truncate">${m.title} (${m.rating.toFixed(1)}★)</div>
+                                            <div class="font-display font-extrabold text-xs text-white truncate">${escapeHTML(m.title)} (${m.rating.toFixed(1)}★)</div>
                                             <div class="text-[10px] text-gray-400">Masa tayang bioskop selesai • Siap tarik pelanggan baru</div>
                                         </div>
                                         <button onclick="releasePostTheaterToCineflix('${m.id}')" class="px-3 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-display font-extrabold text-[11px] shrink-0">
@@ -2764,7 +3060,6 @@
                         </div>
                     ` : ''}
 
-                    <!-- Hero Billboard or Empty Platform Onboarding -->
                     ${!heroMovie ? `
                         <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#141a29] via-[#0f131f] to-black border border-white/10 text-center space-y-3">
                             <div class="w-12 h-12 mx-auto rounded-2xl bg-white/10 flex items-center justify-center text-sky-300">
@@ -2790,8 +3085,8 @@
                                     <span class="px-2 py-0.5 rounded bg-white text-black font-mono text-[10px] font-extrabold">PREMIERE UNGGULAN</span>
                                     <span class="font-mono text-xs text-amber-300 font-bold">${heroMovie.rating.toFixed(1)}★ • ${heroMovie.format}</span>
                                 </div>
-                                <h2 class="font-display font-extrabold text-xl sm:text-3xl text-white tracking-tight">${heroMovie.title}</h2>
-                                <p class="text-xs text-gray-200 line-clamp-2 leading-relaxed">${heroMovie.synopsis}</p>
+                                <h2 class="font-display font-extrabold text-xl sm:text-3xl text-white tracking-tight">${escapeHTML(heroMovie.title)}</h2>
+                                <p class="text-xs text-gray-200 line-clamp-2 leading-relaxed">${escapeHTML(heroMovie.synopsis)}</p>
                                 <div class="pt-1 flex items-center gap-2">
                                     <button onclick="jumpToCineboxdMovie('${heroMovie.id}')" class="px-4 py-2 rounded-xl bg-white text-black font-display font-extrabold text-xs flex items-center gap-1.5">
                                         <i class="ph-fill ph-play"></i>
@@ -2802,8 +3097,7 @@
                         </div>
                     `}
 
-                    <!-- Tier Pricing, Server Cost Breakdown & Infrastructure Upgrade -->
-                    <div class="p-4 rounded-3xl bg-[#111520] border border-white/[0.08] space-y-3">
+                    <div class="p-4 rounded-3xl glass-card space-y-3">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <div>
                                 <div class="font-display font-extrabold text-xs sm:text-sm text-white">Manajemen Paket & Infrastruktur Server</div>
@@ -2848,7 +3142,6 @@
                         `}
                     </div>
 
-                    <!-- Catalog Rails -->
                     ${catalog.length > 0 ? `
                         <div class="space-y-2.5">
                             <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
@@ -2867,8 +3160,8 @@
                                             <span class="font-mono text-xs font-extrabold text-amber-300">${m.rating.toFixed(1)}★</span>
                                         </div>
                                         <div class="mt-4">
-                                            <div class="font-display font-extrabold text-sm text-white truncate">${m.title}</div>
-                                            <div class="text-[11px] text-white/70 truncate">${m.genre} • ${m.studio}</div>
+                                            <div class="font-display font-extrabold text-sm text-white truncate">${escapeHTML(m.title)}</div>
+                                            <div class="text-[11px] text-white/70 truncate">${m.genre} • ${escapeHTML(m.studio)}</div>
                                         </div>
                                     </div>
                                 `).join('')}
@@ -2891,6 +3184,7 @@
             const cap = tierCaps[state.cineflix.tier] || 25000;
             const subGain = Math.round(m.rating * 1400 + 1800);
             state.cineflix.subscribers = Math.min(cap, state.cineflix.subscribers + subGain);
+            saveGameState(true);
             playTone(640, 'triangle', 0.1, 0.04);
             renderCineflixView();
             showToast('"' + m.title + '" kini tayang di CineFlix+ (+' + subGain.toLocaleString('id-ID') + ' pelanggan)!', 'success');
@@ -2913,6 +3207,7 @@
             state.cash -= cfg.nextCost;
             cf.tier += 1;
             cf.monthlyPrice = Math.max(nextCfg.minPrice, Math.min(nextCfg.maxPrice, cf.monthlyPrice + 15000));
+            saveGameState(true);
             playTone(720, 'triangle', 0.14, 0.05);
             updateHUD();
             renderCineflixView();
@@ -2920,7 +3215,7 @@
         }
 
         // =========================================================================
-        // 10. LETTERBOXD-STYLE CINEBOXD (10-BAR RATING HISTOGRAM + REVIEWS + DIARY)
+        // 10. LETTERBOXD-STYLE CINEBOXD
         // =========================================================================
         function buildRatingHistogram(movie) {
             const centerBin = Math.max(0, Math.min(9, Math.round(movie.rating * 2) - 1));
@@ -2957,19 +3252,17 @@
                         </div>
 
                         <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-4">
-                            <!-- Hero Movie Card -->
                             <div class="rounded-3xl bg-gradient-to-br ${m.grad} border border-white/15 p-5 space-y-2.5">
                                 <div class="flex items-center justify-between">
-                                    <span class="px-2.5 py-0.5 rounded bg-black/50 font-mono text-[10px] text-gray-200">${m.genre} • ${m.studio}</span>
+                                    <span class="px-2.5 py-0.5 rounded bg-black/50 font-mono text-[10px] text-gray-200">${m.genre} • ${escapeHTML(m.studio)}</span>
                                     <span class="font-mono text-lg font-extrabold text-emerald-300">${m.rating.toFixed(1)} ★</span>
                                 </div>
-                                <h2 class="font-display font-extrabold text-xl sm:text-2xl text-white">${m.title}</h2>
-                                <div class="text-xs text-gray-300">Disutradarai oleh <strong>${m.director}</strong></div>
-                                <p class="text-xs text-gray-200 leading-relaxed pt-1">${m.synopsis}</p>
+                                <h2 class="font-display font-extrabold text-xl sm:text-2xl text-white">${escapeHTML(m.title)}</h2>
+                                <div class="text-xs text-gray-300">Disutradarai oleh <strong>${escapeHTML(m.director)}</strong></div>
+                                <p class="text-xs text-gray-200 leading-relaxed pt-1">${escapeHTML(m.synopsis)}</p>
                             </div>
 
-                            <!-- Letterboxd 10-Bar Rating Distribution Histogram -->
-                            <div class="p-4 rounded-3xl bg-[#111520] border border-white/[0.08] space-y-2.5">
+                            <div class="p-4 rounded-3xl glass-card space-y-2.5">
                                 <div class="flex items-center justify-between font-mono text-[10px] text-gray-400">
                                     <span class="uppercase tracking-wider font-bold text-gray-300">Distribusi Rating Penonton</span>
                                     <span>Rata-rata <strong class="text-emerald-300">${m.rating.toFixed(1)} / 5.0</strong></span>
@@ -2987,8 +3280,7 @@
                                 </div>
                             </div>
 
-                            <!-- Log Diary / Write Review -->
-                            <div class="p-4 rounded-3xl bg-[#111520] border border-white/[0.08] space-y-2.5">
+                            <div class="p-4 rounded-3xl glass-card space-y-2.5">
                                 <div class="font-display font-extrabold text-xs text-white">Catat ke Diary & Tulis Ulasan</div>
                                 <div class="flex flex-col sm:flex-row gap-2">
                                     <select id="cbRatingSelect" class="px-3 py-2 rounded-xl bg-black/60 border border-white/15 text-xs font-mono font-bold text-amber-300">
@@ -3001,20 +3293,19 @@
                                 </div>
                             </div>
 
-                            <!-- Community & Critic Reviews -->
                             <div class="space-y-2.5 pb-4">
                                 <div class="font-mono text-[11px] uppercase tracking-wider text-gray-400 font-bold">Ulasan & Komentar Sinefil (${reviews.length})</div>
                                 ${reviews.map((rev, rIdx) => `
-                                    <div class="p-3.5 rounded-2xl bg-[#111520] border border-white/[0.07] space-y-1.5">
+                                    <div class="p-3.5 rounded-2xl glass-card space-y-1.5">
                                         <div class="flex items-center justify-between gap-2">
                                             <div class="flex items-center gap-1.5">
-                                                <span class="font-display font-extrabold text-xs text-white">${rev.user}</span>
+                                                <span class="font-display font-extrabold text-xs text-white">${escapeHTML(rev.user)}</span>
                                                 ${rev.badge ? `<span class="px-1.5 py-0.2 rounded bg-emerald-500/20 font-mono text-[9px] font-bold text-emerald-300">${rev.badge}</span>` : ''}
                                                 <span class="font-mono text-xs font-bold text-amber-300">${rev.rating.toFixed(1)}★</span>
                                             </div>
                                             <span class="font-mono text-[10px] text-gray-500">${rev.date}</span>
                                         </div>
-                                        <p class="text-xs text-gray-200 leading-relaxed">${rev.text}</p>
+                                        <p class="text-xs text-gray-200 leading-relaxed">${escapeHTML(rev.text)}</p>
                                         <button onclick="toggleCineboxdReviewLike('${m.id}', ${rIdx})" class="inline-flex items-center gap-1 font-mono text-[10px] ${rev.liked ? 'text-rose-400 font-bold' : 'text-gray-400 hover:text-white'}">
                                             <i class="${rev.liked ? 'ph-fill' : 'ph'} ph-heart"></i>
                                             <span>${rev.likes} suka</span>
@@ -3038,7 +3329,7 @@
                 <div class="shrink-0 px-3.5 sm:px-5 pt-3 pb-2.5 border-b border-white/[0.08] bg-[#0d111a] flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2 flex-1 min-w-[160px]">
                         <i class="ph-fill ph-film-strip text-emerald-400 text-lg"></i>
-                        <input type="text" value="${cb.search}" oninput="state.cineboxd.search=this.value; renderCineboxdView()" placeholder="Cari judul, genre, atau studio..." class="w-full px-3 py-1.5 rounded-xl bg-black/50 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-400">
+                        <input type="text" value="${escapeHTML(cb.search)}" oninput="state.cineboxd.search=this.value; renderCineboxdView()" placeholder="Cari judul, genre, atau studio..." class="w-full px-3 py-1.5 rounded-xl bg-black/50 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-400">
                     </div>
                     <select onchange="state.cineboxd.sort=this.value; renderCineboxdView()" class="px-3 py-1.5 rounded-xl bg-white/[0.07] border border-white/10 text-xs font-bold text-white">
                         <option value="recent" ${cb.sort === 'recent' ? 'selected' : ''}>Rilisan Terbaru</option>
@@ -3050,7 +3341,7 @@
 
                 <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     ${list.length === 0 ? `
-                        <div class="col-span-full p-8 rounded-3xl bg-[#111520] border border-white/10 text-center text-xs text-gray-400">
+                        <div class="col-span-full p-8 rounded-3xl glass-card text-center text-xs text-gray-400">
                             Belum ada film di daftar ini. Buka halaman film mana saja lalu klik "Simpan Ulasan" untuk mencatatnya ke Diary Anda!
                         </div>
                     ` : list.map(m => `
@@ -3060,8 +3351,8 @@
                                 <span class="px-2 py-0.5 rounded bg-black/55 font-mono text-xs font-extrabold ${m.rating >= 3.8 ? 'text-emerald-300' : m.rating >= 2.5 ? 'text-amber-300' : 'text-rose-400'}">${m.rating.toFixed(1)}★</span>
                             </div>
                             <div class="mt-3">
-                                <div class="font-display font-extrabold text-sm text-white line-clamp-1">${m.title}</div>
-                                <div class="text-[11px] text-white/70 truncate">${m.studio} • ${m.year}</div>
+                                <div class="font-display font-extrabold text-sm text-white line-clamp-1">${escapeHTML(m.title)}</div>
+                                <div class="text-[11px] text-white/70 truncate">${escapeHTML(m.studio)} • ${m.year}</div>
                                 <div class="font-mono text-[10px] text-white/50 mt-1">${(m.reviews || []).length} ulasan ${cb.diary.includes(m.id) ? '• ✓ Diary' : ''}</div>
                             </div>
                         </div>
@@ -3090,6 +3381,7 @@
                 state.cineboxd.diary.unshift(movieId);
             }
             m.rating = Number(((m.rating * 8 + ratingVal) / 9).toFixed(1));
+            saveGameState(true);
             playTone(640, 'triangle', 0.1, 0.04);
             renderCineboxdView();
             showToast('Ulasan dicatat ke Diary CineBoxd!', 'success');
@@ -3105,7 +3397,7 @@
         }
 
         // =========================================================================
-        // 11. WEEKLY SIMULATION ENGINE (PEKAN +1)
+        // 11. WEEKLY SIMULATION ENGINE (PEKAN +1 + AUTO-SAVE TO LOCALSTORAGE)
         // =========================================================================
         function advanceWeek() {
             state.week += 1;
@@ -3140,7 +3432,7 @@
                 state.marketMood = moods[Math.floor(Math.random() * moods.length)];
             }
 
-            // 3. Theatrical Box Office Simulation (Duration strictly governed by Hype)
+            // 3. Theatrical Box Office Simulation
             let ourBoxOfficeCut = 0;
             state.releasedMovies.forEach(m => {
                 if (!m.inTheater) return;
@@ -3157,7 +3449,7 @@
                             folder: 'licensing',
                             sender: 'Distribusi Nasional & OTT',
                             email: 'distribution@nusantaracine.id',
-                            subject: '📺 Turun Layar Bioskop: "' + m.title + '" Siap Masuk CineFlix+',
+                            subject: 'Turun Layar Bioskop: "' + m.title + '" Siap Masuk CineFlix+',
                             time: 'Pekan ' + state.week,
                             unread: true,
                             starred: false,
@@ -3250,7 +3542,7 @@
                 });
             }
 
-            // 6. Procedural Weekly CineGram News (Alternating Indonesian & International Cinema Feed)
+            // 6. Procedural Weekly CineGram News
             const weeklyGramPool = [
                 {
                     region: 'id',
@@ -3344,6 +3636,9 @@
                 }
             }
 
+            // 8. Auto-save full state to LocalStorage
+            saveGameState(true);
+
             playTone(500, 'sine', 0.08, 0.03);
             updateHUD();
             renderCurrentTab();
@@ -3353,10 +3648,16 @@
         }
 
         // =========================================================================
-        // 12. INITIAL BOOT
+        // 12. INITIAL BOOT (LOAD SAVED DATA IF AVAILABLE)
         // =========================================================================
+        const restored = loadGameState();
         updateHUD();
-        renderStudioView();
+        switchMainTab(state.mainTab || 'studio');
+        if (restored) {
+            setTimeout(() => showToast('Progres tersimpan dimuat kembali (Pekan ' + state.week + ')!', 'success'), 350);
+        } else {
+            saveGameState(true);
+        }
     </script>
 </body>
 </html>
