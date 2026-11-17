@@ -21,14 +21,29 @@
                             mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
                         },
                         animation: {
-                            'screen-push': 'screenPush 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                            'screen-push': 'screenPush 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+                            'tab-glide': 'tabGlide 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+                            'modal-spring': 'modalSpring 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+                            'backdrop-fade': 'backdropFade 0.24s ease-out forwards',
                             'heart-pop': 'heartPop 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
                             'focus-sweep': 'focusSweep 1.35s ease-in-out infinite alternate',
                         },
                         keyframes: {
                             screenPush: {
-                                '0%': { opacity: '0', transform: 'translateY(8px)' },
+                                '0%': { opacity: '0', transform: 'translateY(10px)' },
                                 '100%': { opacity: '1', transform: 'translateY(0)' },
+                            },
+                            tabGlide: {
+                                '0%': { opacity: '0', transform: 'translateY(8px) scale(0.992)' },
+                                '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                            },
+                            modalSpring: {
+                                '0%': { opacity: '0', transform: 'translateY(14px) scale(0.96)' },
+                                '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                            },
+                            backdropFade: {
+                                '0%': { opacity: '0' },
+                                '100%': { opacity: '1' },
                             },
                             heartPop: {
                                 '0%': { opacity: '0', transform: 'scale(0.3)' },
@@ -77,6 +92,22 @@
         .glass-card {
             background: linear-gradient(180deg, rgba(22, 28, 44, 0.85) 0%, rgba(15, 19, 30, 0.95) 100%);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: border-color 0.24s cubic-bezier(0.22, 1, 0.36, 1), transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.24s ease;
+        }
+        button, select, input, textarea {
+            transition: background-color 0.2s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, box-shadow 0.22s ease;
+        }
+        button:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+        .nav-btn {
+            transition: background-color 0.25s cubic-bezier(0.22, 1, 0.36, 1), color 0.22s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .nav-btn i {
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .nav-btn.text-amber-400 i {
+            transform: translateY(-1px) scale(1.08);
         }
         input[type="range"] {
             -webkit-appearance: none;
@@ -95,6 +126,11 @@
             cursor: pointer;
             border: 2px solid #090b10;
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.14);
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.75);
         }
     </style>
 </head>
@@ -200,8 +236,8 @@
         </nav>
 
         <!-- Modal Overlay Inside Unified App Shell -->
-        <div id="modalOverlay" onclick="if(event.target===this) closeModal()" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-center justify-center p-2.5 sm:p-4">
-            <div id="modalContent" class="w-full max-w-2xl bg-[#111520] border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-screen-push"></div>
+        <div id="modalOverlay" onclick="if(event.target===this) closeModal()" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm items-center justify-center p-2.5 sm:p-4 animate-backdrop-fade">
+            <div id="modalContent" class="w-full max-w-2xl bg-[#111520] border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-modal-spring"></div>
         </div>
     </div>
 
@@ -257,12 +293,13 @@
                 error: 'bg-rose-950/95 border-rose-500/40 text-rose-200'
             };
             const el = document.createElement('div');
-            el.className = 'px-3.5 py-2.5 rounded-2xl border shadow-2xl backdrop-blur-md text-xs font-semibold flex items-center gap-2 animate-screen-push ' + (styles[type] || styles.info);
+            el.className = 'px-3.5 py-2.5 rounded-2xl border shadow-2xl backdrop-blur-md text-xs font-semibold flex items-center gap-2 animate-modal-spring ' + (styles[type] || styles.info);
             el.innerHTML = '<i class="ph-fill ph-sparkle text-amber-400 shrink-0"></i><span class="leading-snug">' + msg + '</span>';
             box.appendChild(el);
             setTimeout(() => {
                 el.style.opacity = '0';
-                el.style.transition = 'opacity 0.25s ease';
+                el.style.transform = 'translateY(-6px)';
+                el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
                 setTimeout(() => el.remove(), 260);
             }, 3200);
         }
@@ -422,7 +459,7 @@
                 verified: true,
                 following: true,
                 location: 'Epicentrum XXI, Jakarta',
-                time: '2 jam yang lalu',
+                time: '1 jam yang lalu',
                 headline: 'HOROR LOKAL MASIH RAJA LAYAR LEBAR!',
                 grad: 'from-red-950 via-stone-900 to-black',
                 icon: 'ph-skull',
@@ -442,11 +479,11 @@
                     votedIndex: null
                 },
                 comments: [
-                    { id: 'c1', user: 'nadia_sinefil', text: 'Jujur adegan sumur tua di menit ke-40 bikin satu studio teriak bareng 😭', time: '1j', likes: 184, liked: false },
-                    { id: 'c2', user: 'dimas.projector', text: 'Tata suaranya rapi banget, bukan sekadar jumpscare murahan!', time: '1j', likes: 112, liked: false },
-                    { id: 'c3', user: 'tukang_popcorn', text: 'Popcorn gue sampe tumpah pas scene lorong gelap 💀🍿', time: '52m', likes: 96, liked: false },
-                    { id: 'c4', user: 'rara.movietalk', text: '@bagas_pratama gas besok malem nonton jam 9 berani ga lu?', time: '41m', likes: 43, liked: false },
-                    { id: 'c5', user: 'bagas_pratama', text: '@rara.movietalk gas tapi lu yang duduk pinggir ya wkwk', time: '35m', likes: 38, liked: false },
+                    { id: 'c1', user: 'nadia_sinefil', text: 'Jujur adegan sumur tua di menit ke-40 bikin satu studio teriak bareng 😭', time: '55m', likes: 184, liked: false },
+                    { id: 'c2', user: 'dimas.projector', text: 'Tata suaranya rapi banget, bukan sekadar jumpscare murahan!', time: '48m', likes: 112, liked: false },
+                    { id: 'c3', user: 'tukang_popcorn', text: 'Popcorn gue sampe tumpah pas scene lorong gelap 💀🍿', time: '42m', likes: 96, liked: false },
+                    { id: 'c4', user: 'rara.movietalk', text: '@bagas_pratama gas besok malem nonton jam 9 berani ga lu?', time: '35m', likes: 43, liked: false },
+                    { id: 'c5', user: 'bagas_pratama', text: '@rara.movietalk gas tapi lu yang duduk pinggir ya wkwk', time: '30m', likes: 38, liked: false },
                     { id: 'c6', user: 'sinema_nusantara', text: 'Kualitas sinematografi film Indonesia 2026 makin naik kelas!', time: '20m', likes: 67, liked: false }
                 ],
                 hiddenComments: [
@@ -461,7 +498,7 @@
                 verified: true,
                 following: false,
                 location: 'Palais des Festivals, Cannes',
-                time: '4 jam yang lalu',
+                time: '2 jam yang lalu',
                 headline: 'SOUTHEAST ASIAN ACTION CINEMA TAKES CANNES!',
                 grad: 'from-amber-950 via-zinc-900 to-black',
                 icon: 'ph-trophy',
@@ -474,11 +511,46 @@
                 bookmarked: false,
                 poll: null,
                 comments: [
-                    { id: 'c21', user: 'variety_asia', text: 'The 12-minute stairwell one-take sequence is pure adrenaline!', time: '3j', likes: 410, liked: false },
-                    { id: 'c22', user: 'kenji_tokyo', text: '日本のアクション映画ファンも大興奮しています！最高！', time: '2j', likes: 215, liked: false },
-                    { id: 'c23', user: 'minji_seoul', text: '한국 극장에서도 빨리 개봉했으면 좋겠어요 🔥👏', time: '2j', likes: 189, liked: false },
-                    { id: 'c24', user: 'claire_paris', text: 'Quelle chorégraphie incroyable! Le public était debout.', time: '1j', likes: 94, liked: false },
+                    { id: 'c21', user: 'variety_asia', text: 'The 12-minute stairwell one-take sequence is pure adrenaline!', time: '2j', likes: 410, liked: false },
+                    { id: 'c22', user: 'kenji_tokyo', text: '日本のアクション映画ファンも大興奮しています！最高！', time: '1j', likes: 215, liked: false },
+                    { id: 'c23', user: 'minji_seoul', text: '한국 극장에서도 빨리 개봉했으면 좋겠어요 🔥👏', time: '1j', likes: 189, liked: false },
+                    { id: 'c24', user: 'claire_paris', text: 'Quelle chorégraphie incroyable! Le public était debout.', time: '54m', likes: 94, liked: false },
                     { id: 'c25', user: 'anak_film_id', text: 'Bangga banget liat koreografi laga Asia Tenggara dipuji di Cannes 🇮🇩🔥', time: '48m', likes: 302, liked: false }
+                ],
+                hiddenComments: []
+            },
+            {
+                id: 'post_4',
+                region: 'intl',
+                author: 'seoul_boxoffice',
+                verified: true,
+                following: false,
+                location: 'CGV Yongsan IMAX, Seoul',
+                time: '3 jam yang lalu',
+                headline: 'KOREAN NEO-NOIR THRILLER SELLS OUT 4 AM SHOWS!',
+                grad: 'from-indigo-950 via-zinc-950 to-black',
+                icon: 'ph-detective',
+                movieId: 'seed_6',
+                caption: 'Unprecedented demand in Seoul and Busan for "SAKSI BISU KERETA MALAM"! Multiplexes added emergency 3:30 AM and 4:15 AM IMAX screenings after weekend tickets vanished in 11 minutes. 🚄🕵️‍♂️ #KoreanCinema #BoxOffice',
+                translatedCaption: 'Permintaan luar biasa di Seoul dan Busan untuk "SAKSI BISU KERETA MALAM"! Bioskop menambah jadwal darurat IMAX pukul 03.30 dan 04.15 pagi setelah tiket akhir pekan ludes dalam 11 menit. 🚄🕵️‍♂️',
+                showTranslation: false,
+                likes: 11280,
+                liked: false,
+                bookmarked: false,
+                poll: {
+                    question: 'Which international thriller style hooks you fastest?',
+                    options: [
+                        { label: 'Seoul Gritty Neo-Noir', votes: 2140 },
+                        { label: 'Nordic Slow-Burn Mystery', votes: 980 },
+                        { label: 'Hollywood High-Tech Espionage', votes: 1310 }
+                    ],
+                    votedIndex: null
+                },
+                comments: [
+                    { id: 'c41', user: 'minji_seoul', text: '새벽 4시 상영관도 만석이었어요! 엔딩 크레딧 올라갈 때까지 아무도 안 일어남 😱👏', time: '2j', likes: 512, liked: false },
+                    { id: 'c42', user: 'busan_cineclub', text: 'The sound design of the train tracks inside the IMAX hall gave me literal chills.', time: '2j', likes: 278, liked: false },
+                    { id: 'c43', user: 'drakor_garis_keras', text: 'Plis masukin jaringan bioskop Indonesia secepatnya jangan nunggu bulan depan 😭🔥', time: '1j', likes: 345, liked: false },
+                    { id: 'c44', user: 'taro_tokyo', text: '来週ソウルに行くので絶対IMAXで観ます！', time: '50m', likes: 119, liked: false }
                 ],
                 hiddenComments: []
             },
@@ -489,7 +561,7 @@
                 verified: false,
                 following: true,
                 location: 'CGV Grand Indonesia',
-                time: '6 jam yang lalu',
+                time: '5 jam yang lalu',
                 headline: 'SURAT TERBUKA UNTUK PRODUSER CGI POWERPOINT 💀',
                 grad: 'from-lime-950 via-zinc-950 to-black',
                 icon: 'ph-ghost',
@@ -501,11 +573,64 @@
                 bookmarked: true,
                 poll: null,
                 comments: [
-                    { id: 'c31', user: 'editor_magang', text: 'Maaf bang kemarin deadline mepet render pake laptop kentang 🙏😭', time: '5j', likes: 890, liked: false },
+                    { id: 'c31', user: 'editor_magang', text: 'Maaf bang kemarin deadline mepet render pake laptop kentang 🙏😭', time: '4j', likes: 890, liked: false },
                     { id: 'c32', user: 'dinda_kurnia', text: 'WKWKWK pas hantunya nyangkut di genteng satu studio tepuk tangan', time: '4j', likes: 540, liked: false },
                     { id: 'c33', user: 'mas_bambang', text: 'Ini mah genre komedi berkedok horor bang', time: '3j', likes: 312, liked: false },
                     { id: 'c34', user: 'nonton_hemat', text: 'Untung gue pake promo buy 1 get 1 jadi sakit hatinya dibagi dua', time: '2j', likes: 421, liked: false },
                     { id: 'c35', user: 'cinephile_jakarta', text: 'Pelajaran berharga buat studio baru: jangan pangkas anggaran VFX!', time: '1j', likes: 275, liked: false }
+                ],
+                hiddenComments: []
+            },
+            {
+                id: 'post_5',
+                region: 'intl',
+                author: 'hollywood_dailies',
+                verified: true,
+                following: false,
+                location: 'TCL Chinese Theatre, Hollywood',
+                time: '7 jam yang lalu',
+                headline: '3-KILOMETER 70MM IMAX FILM REEL WEIGHS 270 KG! 🎞️',
+                grad: 'from-sky-950 via-slate-950 to-black',
+                icon: 'ph-film-reel',
+                movieId: null,
+                caption: 'Projectionists needed a hydraulic forklift just to load the 70mm IMAX print for this weekend’s global Sci-Fi premiere in Los Angeles! Practical filmmaking is alive and well. 🎥🚀 #IMAX70mm #Hollywood',
+                translatedCaption: 'Para operator proyektor membutuhkan forklift hidrolik hanya untuk mengangkat gulungan film IMAX 70mm sepanjang 3 km seberat 270 kg di pemutaran perdana Los Angeles akhir pekan ini! 🎥🚀',
+                showTranslation: false,
+                likes: 15890,
+                liked: false,
+                bookmarked: false,
+                poll: null,
+                comments: [
+                    { id: 'c51', user: 'la_cinephile', text: 'Sitting in Row C for 70mm IMAX is an extreme neck workout worth every penny 😂🙌', time: '6j', likes: 620, liked: false },
+                    { id: 'c52', user: 'projectionist_bob', text: 'One splice mistake on that platter and the whole booth sweats bullets!', time: '5j', likes: 412, liked: false },
+                    { id: 'c53', user: 'dimas.projector', text: 'Gila sih resolusi analog 70mm emang belum ada lawan di layar raksasa!', time: '4j', likes: 298, liked: false },
+                    { id: 'c54', user: 'london_filmnerd', text: 'BFI IMAX in London already sold out every single weekend slot until next month.', time: '3j', likes: 184, liked: false }
+                ],
+                hiddenComments: []
+            },
+            {
+                id: 'post_6',
+                region: 'intl',
+                author: 'tokyo_animelab',
+                verified: true,
+                following: false,
+                location: 'Shinjuku Wald 9, Tokyo',
+                time: '9 jam yang lalu',
+                headline: '18,400 HAND-DRAWN FRAMES FOR ONE 4-MINUTE CLIMAX!',
+                grad: 'from-teal-950 via-emerald-950 to-black',
+                icon: 'ph-sparkle',
+                movieId: 'seed_8',
+                caption: 'Animators spent 14 months hand-painting 18,400 individual key frames on paper for the final forest spirit sequence. Pure artistry over shortcuts! ✨🖌️ #Animation #Sakuga #WorldCinema',
+                translatedCaption: 'Para animator menghabiskan 14 bulan melukis tangan 18.400 frame kunci di atas kertas untuk adegan klimaks roh hutan. Seni murni tanpa jalan pintas! ✨🖌️',
+                showTranslation: false,
+                likes: 19420,
+                liked: false,
+                bookmarked: true,
+                poll: null,
+                comments: [
+                    { id: 'c61', user: 'kenji_tokyo', text: '劇場で見た瞬間、鳥肌が止まりませんでした。アニメーターさんに感謝！😭✨', time: '8j', likes: 740, liked: false },
+                    { id: 'c62', user: 'sakuga_archive', text: 'Every single background leaf moves independently at 24fps. Insane dedication.', time: '7j', likes: 530, liked: false },
+                    { id: 'c63', user: 'anak_animasi_id', text: 'Inspirasi banget buat studio animasi 2D lokal biar makin berani eksplorasi!', time: '5j', likes: 318, liked: false }
                 ],
                 hiddenComments: []
             }
@@ -748,7 +873,16 @@
             }
         }
 
+        function triggerWorkspaceTransition() {
+            const main = document.getElementById('mainWorkspace');
+            if (!main) return;
+            main.classList.remove('animate-tab-glide');
+            void main.offsetWidth;
+            main.classList.add('animate-tab-glide');
+        }
+
         function switchMainTab(tabId) {
+            const changed = state.mainTab !== tabId;
             state.mainTab = tabId;
             if (tabId === 'cinegram') {
                 state.cinegram.unreadNotif = false;
@@ -764,6 +898,7 @@
                 activeBtn.classList.remove('text-gray-400');
                 activeBtn.classList.add('text-amber-400', 'bg-amber-500/10');
             }
+            if (changed) triggerWorkspaceTransition();
             renderCurrentTab();
         }
 
@@ -781,7 +916,7 @@
             const overlay = document.getElementById('modalOverlay');
             const content = document.getElementById('modalContent');
             if (!overlay || !content) return;
-            content.className = 'w-full ' + maxWidthClass + ' bg-[#111520] border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-screen-push';
+            content.className = 'w-full ' + maxWidthClass + ' bg-[#111520] border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-modal-spring';
             content.innerHTML = html;
             overlay.classList.remove('hidden');
             overlay.classList.add('flex');
@@ -1037,7 +1172,7 @@
                     </div>
                 </div>
 
-                <div id="studioBody" class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-4"></div>
+                <div id="studioBody" class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-4 animate-screen-push"></div>
             `;
 
             if (sub === 'production') {
@@ -2120,7 +2255,7 @@
                                     </div>
                                 </div>
 
-                                <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-4 sm:p-6 space-y-5">
+                                <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-4 sm:p-6 space-y-5 animate-screen-push">
                                     <div class="space-y-3">
                                         <h3 class="font-display font-extrabold text-base sm:text-lg text-white leading-snug">${escapeHTML(selectedMail.subject)}</h3>
 
@@ -2561,7 +2696,8 @@
                 { name: state.studioName, badge: 'STUDIO', grad: 'from-amber-500 to-orange-600', icon: 'ph-film-slate' },
                 { name: 'cinephile_id', badge: 'LIVE', grad: 'from-pink-500 to-rose-600', icon: 'ph-popcorn' },
                 { name: 'cannes_news', badge: 'GLOBAL', grad: 'from-purple-500 to-indigo-600', icon: 'ph-trophy' },
-                { name: 'boxoffice_id', badge: 'DATA', grad: 'from-emerald-500 to-teal-600', icon: 'ph-chart-line-up' }
+                { name: 'seoul_cinema', badge: 'K-FILM', grad: 'from-sky-500 to-blue-700', icon: 'ph-detective' },
+                { name: 'tokyo_anime', badge: 'ANIME', grad: 'from-emerald-500 to-teal-600', icon: 'ph-sparkle' }
             ];
 
             const visiblePosts = cg.posts.filter(p => {
@@ -2596,7 +2732,7 @@
                         <div class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1">
                             ${stories.map((st, idx) => `
                                 <button onclick="openStoryModal(${idx})" class="flex flex-col items-center gap-1 shrink-0 group">
-                                    <div class="p-[2px] rounded-full ig-story-ring">
+                                    <div class="p-[2px] rounded-full ig-story-ring transition-transform duration-200 group-hover:scale-105">
                                         <div class="w-12 h-12 rounded-full bg-[#0b0e16] p-0.5 flex items-center justify-center">
                                             <div class="w-full h-full rounded-full bg-gradient-to-br ${st.grad} flex items-center justify-center text-white">
                                                 <i class="ph-fill ${st.icon} text-lg"></i>
@@ -2610,12 +2746,12 @@
 
                         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                             ${[
-                                { id: 'all', label: 'Semua Feed' },
-                                { id: 'id', label: '🇮🇩 Indonesia' },
-                                { id: 'intl', label: '🌍 Internasional' },
+                                { id: 'all', label: 'Semua Feed (' + cg.posts.length + ')' },
+                                { id: 'id', label: '🇮🇩 Indonesia (' + cg.posts.filter(p => p.region === 'id').length + ')' },
+                                { id: 'intl', label: '🌍 Internasional (' + cg.posts.filter(p => p.region === 'intl').length + ')' },
                                 { id: 'saved', label: '🔖 Tersimpan' }
                             ].map(f => `
-                                <button onclick="state.cinegram.regionFilter='${f.id}'; renderCinegramView()" class="px-3 py-1 rounded-full text-[11px] font-bold shrink-0 transition ${filter === f.id ? 'bg-white text-black' : 'bg-white/[0.06] text-gray-300 hover:text-white'}">
+                                <button onclick="state.cinegram.regionFilter='${f.id}'; renderCinegramView()" class="px-3 py-1 rounded-full text-[11px] font-bold shrink-0 transition ${filter === f.id ? 'bg-white text-black shadow-sm' : 'bg-white/[0.06] text-gray-300 hover:text-white'}">
                                     ${f.label}
                                 </button>
                             `).join('')}
@@ -2629,7 +2765,7 @@
                             const totalPollVotes = post.poll ? post.poll.options.reduce((s, o) => s + o.votes, 0) : 0;
                             const displayedCaption = (post.showTranslation && post.translatedCaption) ? post.translatedCaption : post.caption;
                             return `
-                                <article class="rounded-3xl glass-card overflow-hidden border border-white/[0.08]">
+                                <article class="rounded-3xl glass-card overflow-hidden border border-white/[0.08] hover:border-white/[0.16]">
                                     <div class="px-3.5 py-2.5 flex items-center justify-between gap-2">
                                         <div class="flex items-center gap-2.5 min-w-0">
                                             <div class="w-8 h-8 rounded-full ig-story-ring p-[1.5px] shrink-0">
@@ -2708,7 +2844,7 @@
                                                         const isChoice = post.poll.votedIndex === oIdx;
                                                         return `
                                                             <button onclick="voteCinegramPoll('${post.id}', ${oIdx})" ${voted ? 'disabled' : ''} class="relative w-full px-3 py-2 rounded-xl border text-left text-[11px] overflow-hidden transition ${isChoice ? 'border-amber-400 text-white font-extrabold' : 'border-white/10 text-gray-200 hover:border-white/25'}">
-                                                                ${voted ? `<div class="absolute inset-y-0 left-0 bg-amber-500/20" style="width:${pct}%"></div>` : ''}
+                                                                ${voted ? `<div class="absolute inset-y-0 left-0 bg-amber-500/20 transition-all duration-300" style="width:${pct}%"></div>` : ''}
                                                                 <div class="relative flex items-center justify-between gap-2">
                                                                     <span>${escapeHTML(opt.label)}</span>
                                                                     ${voted ? `<span class="font-mono text-[10px] text-amber-300 font-bold">${pct}%</span>` : ''}
@@ -2826,7 +2962,11 @@
             const top = scroller ? scroller.scrollTop : 0;
             fn();
             const nextScroller = document.getElementById('cinegramFeedScroll');
-            if (nextScroller) nextScroller.scrollTop = top;
+            if (nextScroller) {
+                nextScroller.style.scrollBehavior = 'auto';
+                nextScroller.scrollTop = top;
+                nextScroller.style.scrollBehavior = '';
+            }
         }
 
         function togglePostLike(postId) {
@@ -2901,9 +3041,10 @@
         function openStoryModal(idx) {
             const stories = [
                 { name: state.studioName, text: 'Pekan ' + state.week + ' di ' + state.studioName + ': Fokus mencetak karya sinema terbaik tahun ' + state.year + '!' },
-                { name: 'cinephile_jakarta', text: 'Antrean bioskop weekend ini meledak! Film ' + state.trendingGenre + ' lagi dicari penonton.' },
-                { name: 'cannes_dispatch', text: 'Para pembeli hak tayang internasional sedang memantau studio independen Asia!' },
-                { name: 'boxoffice_indonesia', text: 'Update pasar: ' + state.marketMood.label + ' (' + Math.round(state.marketMood.mult * 100) + '%).' }
+                { name: 'cinephile_id', text: 'Antrean bioskop weekend ini meledak! Film ' + state.trendingGenre + ' lagi dicari penonton.' },
+                { name: 'cannes_news', text: 'Para pembeli hak tayang internasional sedang memantau studio independen Asia!' },
+                { name: 'seoul_cinema', text: 'Penjualan tiket tengah malam di Seoul & Busan menembus rekor baru bulan ini!' },
+                { name: 'tokyo_anime', text: 'Studio animasi Jepang memamerkan ribuan frame lukisan tangan untuk rilisan layar lebar!' }
             ];
             const s = stories[idx] || stories[0];
             openModal(`
@@ -3003,7 +3144,7 @@
                                 <div class="pt-2 border-t border-white/[0.06]">
                                     <button onclick="openPostDetailModal('${post.id}', ${!showHidden})" class="text-[11px] text-gray-400 hover:text-white flex items-center gap-1.5">
                                         <i class="ph ph-eye-slash"></i>
-                                        <span>${showHidden ? 'Sembunyikan komentar tersembunyyi' : 'Lihat komentar yang disembunyikan (' + post.hiddenComments.length + ')'}</span>
+                                        <span>${showHidden ? 'Sembunyikan komentar tersembunyi' : 'Lihat komentar yang disembunyikan (' + post.hiddenComments.length + ')'}</span>
                                     </button>
                                     ${showHidden ? `
                                         <div class="mt-2 space-y-2 pl-2 border-l border-white/10">
@@ -3140,7 +3281,7 @@
                     </div>
                 </div>
 
-                <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-2.5">
+                <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-2.5 animate-screen-push">
                     ${shownList.length === 0 ? `
                         <div class="p-8 rounded-3xl glass-card text-center text-xs text-gray-400">
                             Belum ada film di daftar Box Office ini.
@@ -3269,7 +3410,7 @@
                     </div>
                 </div>
 
-                <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-4">
+                <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-4 animate-screen-push">
                     ${postTheaterReadyMovies.length > 0 ? `
                         <div class="p-3.5 rounded-2xl bg-gradient-to-r from-sky-500/15 to-purple-500/10 border border-sky-400/35 space-y-2">
                             <div class="font-mono text-[10px] font-extrabold text-sky-300 uppercase">📺 Turun Layar Bioskop — Siap Rilis ke CineFlix+</div>
@@ -3480,7 +3621,7 @@
                             <span class="font-mono text-[11px] text-emerald-400 font-bold">${m.format || 'Film Panjang'} • ${m.year}</span>
                         </div>
 
-                        <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-4">
+                        <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 space-y-4 animate-screen-push">
                             <div class="rounded-3xl bg-gradient-to-br ${m.grad} border border-white/15 p-5 space-y-2.5">
                                 <div class="flex items-center justify-between">
                                     <span class="px-2.5 py-0.5 rounded bg-black/50 font-mono text-[10px] text-gray-200">${m.genre} • ${escapeHTML(m.studio)}</span>
@@ -3568,7 +3709,7 @@
                     </select>
                 </div>
 
-                <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div class="flex-1 min-h-0 overflow-y-auto app-scroll p-3.5 sm:p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 animate-screen-push">
                     ${list.length === 0 ? `
                         <div class="col-span-full p-8 rounded-3xl glass-card text-center text-xs text-gray-400">
                             Belum ada film di daftar ini. Buka halaman film mana saja lalu klik "Simpan Ulasan" untuk mencatatnya ke Diary Anda!
@@ -3801,8 +3942,25 @@
                 }
             }
 
-            // 6. Procedural Weekly CineGram News
+            // 6. Rich Procedural Weekly CineGram Feed (International + Indonesian Cinema Buzz)
             const weeklyGramPool = [
+                {
+                    region: 'intl',
+                    author: 'venice_biennale_film',
+                    verified: true,
+                    location: 'Sala Grande, Lido di Venezia',
+                    headline: 'VENICE CROWD DEBATES FOR 20 MINUTES AFTER PREMIERE!',
+                    grad: 'from-rose-950 via-indigo-950 to-black',
+                    icon: 'ph-sparkle',
+                    caption: 'A bold psychological Sci-Fi premiere in Venice split critics tonight—half gave a standing ovation while the rest argued passionately in the courtyard! 🎭🇮🇹 #Venezia #WorldCinema',
+                    translatedCaption: 'Pemutaran perdana Sci-Fi psikologis di Venesia membelah opini kritikus malam ini—separuh memberi tepuk tangan berdiri sementara sisanya berdebat seru di halaman gedung! 🎭🇮🇹',
+                    showTranslation: false,
+                    comments: [
+                        { id: 'wg_v1_' + Date.now(), user: 'marco_roma', text: 'When a movie makes people argue for 20 minutes outside the cinema, you know it is unforgettable!', time: 'Baru saja', likes: 342, liked: false },
+                        { id: 'wg_v2_' + Date.now(), user: 'claire_paris', text: 'Le final est complètement fou, j’y pense encore ce matin 🤯', time: 'Baru saja', likes: 194, liked: false },
+                        { id: 'wg_v3_' + Date.now(), user: 'nadia_sinefil', text: 'Film yang bikin penonton berdebat habis keluar studio itu tanda ceritanya ngena banget!', time: 'Baru saja', likes: 158, liked: false }
+                    ]
+                },
                 {
                     region: 'id',
                     author: 'receh_bioskop',
@@ -3838,6 +3996,39 @@
                     ]
                 },
                 {
+                    region: 'intl',
+                    author: 'london_filmweek',
+                    verified: true,
+                    location: 'BFI Southbank, London',
+                    headline: 'DOLBY ATMOS BASS SHAKES COFFEE CUPS NEXT DOOR! 🔊☕',
+                    grad: 'from-orange-950 via-zinc-900 to-black',
+                    icon: 'ph-speaker-high',
+                    caption: 'Sound engineers pushed sub-bass frequencies so hard during an Action screening in London that espresso cups rattled at the café next door! Pure theatrical power. 💥🎬 #SoundDesign #LondonCinema',
+                    translatedCaption: 'Teknisi tata suara mendorong frekuensi bass begitu kuat saat pemutaran film Aksi di London hingga cangkir kopi di kafe sebelah ikut bergetar! 💥🎬',
+                    showTranslation: false,
+                    comments: [
+                        { id: 'wg_l1_' + Date.now(), user: 'london_filmnerd', text: 'My seat was literally vibrating during the helicopter chase scene! Worth every pound.', time: 'Baru saja', likes: 410, liked: false },
+                        { id: 'wg_l2_' + Date.now(), user: 'dimas.projector', text: 'Makanya mixing Dolby Atmos gak pernah bohong kalau diputar di studio proper 🔥', time: 'Baru saja', likes: 235, liked: false },
+                        { id: 'wg_l3_' + Date.now(), user: 'la_cinephile', text: 'This is why home TV speakers can never replace the cinema experience!', time: 'Baru saja', likes: 189, liked: false }
+                    ]
+                },
+                {
+                    region: 'intl',
+                    author: 'busan_film_daily',
+                    verified: true,
+                    location: 'Busan Cinema Center, South Korea',
+                    headline: 'INDIE DIRECTOR SHOOTS ENTIRE THRILLER IN 14 NIGHTS!',
+                    grad: 'from-cyan-950 via-slate-950 to-black',
+                    icon: 'ph-video-camera',
+                    caption: 'With a micro-budget and two handheld cameras, a young Asian director stunned Busan audiences with a breathless one-night street thriller. Proof that script beats budget! 🎥🌙 #BIFF #IndieFilm',
+                    translatedCaption: 'Dengan anggaran mikro dan dua kamera genggam, sutradara muda Asia memukau penonton Busan lewat thriller satu malam yang menegangkan. Bukti naskah mengalahkan bujet! 🎥🌙',
+                    showTranslation: false,
+                    comments: [
+                        { id: 'wg_b1_' + Date.now(), user: 'busan_cineclub', text: 'The neon rain reflections on the wet asphalt looked like a painting!', time: 'Baru saja', likes: 288, liked: false },
+                        { id: 'wg_b2_' + Date.now(), user: 'kritikus_indie', text: 'Contoh nyata kalau tim solid & konsep matang bisa bersaing di festival Asia 👏', time: 'Baru saja', likes: 164, liked: false }
+                    ]
+                },
+                {
                     region: 'id',
                     author: 'cinephile_jakarta',
                     verified: true,
@@ -3852,9 +4043,25 @@
                         { id: 'wg9_' + Date.now(), user: 'nadia_sinefil', text: 'Semoga kualitas penulisan naskahnya ikut dijaga biar gak asal ikut tren.', time: 'Baru saja', likes: 94, liked: false },
                         { id: 'wg10_' + Date.now(), user: 'sinema_nusantara', text: 'Ditunggu kejutan dari ' + state.studioName + ' tahun ini! 👀🎬', time: 'Baru saja', likes: 81, liked: false }
                     ]
+                },
+                {
+                    region: 'intl',
+                    author: 'sundance_insider',
+                    verified: true,
+                    location: 'Park City, Utah',
+                    headline: '$15 MILLION STREAMING BIDDING WAR AT SUNDANCE!',
+                    grad: 'from-purple-950 via-zinc-950 to-black',
+                    icon: 'ph-hand-coins',
+                    caption: 'Global streaming giants stayed up until 5 AM bidding $15M for worldwide OTT rights to a breakout festival drama! Quality storytelling remains the hottest currency in cinema. 💰🎬 #Sundance #StreamingWars',
+                    translatedCaption: 'Raksasa streaming global begadang hingga pukul 5 pagi menawar $15 juta untuk hak tayang OTT global sebuah drama festival! Cerita berkualitas tetap mata uang termahal di sinema. 💰🎬',
+                    showTranslation: false,
+                    comments: [
+                        { id: 'wg_s1_' + Date.now(), user: 'hollywood_dailies', text: 'The director walked into the screening unknown and walked out with a global deal!', time: 'Baru saja', likes: 520, liked: false },
+                        { id: 'wg_s2_' + Date.now(), user: 'anak_film_id', text: 'Keren banget kalau studio kita juga bisa nembus pasar festival & dibeli platform global!', time: 'Baru saja', likes: 274, liked: false }
+                    ]
                 }
             ];
-            const pickedPost = weeklyGramPool[state.week % weeklyGramPool.length];
+            const pickedPost = weeklyGramPool[(state.week + Math.floor(Math.random() * 2)) % weeklyGramPool.length];
             state.cinegram.posts.unshift({
                 id: 'post_wk_' + state.week + '_' + Date.now(),
                 region: pickedPost.region,
@@ -3870,7 +4077,7 @@
                 caption: pickedPost.caption,
                 translatedCaption: pickedPost.translatedCaption,
                 showTranslation: false,
-                likes: Math.round(1800 + Math.random() * 4200),
+                likes: Math.round(1800 + Math.random() * 4800),
                 liked: false,
                 bookmarked: false,
                 poll: null,
