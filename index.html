@@ -132,15 +132,12 @@
                     </button>
 
                     <!-- Cash Pill -->
-                    <div class="px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-right">
-                        <div class="hidden sm:block text-[9px] font-mono uppercase tracking-wider text-emerald-300/75 leading-none">KAS STUDIO</div>
+                    <button onclick="openFundingPitchModal()" title="Pinjaman Investor & Pendanaan Studio" class="px-2.5 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 text-right transition group">
+                        <div class="hidden sm:flex items-center justify-end gap-1 text-[9px] font-mono uppercase tracking-wider text-emerald-300/75 leading-none">
+                            <span>KAS STUDIO</span>
+                            <span class="px-1 rounded bg-emerald-500/20 text-emerald-200 font-bold">+DANA</span>
+                        </div>
                         <div id="hudCash" class="font-mono font-extrabold text-[11px] sm:text-xs text-emerald-300 leading-tight">Rp 600 Jt</div>
-                    </div>
-
-                    <!-- Advance Week CTA -->
-                    <button onclick="advanceWeek()" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-black font-display font-extrabold text-[11px] sm:text-xs flex items-center gap-1 shadow-lg shadow-amber-500/20 transition">
-                        <span>Pekan +1</span>
-                        <i class="ph-bold ph-fast-forward text-[11px]"></i>
                     </button>
                 </div>
             </div>
@@ -524,6 +521,7 @@
 
                 hiredCrewIds: ['dir_1', 'act_1', 'wrt_1', 'tec_1'],
                 awards: [],
+                activeLoans: [],
 
                 draft: {
                     title: 'BISIKAN KERATON',
@@ -582,6 +580,37 @@
                             body: 'Halo Produser,\n\nKami tertarik menempatkan produk minuman kopi kami di salah satu adegan produksi studio Anda bulan ini. Dana sponsor sebesar Rp 30.000.000 siap langsung dicairkan ke kas studio tanpa mengurangi kualitas cerita Anda.',
                             actionType: 'sponsorship',
                             payout: 30000000,
+                            resolved: false
+                        },
+                        {
+                            id: 'mail_3',
+                            folder: 'business',
+                            sender: 'Nusantara Film Venture (VC)',
+                            email: 'capital@nusantaravc.id',
+                            subject: 'Fasilitas Pinjaman Modal Produksi Studio (Rp 200 Jt)',
+                            time: 'Pekan 1',
+                            unread: true,
+                            starred: false,
+                            body: 'Halo Pimpinan Studio,\n\nKami menyediakan fasilitas pinjaman modal kerja bagi studio film yang sedang berkembang agar produksi tidak terhambat biaya operasional.\n\nDana Rp 200.000.000 dapat langsung dicairkan hari ini dengan skema cicilan ringan Rp 22.000.000/pekan selama 10 pekan.',
+                            actionType: 'investor_loan',
+                            principal: 200000000,
+                            weeklyPayment: 22000000,
+                            durationWeeks: 10,
+                            resolved: false
+                        },
+                        {
+                            id: 'mail_4',
+                            folder: 'business',
+                            sender: 'Visinema & Miles Co-Pro Fund',
+                            email: 'copro@sinemakolaborasi.id',
+                            subject: 'Dana Investasi Co-Production & Distribusi (+Rp 120 Jt)',
+                            time: 'Pekan 1',
+                            unread: false,
+                            starred: true,
+                            body: 'Salam Sineas,\n\nKami mencari studio baru berbakat untuk diajak bermitra dalam pengembangan proyek berkualitas. Kami siap menyuntikkan dana co-production sebesar Rp 120.000.000 di muka serta meningkatkan reputasi studio Anda di jaringan distribusi nasional.',
+                            actionType: 'coproduction_invest',
+                            payout: 120000000,
+                            repGain: 3,
                             resolved: false
                         }
                     ]
@@ -671,6 +700,7 @@
                     releasedMovies: Array.isArray(parsed.releasedMovies) && parsed.releasedMovies.length > 0 ? parsed.releasedMovies : fresh.releasedMovies,
                     hiredCrewIds: Array.isArray(parsed.hiredCrewIds) ? parsed.hiredCrewIds : fresh.hiredCrewIds,
                     awards: Array.isArray(parsed.awards) ? parsed.awards : [],
+                    activeLoans: Array.isArray(parsed.activeLoans) ? parsed.activeLoans : [],
                     franchises: Array.isArray(parsed.franchises) ? parsed.franchises : []
                 };
                 return true;
@@ -2027,6 +2057,8 @@
 
             if (finalRating <= 2.5) {
                 state.crisisMovieId = newMovie.id;
+            } else if (finalRating >= 3.7 && (!isTheater || openingGross < 180000000 || state.cash < 250000000)) {
+                generateSmartFundingMail(newMovie);
             }
 
             state.activeProduction = null;
@@ -2078,6 +2110,12 @@
             if (m.actionType === 'sponsorship') {
                 return '<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 font-mono text-[9px] font-bold text-emerald-300 shrink-0">Sponsor</span>';
             }
+            if (m.actionType === 'investor_loan') {
+                return '<span class="px-2 py-0.5 rounded-md bg-purple-500/15 border border-purple-500/30 font-mono text-[9px] font-bold text-purple-300 shrink-0">Pinjaman VC</span>';
+            }
+            if (m.actionType === 'coproduction_invest') {
+                return '<span class="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 font-mono text-[9px] font-bold text-amber-300 shrink-0">Investor Film</span>';
+            }
             return '<span class="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 font-mono text-[9px] font-bold text-amber-300 shrink-0">Studio</span>';
         }
 
@@ -2106,10 +2144,14 @@
                     <div class="flex items-center gap-2">
                         <div class="flex items-center gap-2.5 flex-1 px-3.5 py-2 rounded-2xl bg-[#151b28] border border-white/10 focus-within:border-rose-400/50 transition">
                             <i class="ph ph-magnifying-glass text-gray-400 text-sm"></i>
-                            <input type="text" value="${escapeHTML(cm.search)}" oninput="state.cinemail.search=this.value; renderCinemailView()" placeholder="Cari penawaran lisensi, sponsor, atau pengirim..." class="w-full bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none">
+                            <input type="text" value="${escapeHTML(cm.search)}" oninput="state.cinemail.search=this.value; renderCinemailView()" placeholder="Cari penawaran lisensi, sponsor, investor..." class="w-full bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none">
                             ${cm.search ? `<button onclick="state.cinemail.search=''; renderCinemailView()" class="text-gray-400 hover:text-white"><i class="ph-bold ph-x text-xs"></i></button>` : ''}
                         </div>
-                        <button onclick="markAllMailsRead()" title="Tandai semua dibaca" class="px-3 py-2 rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-[11px] font-bold text-gray-300 shrink-0 flex items-center gap-1.5">
+                        <button onclick="openFundingPitchModal()" class="px-3 py-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black text-[11px] font-display font-extrabold shrink-0 flex items-center gap-1 shadow-md shadow-emerald-500/20">
+                            <i class="ph-bold ph-hand-coins text-sm"></i>
+                            <span>Cari Dana</span>
+                        </button>
+                        <button onclick="markAllMailsRead()" title="Tandai semua dibaca" class="px-2.5 py-2 rounded-2xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-[11px] font-bold text-gray-300 shrink-0 flex items-center gap-1.5">
                             <i class="ph ph-checks text-sm text-emerald-400"></i>
                             <span class="hidden sm:inline">Baca Semua</span>
                         </button>
@@ -2275,6 +2317,36 @@
                                         </div>
                                     ` : ''}
 
+                                    <!-- Interactive Contract Box: Investor Loan -->
+                                    ${selectedMail.actionType === 'investor_loan' && !selectedMail.resolved ? `
+                                        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-purple-500/15 via-[#1a1429] to-[#111520] border border-purple-500/35 space-y-3">
+                                            <div class="flex items-center justify-between gap-2">
+                                                <div class="font-mono text-[10px] uppercase font-extrabold text-purple-300">Perjanjian Pinjaman Modal Investor</div>
+                                                <span class="font-mono text-sm font-extrabold text-emerald-300">+${formatIDR(selectedMail.principal)}</span>
+                                            </div>
+                                            <div class="p-3 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between text-xs">
+                                                <span class="text-gray-400">Skema Cicilan Otomatis:</span>
+                                                <strong class="font-mono text-rose-300">-${formatIDR(selectedMail.weeklyPayment)}/mgg × ${selectedMail.durationWeeks} pekan</strong>
+                                            </div>
+                                            <button onclick="acceptLoanMail('${selectedMail.id}')" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-display font-extrabold text-xs shadow-lg shadow-purple-500/20">
+                                                Cairkan Pinjaman (${formatIDR(selectedMail.principal)})
+                                            </button>
+                                        </div>
+                                    ` : ''}
+
+                                    <!-- Interactive Contract Box: Film Company Co-Production Investment -->
+                                    ${selectedMail.actionType === 'coproduction_invest' && !selectedMail.resolved ? `
+                                        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-amber-500/15 via-[#241b12] to-[#111520] border border-amber-500/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                            <div>
+                                                <div class="font-mono text-[10px] uppercase font-extrabold text-amber-300">Investasi Co-Production & Distribusi</div>
+                                                <div class="font-display font-extrabold text-sm text-white mt-0.5">Suntikan Dana: +${formatIDR(selectedMail.payout)} • +${selectedMail.repGain || 3}% Reputasi</div>
+                                            </div>
+                                            <button onclick="acceptCoProdMail('${selectedMail.id}')" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-display font-extrabold text-xs shadow-lg shadow-amber-500/20 shrink-0">
+                                                Terima Investasi
+                                            </button>
+                                        </div>
+                                    ` : ''}
+
                                     ${selectedMail.resolved && selectedMail.actionType !== 'none' ? `
                                         <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 font-mono text-xs text-emerald-300 flex items-center justify-between gap-2">
                                             <span>✓ Kontrak pada pesan ini telah resmi ditandatangani.</span>
@@ -2372,169 +2444,278 @@
             showToast('Dana sponsor +' + formatIDR(m.payout) + ' masuk ke kas studio!', 'success');
         }
 
-        // =========================================================================
-        // 7. INSTAGRAM-STYLE CINEGRAM
-        // =========================================================================
-        function renderCinegramView() {
-            const main = document.getElementById('mainWorkspace');
-            const cg = state.cinegram;
-            const visiblePosts = cg.posts.filter(p => cg.regionFilter === 'all' || p.region === cg.regionFilter);
+        function acceptLoanMail(mailId) {
+            const m = state.cinemail.messages.find(x => x.id === mailId);
+            if (!m || m.resolved) return;
+            state.cash += m.principal;
+            m.resolved = true;
+            state.activeLoans.push({
+                id: 'loan_' + Date.now(),
+                lender: m.sender,
+                principal: m.principal,
+                weeklyPayment: m.weeklyPayment,
+                weeksLeft: m.durationWeeks
+            });
+            saveGameState(true);
+            playTone(620, 'triangle', 0.12, 0.05);
+            updateHUD();
+            renderCinemailView();
+            showToast('Pinjaman +' + formatIDR(m.principal) + ' cair! Cicilan ' + formatIDR(m.weeklyPayment) + '/mgg.', 'success');
+        }
 
-            const stories = [
-                { name: 'Cerita Anda', handle: state.studioName, text: 'Pekan ' + state.week + ' di ' + state.studioName + ': Fokus mencetak karya sinema terbaik tahun ' + state.year + '!' },
-                { name: 'cinephile_id', handle: 'cinephile_jakarta', text: 'Antrean bioskop weekend ini meledak! Film ' + state.trendingGenre + ' lagi dicari penonton.' },
-                { name: 'cannes_live', handle: 'cannes_dispatch', text: 'Para pembeli hak tayang internasional sedang memantau studio independen Asia!' },
-                { name: 'boxoffice_bot', handle: 'boxoffice_indonesia', text: 'Update pasar: ' + state.marketMood.label + ' (' + Math.round(state.marketMood.mult * 100) + '%).' }
-            ];
+        function acceptCoProdMail(mailId) {
+            const m = state.cinemail.messages.find(x => x.id === mailId);
+            if (!m || m.resolved) return;
+            state.cash += m.payout;
+            state.reputation = Math.min(100, state.reputation + (m.repGain || 3));
+            m.resolved = true;
+            saveGameState(true);
+            playTone(720, 'triangle', 0.14, 0.05);
+            updateHUD();
+            renderCinemailView();
+            showToast('Investasi Co-Production +' + formatIDR(m.payout) + ' & +' + (m.repGain || 3) + '% Reputasi diterima!', 'success');
+        }
 
-            main.innerHTML = `
-                <div class="shrink-0 px-3.5 sm:px-5 pt-2.5 pb-2 border-b border-white/[0.08] bg-[#0d111a] flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                        <i class="ph-fill ph-instagram-logo text-xl text-pink-500"></i>
-                        <span class="font-display font-extrabold text-base text-white tracking-tight">CineGram</span>
+        function repayLoanEarly(loanId) {
+            const idx = state.activeLoans.findIndex(l => l.id === loanId);
+            if (idx === -1) return;
+            const loan = state.activeLoans[idx];
+            const payoff = loan.weeklyPayment * loan.weeksLeft;
+            if (state.cash < payoff) return showToast('Kas studio tidak cukup untuk pelunasan (' + formatIDR(payoff) + ')!', 'error');
+            state.cash -= payoff;
+            state.activeLoans.splice(idx, 1);
+            saveGameState(true);
+            playTone(740, 'triangle', 0.12, 0.05);
+            updateHUD();
+            openFundingPitchModal();
+            showToast('Pinjaman dari ' + loan.lender + ' berhasil dilunasi!', 'success');
+        }
+
+        function generateSmartFundingMail(acclaimedMovie = null) {
+            const unresolvedFunding = state.cinemail.messages.filter(m => !m.resolved && ['sponsorship', 'investor_loan', 'coproduction_invest'].includes(m.actionType)).length;
+            if (!acclaimedMovie && unresolvedFunding >= 4) return;
+
+            if (acclaimedMovie) {
+                const partners = [
+                    { name: 'CJ ENM Southeast Asia', email: 'acquisitions@cjenm-asia.com' },
+                    { name: 'A24 World Acquisitions', email: 'international@a24films.com' },
+                    { name: 'Visinema Capital Partners', email: 'invest@visinemacapital.id' },
+                    { name: 'Falcon Global Co-Production', email: 'copro@falconpictures.co.id' }
+                ];
+                const partner = partners[Math.floor(Math.random() * partners.length)];
+                const grant = Math.round(110000000 + acclaimedMovie.rating * 35000000);
+                state.cinemail.messages.unshift({
+                    id: 'mail_copro_' + Date.now() + '_' + Math.floor(Math.random() * 999),
+                    folder: 'business',
+                    sender: partner.name,
+                    email: partner.email,
+                    subject: 'Investasi Co-Production untuk Kualitas "' + acclaimedMovie.title + '" (' + acclaimedMovie.rating.toFixed(1) + '★)',
+                    time: 'Pekan ' + state.week,
+                    unread: true,
+                    starred: true,
+                    body: 'Halo Tim ' + state.studioName + ',\n\nKami sangat terkesan dengan kualitas artistik karya Anda "' + acclaimedMovie.title + '" yang meraih skor tinggi ' + acclaimedMovie.rating.toFixed(1) + '★ meskipun pendapatan komersialnya masih bertumbuh.\n\nSebagai bentuk dukungan terhadap talenta sinema berkualitas, kami mengajukan investasi co-production & hak distribusi internasional senilai ' + formatIDR(grant) + ' agar studio Anda dapat terus memproduksi karya besar berikutnya.',
+                    actionType: 'coproduction_invest',
+                    payout: grant,
+                    repGain: 4,
+                    resolved: false
+                });
+                return;
+            }
+
+            const roll = Math.random();
+            if (roll < 0.4) {
+                const sponsors = [
+                    { name: 'Teh Melati Nusantara', email: 'promo@tehmelati.id', payout: 35000000 },
+                    { name: 'KilatNet 5G Fiber', email: 'brand@kilatnet.id', payout: 50000000 },
+                    { name: 'Indomie Rasa Nusantara', email: 'sponsorship@indofood-brand.id', payout: 65000000 },
+                    { name: 'Garuda Sky Airlines', email: 'partnership@garudasky.id', payout: 80000000 }
+                ];
+                const sp = sponsors[Math.floor(Math.random() * sponsors.length)];
+                state.cinemail.messages.unshift({
+                    id: 'mail_sp_' + Date.now() + '_' + Math.floor(Math.random() * 999),
+                    folder: 'business',
+                    sender: sp.name,
+                    email: sp.email,
+                    subject: 'Penawaran Sponsor Resmi Proyek Studio (+' + formatIDR(sp.payout) + ')',
+                    time: 'Pekan ' + state.week,
+                    unread: true,
+                    starred: false,
+                    body: 'Halo Produser ' + state.studioName + ',\n\nMelihat reputasi studio Anda (' + state.reputation + '%), brand kami ingin menjadi sponsor resmi produksi berikutnya dengan dana segar sebesar ' + formatIDR(sp.payout) + '.',
+                    actionType: 'sponsorship',
+                    payout: sp.payout,
+                    resolved: false
+                });
+            } else if (roll < 0.75) {
+                const lenders = [
+                    { name: 'Sinema Capital Ventura', email: 'loan@sinemacapital.id', principal: 180000000, weekly: 20000000, weeks: 10 },
+                    { name: 'Bank Kreatif Nusantara', email: 'kredit@bankkreatif.id', principal: 320000000, weekly: 35000000, weeks: 10 },
+                    { name: 'Asia Film Angel Fund', email: 'funding@asiafilmangel.com', principal: 450000000, weekly: 48000000, weeks: 10 }
+                ];
+                const ln = lenders[Math.floor(Math.random() * lenders.length)];
+                state.cinemail.messages.unshift({
+                    id: 'mail_ln_' + Date.now() + '_' + Math.floor(Math.random() * 999),
+                    folder: 'business',
+                    sender: ln.name,
+                    email: ln.email,
+                    subject: 'Pinjaman Modal Ekspansi Studio (' + formatIDR(ln.principal) + ')',
+                    time: 'Pekan ' + state.week,
+                    unread: true,
+                    starred: false,
+                    body: 'Halo Pimpinan ' + state.studioName + ',\n\nKami menawarkan fasilitas kredit modal produksi sebesar ' + formatIDR(ln.principal) + ' yang dapat dicairkan langsung ke kas Anda dengan cicilan ' + formatIDR(ln.weekly) + '/pekan selama ' + ln.weeks + ' pekan.',
+                    actionType: 'investor_loan',
+                    principal: ln.principal,
+                    weeklyPayment: ln.weekly,
+                    durationWeeks: ln.weeks,
+                    resolved: false
+                });
+            } else {
+                const acclaimed = state.releasedMovies
+                    .filter(m => m.studio === state.studioName && m.rating >= 3.6)
+                    .sort((a, b) => b.rating - a.rating)[0];
+                if (acclaimed) {
+                    generateSmartFundingMail(acclaimed);
+                } else {
+                    state.cinemail.messages.unshift({
+                        id: 'mail_sp2_' + Date.now() + '_' + Math.floor(Math.random() * 999),
+                        folder: 'business',
+                        sender: 'Bioskop XXI & CGV Promo',
+                        email: 'partner@jaringanbioskop.id',
+                        subject: 'Dukungan Dana Promosi & Trailer (+Rp 45 Jt)',
+                        time: 'Pekan ' + state.week,
+                        unread: true,
+                        starred: false,
+                        body: 'Halo Tim ' + state.studioName + ',\n\nKami memberikan dana dukungan promosi layar bioskop sebesar Rp 45.000.000 untuk membantu kelancaran produksi studio Anda bulan ini.',
+                        actionType: 'sponsorship',
+                        payout: 45000000,
+                        resolved: false
+                    });
+                }
+            }
+        }
+
+        function openFundingPitchModal() {
+            const bestHiddenGem = state.releasedMovies
+                .filter(m => m.studio === state.studioName && m.rating >= 3.6)
+                .sort((a, b) => b.rating - a.rating)[0];
+
+            openModal(`
+                <div class="p-5 space-y-4 max-h-[82dvh] flex flex-col">
+                    <div class="flex items-center justify-between shrink-0">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                <i class="ph-fill ph-hand-coins text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display font-extrabold text-sm sm:text-base text-white">Pusat Investor, Pinjaman & Sponsor</h3>
+                                <p class="font-mono text-[10px] text-gray-400">Penawaran kontrak akan dikirim langsung ke kotak masuk CineMail</p>
+                            </div>
+                        </div>
+                        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 flex items-center justify-center"><i class="ph ph-x"></i></button>
                     </div>
-                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                        ${[
-                            { id: 'all', label: 'Semua' },
-                            { id: 'id', label: '🇮🇩 ID' },
-                            { id: 'intl', label: '🌍 Intl' }
-                        ].map(f => `
-                            <button onclick="state.cinegram.regionFilter='${f.id}'; renderCinegramView()" class="px-2.5 py-1 rounded-full text-[11px] font-bold shrink-0 transition ${cg.regionFilter === f.id ? 'bg-white text-black' : 'bg-white/[0.07] text-gray-300 hover:text-white'}">
-                                ${f.label}
-                            </button>
-                        `).join('')}
-                        <button onclick="openCreateStudioPostModal()" title="Buat Postingan Studio" class="px-2.5 py-1 rounded-full bg-gradient-to-r from-pink-500 to-amber-500 text-black font-display font-extrabold text-[11px] shrink-0">
-                            + Post
+
+                    <div class="flex-1 overflow-y-auto app-scroll space-y-3">
+                        ${state.activeLoans.length > 0 ? `
+                            <div class="p-3.5 rounded-2xl bg-purple-950/40 border border-purple-500/30 space-y-2">
+                                <div class="font-mono text-[10px] font-extrabold text-purple-300 uppercase">Pinjaman Aktif (${state.activeLoans.length})</div>
+                                ${state.activeLoans.map(l => `
+                                    <div class="flex items-center justify-between gap-2 bg-black/40 p-2.5 rounded-xl text-xs">
+                                        <div>
+                                            <div class="font-bold text-white">${escapeHTML(l.lender)}</div>
+                                            <div class="font-mono text-[10px] text-rose-300">-${formatIDR(l.weeklyPayment)}/mgg • Sisa ${l.weeksLeft} pekan</div>
+                                        </div>
+                                        <button onclick="repayLoanEarly('${l.id}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-500 text-black font-display font-extrabold text-[10px] shrink-0">
+                                            Lunasi (${formatIDR(l.weeklyPayment * l.weeksLeft)})
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        <button onclick="requestFundingOffer('loan')" class="w-full p-3.5 rounded-2xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-left space-y-1 transition">
+                            <div class="flex items-center justify-between">
+                                <span class="font-display font-extrabold text-xs sm:text-sm text-purple-200">🏦 Ajukan Pinjaman Investor Ventura</span>
+                                <span class="font-mono text-xs font-extrabold text-emerald-300">+Rp 180 Jt – Rp 450 Jt</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300">Dapatkan penawaran kredit modal produksi instan dengan cicilan mingguan ringan.</p>
                         </button>
-                        <button onclick="openCinegramActivityModal()" title="Notifikasi Aktivitas" class="w-8 h-8 rounded-full bg-white/[0.07] hover:bg-white/[0.14] flex items-center justify-center text-white shrink-0">
-                            <i class="ph ph-heart text-base"></i>
+
+                        <button onclick="requestFundingOffer('copro')" class="w-full p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-left space-y-1 transition">
+                            <div class="flex items-center justify-between">
+                                <span class="font-display font-extrabold text-xs sm:text-sm text-amber-200">🎬 Pitching Karya Berkualitas ke Perusahaan Film</span>
+                                <span class="font-mono text-xs font-extrabold text-emerald-300">+Rp 120 Jt – Rp 280 Jt</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300">
+                                ${bestHiddenGem
+                                    ? 'Tawarkan portofolio <strong>"' + escapeHTML(bestHiddenGem.title) + '" (' + bestHiddenGem.rating.toFixed(1) + '★)</strong> ke studio besar untuk dana Co-Production tanpa cicilan!'
+                                    : 'Butuh minimal 1 karya studio dengan rating ≥ 3.6★ untuk menarik minat co-production studio besar.'}
+                            </p>
+                        </button>
+
+                        <button onclick="requestFundingOffer('sponsor')" class="w-full p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-left space-y-1 transition">
+                            <div class="flex items-center justify-between">
+                                <span class="font-display font-extrabold text-xs sm:text-sm text-emerald-200">🤝 Cari Sponsor Brand Komersial</span>
+                                <span class="font-mono text-xs font-extrabold text-emerald-300">+Rp 35 Jt – Rp 80 Jt</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300">Undang brand lokal & nasional mengirim penawaran product placement tanpa utang.</p>
                         </button>
                     </div>
                 </div>
+            `, 'max-w-lg');
+        }
 
-                <div id="cinegramFeedScroll" class="flex-1 min-h-0 overflow-y-auto app-scroll">
-                    <div class="px-3.5 sm:px-5 py-3 border-b border-white/[0.06] flex items-center gap-3.5 overflow-x-auto no-scrollbar">
-                        ${stories.map((s, idx) => `
-                            <button onclick="openStoryModal(${idx})" class="flex flex-col items-center gap-1 shrink-0 group">
-                                <div class="w-14 h-14 rounded-full p-[2px] ig-story-ring group-active:scale-95 transition">
-                                    <div class="w-full h-full rounded-full bg-[#0b0e16] flex items-center justify-center font-display font-extrabold text-xs text-white">
-                                        ${s.name.slice(0, 2).toUpperCase()}
-                                    </div>
-                                </div>
-                                <span class="text-[10px] text-gray-300 max-w-[62px] truncate">${s.name}</span>
-                            </button>
-                        `).join('')}
-                    </div>
+        function requestFundingOffer(kind) {
+            if (kind === 'copro') {
+                const best = state.releasedMovies
+                    .filter(m => m.studio === state.studioName && m.rating >= 3.6)
+                    .sort((a, b) => b.rating - a.rating)[0];
+                if (!best) {
+                    return showToast('Rilis minimal 1 karya studio dengan skor ≥ 3.6★ terlebih dahulu untuk pitching ke perusahaan film!', 'warn');
+                }
+                generateSmartFundingMail(best);
+            } else if (kind === 'loan') {
+                const principal = state.reputation >= 50 ? 400000000 : 220000000;
+                const weekly = Math.round((principal * 1.1) / 10);
+                state.cinemail.messages.unshift({
+                    id: 'mail_req_ln_' + Date.now(),
+                    folder: 'business',
+                    sender: 'Nusantara Film Venture (VC)',
+                    email: 'approval@nusantaravc.id',
+                    subject: 'Persetujuan Pinjaman Modal Studio (' + formatIDR(principal) + ')',
+                    time: 'Pekan ' + state.week,
+                    unread: true,
+                    starred: true,
+                    body: 'Halo ' + state.studioName + ',\n\nPengajuan pinjaman modal kerja Anda telah disetujui! Dana sebesar ' + formatIDR(principal) + ' siap ditransfer dengan cicilan ' + formatIDR(weekly) + '/pekan selama 10 pekan.',
+                    actionType: 'investor_loan',
+                    principal,
+                    weeklyPayment: weekly,
+                    durationWeeks: 10,
+                    resolved: false
+                });
+            } else {
+                const payout = Math.round(35000000 + state.reputation * 600000);
+                state.cinemail.messages.unshift({
+                    id: 'mail_req_sp_' + Date.now(),
+                    folder: 'business',
+                    sender: 'Kopi Kenangan & Mitra Brand',
+                    email: 'agency@brandmitra.id',
+                    subject: 'Kontrak Sponsor Brand Baru (+' + formatIDR(payout) + ')',
+                    time: 'Pekan ' + state.week,
+                    unread: true,
+                    starred: false,
+                    body: 'Halo Tim ' + state.studioName + ',\n\nKami siap menjadi sponsor produk pada produksi Anda berikutnya dengan pencairan dana langsung sebesar ' + formatIDR(payout) + '.',
+                    actionType: 'sponsorship',
+                    payout,
+                    resolved: false
+                });
+            }
 
-                    <div class="max-w-xl mx-auto divide-y divide-white/[0.08] pb-6">
-                        ${visiblePosts.map(post => {
-                            const totalVotes = post.poll ? post.poll.options.reduce((a, b) => a + b.votes, 0) : 0;
-                            const displayedCaption = (post.showTranslation && post.translatedCaption) ? post.translatedCaption : post.caption;
-                            return `
-                                <article class="py-3.5 px-3.5 sm:px-4 space-y-2.5">
-                                    <div class="flex items-center justify-between gap-2">
-                                        <div class="flex items-center gap-2.5 min-w-0">
-                                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-pink-600 flex items-center justify-center font-display font-extrabold text-xs text-white shrink-0">
-                                                ${post.author.slice(0, 2).toUpperCase()}
-                                            </div>
-                                            <div class="min-w-0">
-                                                <div class="flex items-center gap-1">
-                                                    <span class="font-display font-extrabold text-xs text-white truncate">${post.author}</span>
-                                                    ${post.verified ? '<i class="ph-fill ph-seal-check text-sky-400 text-xs shrink-0"></i>' : ''}
-                                                    <span class="px-1.5 py-0.2 rounded bg-white/10 font-mono text-[9px] text-gray-300 shrink-0">${post.region === 'intl' ? '🌍' : '🇮🇩'}</span>
-                                                </div>
-                                                <div class="text-[10px] text-gray-400 truncate">${post.location}</div>
-                                            </div>
-                                        </div>
-                                        <button onclick="toggleFollowAuthor('${post.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 ${post.following ? 'bg-white/10 text-gray-300' : 'bg-sky-500 text-black font-extrabold'}">
-                                            ${post.following ? 'Mengikuti' : 'Ikuti'}
-                                        </button>
-                                    </div>
-
-                                    <div ondblclick="doubleTapPost('${post.id}')" onclick="openPostDetailModal('${post.id}')" class="relative rounded-2xl bg-gradient-to-br ${post.grad} border border-white/10 p-5 sm:p-6 min-h-[210px] sm:min-h-[245px] flex flex-col justify-between cursor-pointer overflow-hidden">
-                                        <div class="flex items-center justify-between text-white/60">
-                                            <span class="font-mono text-[10px] tracking-widest uppercase">${post.location}</span>
-                                            <i class="ph-fill ${post.icon} text-2xl text-white/80"></i>
-                                        </div>
-                                        <div class="my-3">
-                                            <h3 class="font-display font-extrabold text-lg sm:text-2xl text-white leading-tight tracking-tight">${escapeHTML(post.headline)}</h3>
-                                            ${post.movieId ? `
-                                                <button onclick="event.stopPropagation(); jumpToCineboxdMovie('${post.movieId}')" class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 hover:bg-black/75 border border-emerald-400/40 text-[11px] font-bold text-emerald-300">
-                                                    <span>Buka Halaman Film di CineBoxd</span>
-                                                    <i class="ph-bold ph-arrow-right"></i>
-                                                </button>
-                                            ` : ''}
-                                        </div>
-                                        <div class="font-mono text-[10px] text-white/55">${post.time}</div>
-                                        <div id="heartBurst-${post.id}" class="hidden pointer-events-none absolute inset-0 flex items-center justify-center">
-                                            <i class="ph-fill ph-heart text-6xl text-rose-500 drop-shadow-2xl animate-heart-pop"></i>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-center justify-between pt-0.5">
-                                        <div class="flex items-center gap-4">
-                                            <button onclick="togglePostLike('${post.id}')" class="text-xl transition active:scale-125 ${post.liked ? 'text-rose-500' : 'text-white hover:text-gray-300'}">
-                                                <i class="${post.liked ? 'ph-fill' : 'ph'} ph-heart"></i>
-                                            </button>
-                                            <button onclick="openPostDetailModal('${post.id}')" class="text-xl text-white hover:text-gray-300">
-                                                <i class="ph ph-chat-circle"></i>
-                                            </button>
-                                            <button onclick="showToast('Tautan postingan disalin!', 'info')" class="text-xl text-white hover:text-gray-300">
-                                                <i class="ph ph-paper-plane-tilt"></i>
-                                            </button>
-                                        </div>
-                                        <button onclick="togglePostBookmark('${post.id}')" class="text-xl ${post.bookmarked ? 'text-amber-400' : 'text-white hover:text-gray-300'}">
-                                            <i class="${post.bookmarked ? 'ph-fill' : 'ph'} ph-bookmark-simple"></i>
-                                        </button>
-                                    </div>
-
-                                    <div class="space-y-1">
-                                        <div class="font-display font-extrabold text-xs text-white">${post.likes.toLocaleString('id-ID')} suka</div>
-                                        <p class="text-xs text-gray-200 leading-relaxed">
-                                            <strong class="text-white mr-1">${post.author}</strong>${escapeHTML(displayedCaption)}
-                                        </p>
-                                        ${post.translatedCaption ? `
-                                            <button onclick="togglePostTranslation('${post.id}')" class="text-[11px] font-bold text-gray-400 hover:text-white">
-                                                ${post.showTranslation ? 'Lihat teks asli' : 'Lihat terjemahan'}
-                                            </button>
-                                        ` : ''}
-                                    </div>
-
-                                    ${post.poll ? `
-                                        <div class="p-3 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2">
-                                            <div class="text-xs font-bold text-white">${post.poll.question}</div>
-                                            <div class="space-y-1.5">
-                                                ${post.poll.options.map((opt, idx) => {
-                                                    const pct = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
-                                                    const voted = post.poll.votedIndex === idx;
-                                                    return `
-                                                        <button onclick="voteCinegramPoll('${post.id}', ${idx})" class="w-full relative overflow-hidden rounded-xl border ${voted ? 'border-amber-400' : 'border-white/10'} bg-black/40 px-3 py-2 text-left text-xs flex items-center justify-between">
-                                                            <div class="absolute inset-y-0 left-0 bg-amber-500/20" style="width:${post.poll.votedIndex !== null ? pct : 0}%"></div>
-                                                            <span class="relative font-semibold text-gray-100">${opt.label}</span>
-                                                            ${post.poll.votedIndex !== null ? `<span class="relative font-mono text-[11px] font-bold text-amber-300">${pct}%</span>` : ''}
-                                                        </button>
-                                                    `;
-                                                }).join('')}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-
-                                    <div class="space-y-1 pt-0.5">
-                                        <button onclick="openPostDetailModal('${post.id}')" class="text-[11px] text-gray-400 hover:text-gray-200 font-medium">
-                                            Lihat semua ${post.comments.length} komentar...
-                                        </button>
-                                        ${post.comments.slice(0, 2).map(c => `
-                                            <div class="text-xs text-gray-300 truncate">
-                                                <strong class="text-white mr-1">${c.user}</strong>${escapeHTML(c.text)}
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </article>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            `;
+            state.cinemail.selectedId = state.cinemail.messages[0].id;
+            state.cinemail.mobilePane = 'detail';
+            saveGameState(true);
+            closeModal();
+            updateHUD();
+            switchMainTab('cinemail');
+            showToast('Penawaran pendanaan baru masuk ke CineMail!', 'success');
         }
 
         function openCreateStudioPostModal() {
@@ -3409,7 +3590,17 @@
             // 1. Studio Overhead & Crew Payroll
             const payroll = getWeeklyPayroll();
             const studioOverhead = 8000000;
-            state.cash -= (payroll + studioOverhead);
+            let loanRepaymentTotal = 0;
+            state.activeLoans = state.activeLoans.filter(loan => {
+                loanRepaymentTotal += loan.weeklyPayment;
+                loan.weeksLeft -= 1;
+                if (loan.weeksLeft <= 0) {
+                    showToast('Pinjaman dari ' + loan.lender + ' telah LUNAS!', 'success');
+                    return false;
+                }
+                return true;
+            });
+            state.cash -= (payroll + studioOverhead + loanRepaymentTotal);
 
             // 1b. Reset weekly camera takes & progress active on-set filming
             if (state.activeProduction) {
@@ -3487,6 +3678,10 @@
             }
 
             // 5. Rival AI Studio Release & Licensing Offer every 3 weeks
+            if (state.week % 2 === 0 || state.cash < 180000000) {
+                generateSmartFundingMail(null);
+            }
+
             if (state.week % 3 === 0) {
                 const rivalTitles = [
                     { title: 'MALAM SATU SURO', studio: 'Rapi Films', director: 'Joko Anwar', genre: 'Horor', rating: 4.3, icon: 'ph-skull', grad: 'from-red-950 via-stone-950 to-black', synopsis: 'Ritual malam keramat membuka portal arwah leluhur di desa terpencil.' },
@@ -3643,7 +3838,7 @@
             updateHUD();
             renderCurrentTab();
 
-            const netDelta = ourBoxOfficeCut + (econ.catalog.length > 0 ? econ.netWeekly : 0) - (payroll + studioOverhead);
+            const netDelta = ourBoxOfficeCut + (econ.catalog.length > 0 ? econ.netWeekly : 0) - (payroll + studioOverhead + loanRepaymentTotal);
             showToast('Pekan ' + state.week + ' • Arus kas bersih: ' + (netDelta >= 0 ? '+' : '') + formatIDR(netDelta), netDelta >= 0 ? 'success' : 'info');
         }
 
